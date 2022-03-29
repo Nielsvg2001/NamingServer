@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -51,8 +52,10 @@ public class JSONHelper {
                     nodesList.put(Integer.valueOf((String) key), (Inet4Address) Inet4Address.getByName((String) jsonObject.get(key)));
                 }
             }
-        } catch (IOException | ParseException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
+        } catch (IOException e){
+            System.out.println("File not found");
         }
         return nodesList;
     }
