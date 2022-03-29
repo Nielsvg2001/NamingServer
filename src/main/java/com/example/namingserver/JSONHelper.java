@@ -5,7 +5,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,7 +18,7 @@ public class JSONHelper {
 
     /**
      * @param nodesList - HashMap of nodes and their IP addresses
-     * Writes the HashMap to a JSON file.
+     *                  Writes the HashMap to a JSON file.
      */
     public void writeToFile(HashMap<Integer, Inet4Address> nodesList) {
         JSONArray jsonArray = new JSONArray();
@@ -54,7 +53,7 @@ public class JSONHelper {
             }
         } catch (ParseException e) {
             e.printStackTrace();
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("File not found");
         }
         return nodesList;

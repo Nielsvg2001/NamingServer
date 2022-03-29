@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class Naming {
-    static HashMap<Integer, Inet4Address> nodesList = new HashMap<>();
+    static HashMap<Integer, Inet4Address> nodesList;
     static JSONHelper jsonHelper = new JSONHelper();
 
     public Naming() {
@@ -29,17 +29,22 @@ public class Naming {
 
     /**
      * @param hostName name of the node
-     * @param ipadres ipadres of the node
+     * @param ipadres  ipadres of the node
      * @return hash of the added node
      * Adds a node to the list.
      */
     public static int addNode(String hostName, Inet4Address ipadres) {
-
-        int hash = hashCode(hostName);
-        if (!nodesList.containsKey(hash)) {
+        Lock lock = new ReentrantLock();
+        lock.lock();
+        try {
+            int hash = hashCode(hostName);
+            if (!nodesList.containsKey(hash)) {
                 nodesList.put(hash, ipadres);
                 jsonHelper.writeToFile(nodesList);
-            return hash;
+                return hash;
+            }
+        } finally {
+            lock.unlock();
         }
         return -1;
     }
@@ -50,10 +55,16 @@ public class Naming {
      * Removes a node from the list.
      */
     public static int removeNode(String hostName) {
-        if (nodesList.containsKey(hashCode(hostName))) {
+        Lock lock = new ReentrantLock();
+        lock.lock();
+        try {
+            if (nodesList.containsKey(hashCode(hostName))) {
                 nodesList.remove(hashCode(hostName));
                 jsonHelper.writeToFile(nodesList);
-            return hashCode(hostName);
+                return hashCode(hostName);
+            }
+        } finally {
+            lock.unlock();
         }
         return -1;
     }
