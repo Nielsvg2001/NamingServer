@@ -29,21 +29,22 @@ public class Naming {
 
     /**
      * @param hostName name of the node
-     * @param ipadres ipadres of the node
+     * @param ipadres  ipadres of the node
      * @return hash of the added node
      * Adds a node to the list.
      */
     public static int addNode(String hostName, Inet4Address ipadres) {
         Lock lock = new ReentrantLock();
-        int hash = hashCode(hostName);
-        if (!nodesList.containsKey(hash)) {
-            try {
+        lock.lock();
+        try {
+            int hash = hashCode(hostName);
+            if (!nodesList.containsKey(hash)) {
                 nodesList.put(hash, ipadres);
                 jsonHelper.writeToFile(nodesList);
-            } finally {
-                lock.unlock();
+                return hash;
             }
-            return hash;
+        } finally {
+            lock.unlock();
         }
         return -1;
     }
@@ -55,14 +56,15 @@ public class Naming {
      */
     public static int removeNode(String hostName) {
         Lock lock = new ReentrantLock();
-        if (nodesList.containsKey(hashCode(hostName))) {
-            try {
+        lock.lock();
+        try {
+            if (nodesList.containsKey(hashCode(hostName))) {
                 nodesList.remove(hashCode(hostName));
                 jsonHelper.writeToFile(nodesList);
-            } finally {
-                lock.unlock();
+                return hashCode(hostName);
             }
-            return hashCode(hostName);
+        } finally {
+            lock.unlock();
         }
         return -1;
     }

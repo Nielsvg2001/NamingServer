@@ -18,7 +18,7 @@ public class JSONHelper {
 
     /**
      * @param nodesList - HashMap of nodes and their IP addresses
-     * Writes the HashMap to a JSON file.
+     *                  Writes the HashMap to a JSON file.
      */
     public void writeToFile(HashMap<Integer, Inet4Address> nodesList) {
         JSONArray jsonArray = new JSONArray();
@@ -53,7 +53,7 @@ public class JSONHelper {
             }
         } catch (ParseException e) {
             e.printStackTrace();
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("File not found");
         }
         return nodesList;
