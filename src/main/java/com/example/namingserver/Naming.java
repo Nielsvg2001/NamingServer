@@ -7,9 +7,11 @@ import java.util.HashMap;
 
 @Service
 public class Naming {
-    static HashMap<Integer, Inet4Address> nodesList = new HashMap<>();
+    static HashMap<Integer, Inet4Address> nodesList;
+    static JSONHelper jsonHelper = new JSONHelper();
 
     public Naming() {
+        nodesList = jsonHelper.readFromFile();
     }
 
     public static Inet4Address getRequest(String fileName) {
@@ -22,6 +24,7 @@ public class Naming {
         int hash = hashCode(hostName);
         if (!nodesList.containsKey(hash)) {
             nodesList.put(hash, ipadres);
+            jsonHelper.writeToFile(nodesList);
             return hash;
         }
         return -1;
@@ -30,6 +33,7 @@ public class Naming {
     public static int removeNode(String hostName) {
         if (nodesList.containsKey(hashCode(hostName))) {
             nodesList.remove(hashCode(hostName));
+            jsonHelper.writeToFile(nodesList);
             return hashCode(hostName);
         }
         return -1;
@@ -53,6 +57,6 @@ public class Naming {
     }
 
     public static int hashCode(String toHash) {
-        return (int) ((toHash.hashCode()+2147483648.0)*(32768/(2147483648.0+Math.abs(-2147483648.0))));
+        return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
     }
 }
