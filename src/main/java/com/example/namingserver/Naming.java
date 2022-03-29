@@ -14,12 +14,23 @@ public class Naming {
         nodesList = jsonHelper.readFromFile();
     }
 
+    /**
+     * @param fileName name of the file
+     * @return ipadres of the node that has the file
+     * Gives the ipadres of the node that has the file.
+     */
     public static Inet4Address getRequest(String fileName) {
         int hash = hashCode(fileName);
         System.out.println("Requesting file: " + fileName + " with hash: " + hash);
         return checkID(hash);
     }
 
+    /**
+     * @param hostName name of the node
+     * @param ipadres ipadres of the node
+     * @return hash of the added node
+     * Adds a node to the list.
+     */
     public static int addNode(String hostName, Inet4Address ipadres) {
         int hash = hashCode(hostName);
         if (!nodesList.containsKey(hash)) {
@@ -30,6 +41,11 @@ public class Naming {
         return -1;
     }
 
+    /**
+     * @param hostName name of the node
+     * @return hash of the removed node
+     * Removes a node from the list.
+     */
     public static int removeNode(String hostName) {
         if (nodesList.containsKey(hashCode(hostName))) {
             nodesList.remove(hashCode(hostName));
@@ -39,6 +55,11 @@ public class Naming {
         return -1;
     }
 
+    /**
+     * @param hashFilename hash of the filename
+     * @return ipadres of the node that has the file
+     * Gives the ipadres of the node that has the file.
+     */
     public static Inet4Address checkID(int hashFilename) {
         int closestID = -1;
         int biggestID = -1;
@@ -56,6 +77,12 @@ public class Naming {
         return nodesList.get((closestID == -1) ? biggestID : closestID);
     }
 
+
+    /**
+     * @param toHash string to hash
+     * @return hash of the string
+     * Maps a string to a hash between 0 and 32768.
+     */
     public static int hashCode(String toHash) {
         return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
     }

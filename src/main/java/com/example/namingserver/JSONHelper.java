@@ -16,6 +16,10 @@ public class JSONHelper {
     public JSONHelper() {
     }
 
+    /**
+     * @param nodesList - HashMap of nodes and their IP addresses
+     * Writes the HashMap to a JSON file.
+     */
     public void writeToFile(HashMap<Integer, Inet4Address> nodesList) {
         JSONArray jsonArray = new JSONArray();
         for (Integer key : nodesList.keySet()) {
@@ -31,6 +35,10 @@ public class JSONHelper {
         }
     }
 
+    /**
+     * @return HashMap of nodes and their IP addresses
+     * Reads the JSON file and returns a HashMap of nodes and their IP addresses.
+     */
     public HashMap<Integer, Inet4Address> readFromFile() {
         JSONParser parser = new JSONParser();
         HashMap<Integer, Inet4Address> nodesList = new HashMap<>();
