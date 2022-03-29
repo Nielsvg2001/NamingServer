@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.Inet4Address;
 import java.util.HashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class Naming {
@@ -32,10 +34,15 @@ public class Naming {
      * Adds a node to the list.
      */
     public static int addNode(String hostName, Inet4Address ipadres) {
+        Lock lock = new ReentrantLock();
         int hash = hashCode(hostName);
         if (!nodesList.containsKey(hash)) {
-            nodesList.put(hash, ipadres);
-            jsonHelper.writeToFile(nodesList);
+            try {
+                nodesList.put(hash, ipadres);
+                jsonHelper.writeToFile(nodesList);
+            } finally {
+                lock.unlock();
+            }
             return hash;
         }
         return -1;
@@ -47,9 +54,14 @@ public class Naming {
      * Removes a node from the list.
      */
     public static int removeNode(String hostName) {
+        Lock lock = new ReentrantLock();
         if (nodesList.containsKey(hashCode(hostName))) {
-            nodesList.remove(hashCode(hostName));
-            jsonHelper.writeToFile(nodesList);
+            try {
+                nodesList.remove(hashCode(hostName));
+                jsonHelper.writeToFile(nodesList);
+            } finally {
+                lock.unlock();
+            }
             return hashCode(hostName);
         }
         return -1;
