@@ -19,10 +19,17 @@ public class RestController {
     public String addNode(@RequestParam String nodeName, @RequestParam String nodeIP) {
         try {
             int hash = Naming.addNode(nodeName, (Inet4Address) Inet4Address.getByName(nodeIP));
-            return "Node " + nodeName + " added with hash " + hash;
+            return (hash == -1) ? "Node already exists, remove him first" : "Node " + nodeName + " added with hash " + hash;
         } catch (UnknownHostException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong IP address");
         }
+    }
+
+    @DeleteMapping("/removeNode")
+    @ResponseStatus(HttpStatus.OK)
+    public String removeNode(@RequestParam String nodeName) {
+        int hash = Naming.removeNode(nodeName);
+        return (hash == -1) ? "Node doesn't exist" : "Node " + nodeName + " removed with hash " + hash;
     }
 
     @GetMapping(value = "/namingRequest")

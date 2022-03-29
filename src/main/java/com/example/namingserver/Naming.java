@@ -20,8 +20,19 @@ public class Naming {
 
     public static int addNode(String hostName, Inet4Address ipadres) {
         int hash = hashCode(hostName);
-        nodesList.put(hash, ipadres);
-        return hash;
+        if (!nodesList.containsKey(hash)) {
+            nodesList.put(hash, ipadres);
+            return hash;
+        }
+        return -1;
+    }
+
+    public static int removeNode(String hostName) {
+        if (nodesList.containsKey(hashCode(hostName))) {
+            nodesList.remove(hashCode(hostName));
+            return hashCode(hostName);
+        }
+        return -1;
     }
 
     public static Inet4Address checkID(int hashFilename) {
