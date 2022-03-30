@@ -12,15 +12,19 @@ public class Client {
 
     public static void main(String[] args) throws UnknownHostException {
         Client cl = new Client();
+
         InetAddress address = InetAddress.getLocalHost();
+        cl.addNode(address);
         cl.NamingRequest("testfile name.txt");
         cl.removeNode("testnodename");
 
     }
 
 
-    public void addNode(Inet4Address ipaddr){
+    public void addNode(InetAddress ipaddr){
         System.out.println("addnode");
+        System.out.println("nodeName"+ ipaddr.getHostName());
+        System.out.println("nodeName"+ ipaddr.getHostAddress());
         HttpResponse<String> response = Unirest.post("http://host0.group6.6dist:8080/addNode")
                 .queryString("nodeName", ipaddr.getHostName())
                 .queryString("nodeIP", ipaddr.getHostAddress())
