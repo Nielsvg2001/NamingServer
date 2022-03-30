@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
-import java.util.Map;
-import java.util.Objects;
 
 public class Discovery {
     private static final int PORT = 9999;
@@ -29,7 +27,7 @@ public class Discovery {
                         Naming.addNode(hostname, (Inet4Address) packet.getAddress());
 
                         Integer hash = Naming.hashCode(hostname);
-                        Integer  previousNode = Naming.getNodesList().lowerKey(hash);
+                        Integer previousNode = Naming.getNodesList().lowerKey(hash);
                         Integer nextNode = Naming.getNodesList().higherKey(hash);
 
                         JSONObject jsonObject = new JSONObject();
