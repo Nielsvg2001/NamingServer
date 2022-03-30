@@ -45,6 +45,7 @@ public class Client {
                 .queryString("fileName", fileName)
                 .asString();
         System.out.println("response: " +response);
+        System.out.println("response: " +response.getBody());
     }
 
 
