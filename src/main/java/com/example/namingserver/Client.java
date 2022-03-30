@@ -8,10 +8,12 @@ import java.net.*;
 
 
 public class Client {
+    public static final int LISTENPORT = 9999;
 
     public static void main(String[] args) throws IOException {
         Client cl = new Client();
         System.out.println("There are " + cl.Dicovery() + " nodes in the network");
+        cl.Listen();
         cl.addNode();
         cl.NamingRequest();
         cl.removeNode();
@@ -49,6 +51,36 @@ public class Client {
         socket.send(datagramPacket);
         socket.receive(datagramPacket);
         return Integer.parseInt(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+    }
+
+    public void Listen(){
+        System.out.println("Starting Listening");
+        try {
+            DatagramSocket datagramSocket = new DatagramSocket(LISTENPORT);
+            Thread thread = new Thread(() -> {
+                while (true) {
+                    try {
+                        DatagramPacket packet = new DatagramPacket(new byte[256], 256);
+                        datagramSocket.receive(packet);
+                        String hostname = new String(packet.getData(), 0, packet.getLength());
+
+                        /*Naming.addNode(hostname, (Inet4Address) packet.getAddress());
+
+                        byte[] numNodes = String.valueOf(Naming.numberOfNodes()).getBytes();
+                        DatagramPacket reply = new DatagramPacket(numNodes, numNodes.length, packet.getAddress(), packet.getPort());
+                        reply.setData(String.valueOf(Naming.numberOfNodes()).getBytes());
+                        datagramSocket.send(reply);
+
+                         */
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
