@@ -3,15 +3,14 @@ package com.example.namingserver;
 import org.springframework.stereotype.Service;
 
 import java.net.Inet4Address;
-import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class Naming {
-    static TreeMap<Integer, Inet4Address> nodesList;
-    static JSONHelper jsonHelper = new JSONHelper();
+    private static final JSONHelper jsonHelper = new JSONHelper();
+    private static TreeMap<Integer, Inet4Address> nodesList;
 
     public Naming() {
         nodesList = jsonHelper.readFromFile();
@@ -93,9 +92,14 @@ public class Naming {
         return nodesList.get((closestID == -1) ? biggestID : closestID);
     }
 
-    public static int numberOfNodes(){
+    public static int numberOfNodes() {
         return nodesList.size();
     }
+
+    public static TreeMap<Integer, Inet4Address> getNodesList() {
+        return nodesList;
+    }
+
 
     /**
      * @param toHash string to hash

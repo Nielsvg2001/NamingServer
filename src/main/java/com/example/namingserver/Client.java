@@ -2,13 +2,15 @@ package com.example.namingserver;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 
 
 public class Client {
@@ -23,52 +25,70 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         Client cl = new Client();
-        System.out.println("There are " + cl.Dicovery() + " nodes in the network");
+        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
         cl.Listen();
         InetAddress address = InetAddress.getLocalHost();
         cl.addNode(address);
-        cl.NamingRequest("testfile name.txt");
+        cl.namingRequest("testfile name.txt");
         cl.removeNode("testnodename");
 
     }
 
+    public static int hashCode(String toHash) {
+        return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
+    }
 
-    public void addNode(InetAddress ipaddr){
+    public void addNode(InetAddress ipaddr) {
         System.out.println("addnode");
-        System.out.println("nodeName"+ ipaddr.getHostName());
-        System.out.println("nodeName"+ ipaddr.getHostAddress());
-        HttpResponse<String> response = Unirest.post("http://"+NAMINGSERVERADDRESS+":"+NAMINGPORT+"/addNode")
+        System.out.println("nodeName" + ipaddr.getHostName());
+        System.out.println("nodeName" + ipaddr.getHostAddress());
+        HttpResponse<String> response = Unirest.post("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/addNode")
                 .queryString("nodeName", ipaddr.getHostName())
                 .queryString("nodeIP", ipaddr.getHostAddress())
                 .asString();
     }
 
-
     public void removeNode(String nodeName) {
         System.out.println("removenode");
-        HttpResponse<String> response = Unirest.delete("http://"+NAMINGSERVERADDRESS+":"+NAMINGPORT+"/removeNode")
-                .queryString("nodeName",nodeName )
+        HttpResponse<String> response = Unirest.delete("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/removeNode")
+                .queryString("nodeName", nodeName)
                 .asString();
     }
 
-    public void NamingRequest(String fileName) {
+    public void namingRequest(String fileName) {
         System.out.println("request");
-        HttpResponse<String> response = Unirest.get("http://"+NAMINGSERVERADDRESS+":"+NAMINGPORT+"/namingRequest")
+        HttpResponse<String> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/namingRequest")
                 .queryString("fileName", fileName)
                 .asString();
-        System.out.println("responsebody: " +response.getBody());
+        System.out.println("responsebody: " + response.getBody());
     }
 
-    public int Dicovery() throws IOException {
-        DatagramSocket socket = new DatagramSocket();
-        byte[] buf = Inet4Address.getLocalHost().getHostName().getBytes();
-        DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"),9999);
-        socket.send(datagramPacket);
-        socket.receive(datagramPacket);
-        return Integer.parseInt(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+    public int dicovery() {
+        try {
+            // Send hostname (+ ip) to naming server
+            DatagramSocket socket = new DatagramSocket();
+            byte[] buf = Inet4Address.getLocalHost().getHostName().getBytes();
+            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"), 9999);
+            socket.send(datagramPacket);
+
+            // Receive a response
+            datagramPacket = new DatagramPacket(new byte[1024], 1024);
+            socket.receive(datagramPacket);
+
+            // Handle received data
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+            previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
+            nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
+            return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
-    public void Listen(){
+    public void Listen() {
         System.out.println("Starting Listening");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(LISTENPORT);
@@ -79,7 +99,7 @@ public class Client {
                         datagramSocket.receive(packet);
                         String hostname = new String(packet.getData(), 0, packet.getLength());
                         int hash = hashCode(hostname);
-                        if (hash<nextNode && hash>hashThisNode){
+                        if (hash < nextNode && hash > hashThisNode) {
                             nextNode = hash;
                         }
 
@@ -103,10 +123,6 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static int hashCode(String toHash) {
-        return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
     }
 
 
