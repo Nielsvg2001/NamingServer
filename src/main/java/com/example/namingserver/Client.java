@@ -46,7 +46,7 @@ public class Client {
 
     public int Dicovery() throws IOException {
         DatagramSocket socket = new DatagramSocket();
-        byte[] buf = "clienthost".getBytes();
+        byte[] buf = Inet4Address.getLocalHost().getHostName().getBytes();
         DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"),9999);
         socket.send(datagramPacket);
         socket.receive(datagramPacket);
