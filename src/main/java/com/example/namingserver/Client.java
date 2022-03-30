@@ -17,10 +17,10 @@ public class Client {
     public String NAMINGSERVERADDRESS = "localhost";
     //public String NAMINGSERVERADDRESS = "host0.group6.6dist";
 
-    public static void main(String[] args) throws UnknownHostException, IOException {
+    public static void main(String[] args) throws IOException {
         Client cl = new Client();
         System.out.println("There are " + cl.Dicovery() + " nodes in the network");
-        cl.Listen();
+       // cl.Listen();
         InetAddress address = InetAddress.getLocalHost();
         cl.addNode(address);
         cl.NamingRequest("testfile name.txt");
