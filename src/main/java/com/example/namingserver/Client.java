@@ -3,38 +3,42 @@ package com.example.namingserver;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 
 public class Client {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         Client cl = new Client();
-        cl.addNode();
-        cl.NamingRequest();
-        cl.removeNode();
+        InetAddress address = InetAddress.getLocalHost();
+        cl.NamingRequest("testfile name.txt");
+        cl.removeNode("testnodename");
 
     }
 
 
-    public void addNode(){
+    public void addNode(Inet4Address ipaddr){
         System.out.println("addnode");
-        HttpResponse<String> response = Unirest.post("http://192.168.128.5:8080/addNode")
-                .queryString("nodeName", "testnodename")
-                .queryString("nodeIP", "8.7.6.5")
+        HttpResponse<String> response = Unirest.post("http://host0.group6.6dist:8080/addNode")
+                .queryString("nodeName", ipaddr.getHostName())
+                .queryString("nodeIP", ipaddr.getHostAddress())
                 .asString();
     }
 
 
-    public void removeNode() {
+    public void removeNode(String nodeName) {
         System.out.println("removenode");
-        HttpResponse<String> response = Unirest.delete("http://192.168.128.5:8080/removeNode")
-                .queryString("nodeName", "testnodename")
+        HttpResponse<String> response = Unirest.delete("http://host0.group6.6dist:8080/removeNode")
+                .queryString("nodeName",nodeName )
                 .asString();
     }
 
-    public void NamingRequest() {
+    public void NamingRequest(String fileName) {
         System.out.println("request");
-        HttpResponse<String> response = Unirest.get("http://192.168.128.5:8080/namingRequest")
-                .queryString("fileName", "testfilename")
+        HttpResponse<String> response = Unirest.get("http://host0.group6.6dist:8080/namingRequest")
+                .queryString("fileName", fileName)
                 .asString();
         System.out.println(response);
     }
