@@ -16,11 +16,15 @@ public class Client {
     public static final String NAMINGPORT = "8080";
     public String NAMINGSERVERADDRESS = "localhost";
     //public String NAMINGSERVERADDRESS = "host0.group6.6dist";
+    private int previousNode;
+    private int nextNode;
+    private int hashThisNode;
+
 
     public static void main(String[] args) throws IOException {
         Client cl = new Client();
         System.out.println("There are " + cl.Dicovery() + " nodes in the network");
-       // cl.Listen();
+        cl.Listen();
         InetAddress address = InetAddress.getLocalHost();
         cl.addNode(address);
         cl.NamingRequest("testfile name.txt");
@@ -74,6 +78,13 @@ public class Client {
                         DatagramPacket packet = new DatagramPacket(new byte[256], 256);
                         datagramSocket.receive(packet);
                         String hostname = new String(packet.getData(), 0, packet.getLength());
+                        int hash = hashCode(hostname);
+                        if (hash<nextNode && hash>hashThisNode){
+                            nextNode = hash;
+                        }
+
+                        // here nog previousNode toevoegen + zorgen dat hashTHisnode gevuld wordt
+
 
                         /*Naming.addNode(hostname, (Inet4Address) packet.getAddress());
 
@@ -92,6 +103,10 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static int hashCode(String toHash) {
+        return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
     }
 
 
