@@ -11,11 +11,10 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         Client cl = new Client();
-        cl.Dicovery();
+        System.out.println("There are " + cl.Dicovery() + " nodes in the network");
         cl.addNode();
         cl.NamingRequest();
         cl.removeNode();
-
     }
 
 
@@ -48,11 +47,8 @@ public class Client {
         byte[] buf = "clienthost".getBytes();
         DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"),9999);
         socket.send(datagramPacket);
-        System.out.println("send");
         socket.receive(datagramPacket);
-        System.out.println("received");
-        System.out.println(new String(datagramPacket.getData()));
-        return Integer.parseInt(new String(datagramPacket.getData()));
+        return Integer.parseInt(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
     }
 
 

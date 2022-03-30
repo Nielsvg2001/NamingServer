@@ -13,17 +13,18 @@ public class Discovery {
         System.out.println("Starting Discovery");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(PORT);
-            DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-            datagramSocket.receive(packet);
             Thread thread = new Thread(() -> {
                 while (true) {
-                    String hostname = new String(packet.getData(), 0, packet.getLength());
-
-                    Naming.addNode(hostname, (Inet4Address) packet.getAddress());
-
-                    DatagramPacket reply = new DatagramPacket(new byte[256], 256, packet.getAddress(), packet.getPort());
-                    reply.setData(String.valueOf(Naming.numberOfNodes()).getBytes());
                     try {
+                        DatagramPacket packet = new DatagramPacket(new byte[256], 256);
+                        datagramSocket.receive(packet);
+                        String hostname = new String(packet.getData(), 0, packet.getLength());
+
+                        Naming.addNode(hostname, (Inet4Address) packet.getAddress());
+                        
+                        byte[] numNodes = String.valueOf(Naming.numberOfNodes()).getBytes();
+                        DatagramPacket reply = new DatagramPacket(numNodes, numNodes.length, packet.getAddress(), packet.getPort());
+                        reply.setData(String.valueOf(Naming.numberOfNodes()).getBytes());
                         datagramSocket.send(reply);
                     } catch (IOException e) {
                         e.printStackTrace();
