@@ -44,7 +44,7 @@ public class Client {
         HttpResponse<String> response = Unirest.get("http://host0.group6.6dist:8080/namingRequest")
                 .queryString("fileName", fileName)
                 .asString();
-        System.out.println(response);
+        System.out.println("response: " +response);
     }
 
 
