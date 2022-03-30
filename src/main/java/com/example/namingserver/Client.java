@@ -9,6 +9,10 @@ import java.net.*;
 
 public class Client {
     public static final int LISTENPORT = 9999;
+    public static final String NAMINGPORT = "8080";
+    public String NAMINGSERVERADDRESS = "localhost";
+    //public String NAMINGSERVERADDRESS = "host0.group6.6dist";
+
 
     public static void main(String[] args) throws IOException {
         Client cl = new Client();
@@ -22,7 +26,7 @@ public class Client {
 
     public void addNode(){
         System.out.println("addnode");
-        HttpResponse<String> response = Unirest.post("http://localhost:8080/addNode")
+        HttpResponse<String> response = Unirest.post("http://"+NAMINGSERVERADDRESS+":"+NAMINGPORT+"/addNode")
                 .queryString("nodeName", "testnodename")
                 .queryString("nodeIP", "8.7.6.5")
                 .asString();
@@ -31,14 +35,14 @@ public class Client {
 
     public void removeNode() {
         System.out.println("removenode");
-        HttpResponse<String> response = Unirest.delete("http://localhost:8080/removeNode")
+        HttpResponse<String> response = Unirest.delete("http://"+NAMINGSERVERADDRESS+":"+NAMINGPORT+"/removeNode")
                 .queryString("nodeName", "testnodename")
                 .asString();
     }
 
     public void NamingRequest() {
         System.out.println("request");
-        HttpResponse<String> response = Unirest.get("http://localhost:8080/namingRequest")
+        HttpResponse<String> response = Unirest.get("http://"+NAMINGSERVERADDRESS+":"+NAMINGPORT+"/namingRequest")
                 .queryString("fileName", "testfilename")
                 .asString();
         System.out.println(response);
