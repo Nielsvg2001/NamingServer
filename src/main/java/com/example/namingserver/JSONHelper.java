@@ -42,8 +42,6 @@ public class JSONHelper {
         HashMap<Integer, Inet4Address> nodesList = new HashMap<>();
         if( (new File("src/main/resources/nodes.json").exists()) ) {
             try (FileReader reader = new FileReader("src/main/resources/nodes.json")) {
-                BufferedReader br = new BufferedReader(reader);
-                if (br.readLine() != null) {
                     Object obj = parser.parse(reader);
                     JSONArray jsonArray = (JSONArray) obj;
                     for (Object o : jsonArray) {
@@ -52,11 +50,8 @@ public class JSONHelper {
                             nodesList.put(Integer.valueOf((String) key), (Inet4Address) Inet4Address.getByName((String) jsonObject.get(key)));
                         }
                     }
-                } else {
-                    System.out.println("File is empty");
-                }
             } catch (ParseException | IOException e) {
-                e.printStackTrace();
+                System.out.println("File is empty");
             }
         }
         else {

@@ -3,11 +3,15 @@ package com.example.namingserver;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
+import java.io.IOException;
+import java.net.*;
+
 
 public class Client {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Client cl = new Client();
+        cl.Dicovery();
         cl.addNode();
         cl.NamingRequest();
         cl.removeNode();
@@ -37,6 +41,18 @@ public class Client {
                 .queryString("fileName", "testfilename")
                 .asString();
         System.out.println(response);
+    }
+
+    public int Dicovery() throws IOException {
+        DatagramSocket socket = new DatagramSocket();
+        byte[] buf = "clienthost".getBytes();
+        DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"),9999);
+        socket.send(datagramPacket);
+        System.out.println("send");
+        socket.receive(datagramPacket);
+        System.out.println("received");
+        System.out.println(new String(datagramPacket.getData()));
+        return Integer.parseInt(new String(datagramPacket.getData()));
     }
 
 

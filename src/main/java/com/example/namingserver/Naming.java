@@ -14,6 +14,7 @@ public class Naming {
 
     public Naming() {
         nodesList = jsonHelper.readFromFile();
+        Discovery.start();
     }
 
     /**
@@ -91,6 +92,9 @@ public class Naming {
         return nodesList.get((closestID == -1) ? biggestID : closestID);
     }
 
+    public static int numberOfNodes(){
+        return nodesList.size();
+    }
 
     /**
      * @param toHash string to hash
