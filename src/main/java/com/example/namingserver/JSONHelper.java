@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.net.Inet4Address;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class JSONHelper {
 
@@ -18,7 +19,7 @@ public class JSONHelper {
      * @param nodesList - HashMap of nodes and their IP addresses
      *                  Writes the HashMap to a JSON file.
      */
-    public void writeToFile(HashMap<Integer, Inet4Address> nodesList) {
+    public void writeToFile(TreeMap<Integer, Inet4Address> nodesList) {
         JSONArray jsonArray = new JSONArray();
         for (Integer key : nodesList.keySet()) {
             JSONObject jsonObject = new JSONObject();
@@ -37,9 +38,9 @@ public class JSONHelper {
      * @return HashMap of nodes and their IP addresses
      * Reads the JSON file and returns a HashMap of nodes and their IP addresses.
      */
-    public HashMap<Integer, Inet4Address> readFromFile() {
+    public TreeMap<Integer, Inet4Address> readFromFile() {
         JSONParser parser = new JSONParser();
-        HashMap<Integer, Inet4Address> nodesList = new HashMap<>();
+        TreeMap<Integer, Inet4Address> nodesList = new TreeMap<>();
         if( (new File("src/main/resources/nodes.json").exists()) ) {
             try (FileReader reader = new FileReader("src/main/resources/nodes.json")) {
                     Object obj = parser.parse(reader);

@@ -4,12 +4,13 @@ import org.springframework.stereotype.Service;
 
 import java.net.Inet4Address;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class Naming {
-    static HashMap<Integer, Inet4Address> nodesList;
+    static TreeMap<Integer, Inet4Address> nodesList;
     static JSONHelper jsonHelper = new JSONHelper();
 
     public Naming() {
