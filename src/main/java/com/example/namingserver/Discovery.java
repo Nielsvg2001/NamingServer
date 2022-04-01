@@ -1,6 +1,8 @@
 package com.example.namingserver;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,6 +11,7 @@ import java.net.Inet4Address;
 
 public class Discovery {
     private static final int PORT = 9999;
+    private static final int SHUTDOWNPORT = 9998;
 
     public Discovery() {
     }
