@@ -7,17 +7,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
+import java.net.*;
 
 
 public class Client {
     public static final int LISTENPORT = 9999;
     public static final String NAMINGPORT = "8080";
     public String NAMINGSERVERADDRESS = "localhost";
-    //public String NAMINGSERVERADDRESS = "host0.group6.6dist";
+    private final int SHUTDOWNPORT = 9998;
     private int previousNode;
     private int nextNode;
     private int hashThisNode;
@@ -125,5 +122,31 @@ public class Client {
         }
     }
 
+    public void shutdown() throws SocketException {
+        System.out.println("shutdown");
+        //public String NAMINGSERVERADDRESS = "host0.group6.6dist";
+        DatagramSocket socket = new DatagramSocket();
+        try {
+            // Sending nextNode to previousNode
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("newNextNode", nextNode);
+            byte[] buf = jsonObject.toString().getBytes();
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
+            socket.send(packet);
+
+            // Sending previousNode to nextNode
+            jsonObject = new JSONObject();
+            jsonObject.put("newPreviousNode", previousNode);
+            buf = jsonObject.toString().getBytes();
+            packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
+            socket.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        HttpResponse<String> response = Unirest.delete("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/removeNode")
+                .asString();
+    }
 
 }
