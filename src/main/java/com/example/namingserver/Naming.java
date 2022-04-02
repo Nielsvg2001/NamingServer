@@ -58,6 +58,7 @@ public class Naming {
         Lock lock = new ReentrantLock();
         lock.lock();
         try {
+            System.out.println(hashCode(hostName));
             if (nodesList.containsKey(hashCode(hostName))) {
                 nodesList.remove(hashCode(hostName));
                 jsonHelper.writeToFile(nodesList);
