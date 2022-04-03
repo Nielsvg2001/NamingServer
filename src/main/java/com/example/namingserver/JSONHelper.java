@@ -54,7 +54,7 @@ public class JSONHelper {
                     }
                 }
             } catch (ParseException | IOException e) {
-                System.out.println("File is empty");
+                System.out.println("File is empty or corrupted");
             }
         } else {
             System.out.println("File does not exist");
