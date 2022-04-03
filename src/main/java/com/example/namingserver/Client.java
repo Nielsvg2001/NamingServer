@@ -10,6 +10,7 @@ import java.net.InetAddress;
 public class Client {
     public static final String NAMINGPORT = "8080";
     public String NAMINGSERVERADDRESS = "localhost";
+    // public String NAMINGSERVERADDRESS = "host0.group6.6dist";
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Client cl = new Client();
