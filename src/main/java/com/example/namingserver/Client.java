@@ -15,6 +15,8 @@ public class Client {
     public static void main(String[] args) throws IOException, InterruptedException {
         Client cl = new Client();
         InetAddress localHost = InetAddress.getLocalHost();
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
+        root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         // Add a node with a unique node name
         System.out.println("Add a node with a unique node name");
