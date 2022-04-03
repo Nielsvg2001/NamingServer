@@ -31,8 +31,8 @@ public class Client {
         cl.addNode(node);
         Thread.sleep(2000);
 
-        // Send a filename to the naming server
-        System.out.println("Send a filename to the naming server");
+        // Send a filename with a hash smaller than the smallest hash of the nodes.
+        System.out.println("Send a filename with a hash smaller than the smallest hash of the nodes");
         cl.NamingRequest("testfile.txt");
         Thread.sleep(2000);
 
