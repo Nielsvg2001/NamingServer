@@ -25,6 +25,7 @@ public class Client {
     public static void main(String[] args) throws IOException {
         Client cl = new Client();
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
+        cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
         address = InetAddress.getLocalHost();
         cl.addNode(address);
@@ -87,6 +88,7 @@ public class Client {
         return -1;
     }
 
+    // listens and if it receives a packet, the node checks if it must update the previous or next node
     public void Listen() {
         System.out.println("Starting Listening");
         try {
@@ -101,18 +103,10 @@ public class Client {
                         if (hash < nextNode && hash > hashThisNode) {
                             nextNode = hash;
                         }
+                        if (hash>previousNode && hash<hashThisNode){
+                            previousNode = hash;
+                        }
 
-                        // here nog previousNode toevoegen + zorgen dat hashTHisnode gevuld wordt
-
-
-                        /*Naming.addNode(hostname, (Inet4Address) packet.getAddress());
-
-                        byte[] numNodes = String.valueOf(Naming.numberOfNodes()).getBytes();
-                        DatagramPacket reply = new DatagramPacket(numNodes, numNodes.length, packet.getAddress(), packet.getPort());
-                        reply.setData(String.valueOf(Naming.numberOfNodes()).getBytes());
-                        datagramSocket.send(reply);
-
-                         */
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
