@@ -13,22 +13,27 @@ import java.net.*;
 public class Node {
     public static InetAddress address;
     public static final int LISTENPORT = 9999;
-    public static final String NAMINGPORT = "8080";
     public String NAMINGSERVERADDRESS = "localhost";
+    public static final String NAMINGPORT = "8080";
     public static int SHUTDOWNPORT = 9998;
-    private static int previousNode;
-    private static int nextNode;
-    private int hashThisNode;
+
+    private static int previousNode_id;
+    private static int nextNode_id;
+    private static InetAddress previousNode_ip;
+    private static InetAddress nextNode_ip;
+
+    private static int hashThisNode;
 
 
     public static void main(String[] args) throws IOException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
+
         Node cl = new Node();
         address = InetAddress.getLocalHost();
-        cl.hashThisNode = hashCode(address.getHostName());
-        System.out.println("I'm node " + hashCode(address.getHostName()));
-        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
+        hashThisNode = hashCode(address.getHostName());
+        System.out.println("I'm node " + hashCode(address.getHostName() + "and my ip is " + address.getHostAddress()));
+        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode_id + " and the next node is " + nextNode_id);
         cl.Listen();
         // cl.addNode(address);
         cl.namingRequest("testfile name.txt");
@@ -81,9 +86,11 @@ public class Node {
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
             NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
-            previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
-            nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
-            System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
+            previousNode_id = Integer.parseInt(jsonObject.get("previousNode_id").toString());
+            nextNode_id = Integer.parseInt(jsonObject.get("nextNode_id").toString());
+            previousNode_ip = InetAddress.getByName(jsonObject.get("previousNode_ip").toString());
+            nextNode_ip = InetAddress.getByName(jsonObject.get("nextNode_id").toString());
+            System.out.println("In discovery: The previous node is " + previousNode_id + " and the next node is " + nextNode_id);
             return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
 
         } catch (IOException | ParseException e) {
@@ -105,13 +112,15 @@ public class Node {
                         String hostname = new String(packet.getData(), 0, packet.getLength());
                         int hash = hashCode(hostname);
                         System.out.println("In Listen: Received packet from " + hostname + " with hash " + hash);
-                        if ((hash < nextNode && hash > hashThisNode) || (nextNode<=hashThisNode && hash>hashThisNode) || (nextNode<=hashThisNode && hash<nextNode)) {
-                            nextNode = hash;
+                        if ((hash < nextNode_id && hash > hashThisNode) || (nextNode_id <=hashThisNode && hash>hashThisNode) || (nextNode_id <=hashThisNode && hash< nextNode_id)) {
+                            nextNode_id = hash;
+                            nextNode_ip = packet.getAddress();
                         }
-                        if ((hash>previousNode && hash<hashThisNode) ||(previousNode>=hashThisNode && hash<hashThisNode) || (previousNode>=hashThisNode && hash>previousNode)) {
-                            previousNode = hash;
+                        if ((hash> previousNode_id && hash<hashThisNode) ||(previousNode_id >=hashThisNode && hash<hashThisNode) || (previousNode_id >=hashThisNode && hash> previousNode_id)) {
+                            previousNode_id = hash;
+                            previousNode_ip = packet.getAddress();
                         }
-                        System.out.println("In Listen: The previous node is " + previousNode + " and the next node is " + nextNode);
+                        System.out.println("In Listen: The previous node is " + previousNode_id + " and the next node is " + nextNode_id);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -130,16 +139,18 @@ public class Node {
             try {
                 // Sending nextNode to previousNode
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("newNextNode", nextNode);
+                jsonObject.put("newNextNode_id", nextNode_id);
+                jsonObject.put("newNextNode_ip", nextNode_ip.getHostAddress());
                 byte[] buf = jsonObject.toString().getBytes();
-                DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, previousNode_ip, SHUTDOWNPORT);
                 socket.send(packet);
 
                 // Sending previousNode to nextNode
                 jsonObject = new JSONObject();
-                jsonObject.put("newPreviousNode", previousNode);
+                jsonObject.put("newPreviousNode_id", previousNode_id);
+                jsonObject.put("newPreviousNode_ip", previousNode_ip.getHostAddress());
                 buf = jsonObject.toString().getBytes();
-                packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
+                packet = new DatagramPacket(buf, buf.length, nextNode_ip, SHUTDOWNPORT);
                 socket.send(packet);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -167,13 +178,13 @@ public class Node {
                             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
 
                             // update previousNode
-                            if (jsonObject.containsKey("newPreviousNode")) {
-                                previousNode = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
+                            if (jsonObject.containsKey("newPreviousNode_id")) {
+                                previousNode_id = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
                             }
 
                             // update nextNode
-                            if (jsonObject.containsKey("newNextNode")) {
-                                nextNode = Integer.parseInt(jsonObject.get("newNextNode").toString());
+                            if (jsonObject.containsKey("newNextNode_id")) {
+                                nextNode_id = Integer.parseInt(jsonObject.get("newNextNode").toString());
                             }
                         }
                     } catch(IOException | ParseException e){

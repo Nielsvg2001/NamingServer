@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
+import java.util.Map;
 
 public class Discovery {
     private static final int PORT = 9999;
@@ -33,14 +34,16 @@ public class Discovery {
 
                         // Creating response
                         Integer hash = Naming.hashCode(hostname);
-                        Integer previousNode = Naming.getNodesList().lowerKey(hash);
-                        Integer nextNode = Naming.getNodesList().higherKey(hash);
+                        Map.Entry<Integer, Inet4Address> previousNode = Naming.getNodesList().lowerEntry(hash);
+                        Map.Entry<Integer, Inet4Address> nextNode = Naming.getNodesList().higherEntry(hash);
 
                         // Structuring response
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("numberOfNodes", Naming.numberOfNodes());
-                        jsonObject.put("previousNode", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode);
-                        jsonObject.put("nextNode", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode);
+                        jsonObject.put("previousNode_id", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode.getKey());
+                        jsonObject.put("nextNode_id", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode.getKey());
+                        jsonObject.put("previousNode_ip", (previousNode == null) ? Naming.getNodesList().lastEntry().getValue() : previousNode.getValue());
+                        jsonObject.put("nextNode_ip", (nextNode == null) ? Naming.getNodesList().firstEntry().getValue() : nextNode.getValue());
 
                         // Send numberOfNodes, previousNode and nextNode to the new node
                         byte[] data = jsonObject.toJSONString().getBytes();
