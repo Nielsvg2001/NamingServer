@@ -24,11 +24,11 @@ public class Node {
     public static void main(String[] args) throws IOException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
-        address = InetAddress.getLocalHost();
-        System.out.println("I'm node " + hashCode(address.getHostName()));
         Node cl = new Node();
-        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
+        address = InetAddress.getLocalHost();
         cl.hashThisNode = hashCode(address.getHostName());
+        System.out.println("I'm node " + hashCode(address.getHostName()));
+        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
         cl.Listen();
         // cl.addNode(address);
         cl.namingRequest("testfile name.txt");
@@ -104,6 +104,7 @@ public class Node {
                         datagramSocket.receive(packet);
                         String hostname = new String(packet.getData(), 0, packet.getLength());
                         int hash = hashCode(hostname);
+                        System.out.println("In Listen: Received packet from " + hostname + " with hash " + hash);
                         if (hash < nextNode && hash > hashThisNode) {
                             nextNode = hash;
                         }
