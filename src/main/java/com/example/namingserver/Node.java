@@ -22,8 +22,11 @@ public class Node {
 
 
     public static void main(String[] args) throws IOException {
-        Node cl = new Node();
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
+        root.setLevel(ch.qos.logback.classic.Level.OFF);
         address = InetAddress.getLocalHost();
+        System.out.println("I'm node " + hashCode(address.getHostName()));
+        Node cl = new Node();
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
         cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
@@ -80,6 +83,7 @@ public class Node {
             NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
             previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
             nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
+            System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
             return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
 
         } catch (IOException | ParseException e) {
@@ -106,7 +110,7 @@ public class Node {
                         if (hash>previousNode && hash<hashThisNode){
                             previousNode = hash;
                         }
-                        System.out.println("The previous node is " + previousNode + " and the next node is " + nextNode);
+                        System.out.println("In Listen: The previous node is " + previousNode + " and the next node is " + nextNode);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
