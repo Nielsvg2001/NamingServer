@@ -163,7 +163,6 @@ public class Node {
         }
         // Remove this node from the list of nodes
         removeNode(address.getHostName());
-        System.out.println("In shutdown: The previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
     }
 
 
@@ -193,6 +192,7 @@ public class Node {
                                 nextNode_ip = InetAddress.getByName(jsonObject.get("newNextNode_ip").toString());
                             }
                         }
+                        System.out.println("In shutdownListener: The previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
                     } catch(IOException | ParseException e){
                         e.printStackTrace();
                     }
