@@ -140,21 +140,25 @@ public class Node {
         try {
             DatagramSocket socket = new DatagramSocket();
             try {
-                // Sending nextNode to previousNode
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("newNextNode_id", nextNode_id);
-                jsonObject.put("newNextNode_ip", nextNode_ip.getHostAddress());
                 byte[] buf = jsonObject.toString().getBytes();
-                DatagramPacket packet = new DatagramPacket(buf, buf.length, previousNode_ip, SHUTDOWNPORT);
-                socket.send(packet);
+                // Sending nextNode to previousNode
+                if(previousNode_ip != address) {
+                    jsonObject.put("newNextNode_id", nextNode_id);
+                    jsonObject.put("newNextNode_ip", nextNode_ip.getHostAddress());
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length, previousNode_ip, SHUTDOWNPORT);
+                    socket.send(packet);
+                }
 
                 // Sending previousNode to nextNode
-                jsonObject = new JSONObject();
-                jsonObject.put("newPreviousNode_id", previousNode_id);
-                jsonObject.put("newPreviousNode_ip", previousNode_ip.getHostAddress());
-                buf = jsonObject.toString().getBytes();
-                packet = new DatagramPacket(buf, buf.length, nextNode_ip, SHUTDOWNPORT);
-                socket.send(packet);
+                if(nextNode_ip != address) {
+                    jsonObject = new JSONObject();
+                    jsonObject.put("newPreviousNode_id", previousNode_id);
+                    jsonObject.put("newPreviousNode_ip", previousNode_ip.getHostAddress());
+                    buf = jsonObject.toString().getBytes();
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length, nextNode_ip, SHUTDOWNPORT);
+                    socket.send(packet);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -191,8 +195,8 @@ public class Node {
                                 nextNode_id = Integer.parseInt(jsonObject.get("newNextNode_id").toString());
                                 nextNode_ip = InetAddress.getByName(jsonObject.get("newNextNode_ip").toString());
                             }
+                            System.out.println("In shutdownListener: The previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
                         }
-                        System.out.println("In shutdownListener: The previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
                     } catch(IOException | ParseException e){
                         e.printStackTrace();
                     }
