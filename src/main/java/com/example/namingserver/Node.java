@@ -6,12 +6,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.imageio.IIOParam;
 import java.io.IOException;
 import java.net.*;
 
 
-public class Client {
+public class Node {
     public static InetAddress address;
     public static final int LISTENPORT = 9999;
     public static final String NAMINGPORT = "8080";
@@ -23,7 +22,7 @@ public class Client {
 
 
     public static void main(String[] args) throws IOException {
-        Client cl = new Client();
+        Node cl = new Node();
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
         cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();

@@ -8,4 +8,4 @@ mvn package
 mvn spring-boot:run
 
 /* run Client */
-mvn exec:java -Dexec.mainClass=com.example.namingserver.Client
+mvn exec:java -Dexec.mainClass=com.example.namingserver.Node
