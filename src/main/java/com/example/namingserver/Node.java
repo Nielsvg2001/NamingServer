@@ -33,7 +33,7 @@ public class Node {
         address = InetAddress.getLocalHost();
         hashThisNode = hashCode(address.getHostName());
         System.out.println("I'm node " + hashCode(address.getHostName() + "and my ip is " + address.getHostAddress()));
-        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode_id + " and the next node is " + nextNode_id);
+        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
         cl.Listen();
         // cl.addNode(address);
         cl.namingRequest("testfile name.txt");
@@ -90,7 +90,7 @@ public class Node {
             nextNode_id = Integer.parseInt(jsonObject.get("nextNode_id").toString());
             previousNode_ip = InetAddress.getByName(jsonObject.get("previousNode_ip").toString());
             nextNode_ip = InetAddress.getByName(jsonObject.get("nextNode_id").toString());
-            System.out.println("In discovery: The previous node is " + previousNode_id + " and the next node is " + nextNode_id);
+            System.out.println("In discovery: The previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
             return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
 
         } catch (IOException | ParseException e) {
@@ -111,7 +111,6 @@ public class Node {
                         datagramSocket.receive(packet);
                         String hostname = new String(packet.getData(), 0, packet.getLength());
                         int hash = hashCode(hostname);
-                        System.out.println("In Listen: Received packet from " + hostname + " with hash " + hash);
                         if ((hash < nextNode_id && hash > hashThisNode) || (nextNode_id <=hashThisNode && hash>hashThisNode) || (nextNode_id <=hashThisNode && hash< nextNode_id)) {
                             nextNode_id = hash;
                             nextNode_ip = packet.getAddress();
@@ -120,7 +119,7 @@ public class Node {
                             previousNode_id = hash;
                             previousNode_ip = packet.getAddress();
                         }
-                        System.out.println("In Listen: The previous node is " + previousNode_id + " and the next node is " + nextNode_id);
+                        System.out.println("In Listen: The previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
