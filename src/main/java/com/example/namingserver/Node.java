@@ -13,7 +13,7 @@ import java.net.*;
 public class Node {
     public static InetAddress address;
     public static final int LISTENPORT = 9999;
-    public String NAMINGSERVERADDRESS = "localhost";
+    public String NAMINGSERVERADDRESS;
     public static final String NAMINGPORT = "8080";
     public static int SHUTDOWNPORT = 9998;
 
