@@ -105,10 +105,10 @@ public class Node {
                         String hostname = new String(packet.getData(), 0, packet.getLength());
                         int hash = hashCode(hostname);
                         System.out.println("In Listen: Received packet from " + hostname + " with hash " + hash);
-                        if ((hash < nextNode && hash > hashThisNode) || (nextNode<hashThisNode && hash>hashThisNode)) {
+                        if ((hash < nextNode && hash > hashThisNode) || (nextNode<=hashThisNode && hash>hashThisNode)) {
                             nextNode = hash;
                         }
-                        if ((hash>previousNode && hash<hashThisNode) ||(previousNode>hashThisNode && hash<hashThisNode)) {
+                        if ((hash>previousNode && hash<hashThisNode) ||(previousNode>=hashThisNode && hash<hashThisNode)) {
                             previousNode = hash;
                         }
                         System.out.println("In Listen: The previous node is " + previousNode + " and the next node is " + nextNode);
