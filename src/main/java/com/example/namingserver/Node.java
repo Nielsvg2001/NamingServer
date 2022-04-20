@@ -23,13 +23,13 @@ public class Node {
 
     public static void main(String[] args) throws IOException {
         Node cl = new Node();
+        address = InetAddress.getLocalHost();
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
         cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
-        address = InetAddress.getLocalHost();
-        cl.addNode(address);
+        // cl.addNode(address);
         cl.namingRequest("testfile name.txt");
-        cl.removeNode("testnodename");
+        //cl.removeNode("testnodename");
 
     }
 
@@ -77,6 +77,7 @@ public class Node {
             // Handle received data
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+            NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
             previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
             nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
             return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
@@ -105,7 +106,7 @@ public class Node {
                         if (hash>previousNode && hash<hashThisNode){
                             previousNode = hash;
                         }
-
+                        System.out.println("The previous node is " + previousNode + " and the next node is " + nextNode);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
