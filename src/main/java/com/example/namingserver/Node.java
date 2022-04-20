@@ -39,7 +39,7 @@ public class Node {
         cl.namingRequest("testfile name.txt");
         //cl.removeNode("testnodename");
         cl.shutdownListener();
-        Thread.sleep(20000);
+        Thread.sleep(50000);
         cl.shutdown();
 
     }
