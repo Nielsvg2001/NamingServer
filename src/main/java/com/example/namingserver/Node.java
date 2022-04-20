@@ -22,7 +22,7 @@ public class Node {
     private static InetAddress previousNode_ip;
     private static InetAddress nextNode_ip;
 
-    private static int hashThisNode;
+    private int hashThisNode;
 
 
     public static void main(String[] args) throws IOException {
@@ -33,7 +33,7 @@ public class Node {
         address = InetAddress.getLocalHost();
         System.out.println("I'm node " + hashCode(address.getHostName() + "and my ip is " + address.getHostAddress()));
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
-        hashThisNode = hashCode(address.getHostName());
+        cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
         // cl.addNode(address);
         cl.namingRequest("testfile name.txt");
