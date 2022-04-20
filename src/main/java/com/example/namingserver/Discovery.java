@@ -42,8 +42,8 @@ public class Discovery {
                         jsonObject.put("numberOfNodes", Naming.numberOfNodes());
                         jsonObject.put("previousNode_id", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode.getKey());
                         jsonObject.put("nextNode_id", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode.getKey());
-                        jsonObject.put("previousNode_ip", (previousNode == null) ? Naming.getNodesList().lastEntry().getValue() : previousNode.getValue());
-                        jsonObject.put("nextNode_ip", (nextNode == null) ? Naming.getNodesList().firstEntry().getValue() : nextNode.getValue());
+                        jsonObject.put("previousNode_ip", (previousNode == null) ? Naming.getNodesList().lastEntry().getValue().getHostAddress() : previousNode.getValue().getHostAddress());
+                        jsonObject.put("nextNode_ip", (nextNode == null) ? Naming.getNodesList().firstEntry().getValue().getHostAddress() : nextNode.getValue().getHostAddress());
 
                         // Send numberOfNodes, previousNode and nextNode to the new node
                         byte[] data = jsonObject.toJSONString().getBytes();
