@@ -132,6 +132,7 @@ public class Node {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("newNextNode", nextNode);
                 byte[] buf = jsonObject.toString().getBytes();
+                // !!!!!!!!!!! verzend adres nog aanpassen !!!!!!!!!!!!
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
                 socket.send(packet);
 
@@ -139,6 +140,7 @@ public class Node {
                 jsonObject = new JSONObject();
                 jsonObject.put("newPreviousNode", previousNode);
                 buf = jsonObject.toString().getBytes();
+                // !!!!!!!!!!! verzend adres nog aanpassen !!!!!!!!!!!!
                 packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
                 socket.send(packet);
             } catch (IOException e) {
