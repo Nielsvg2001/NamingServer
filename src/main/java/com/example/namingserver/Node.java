@@ -85,6 +85,7 @@ public class Node {
             // Handle received data
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+            System.out.println("Naming address: " + datagramPacket.getAddress().getHostAddress());
             NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
             previousNode_id = Integer.parseInt(jsonObject.get("previousNode_id").toString());
             nextNode_id = Integer.parseInt(jsonObject.get("nextNode_id").toString());
