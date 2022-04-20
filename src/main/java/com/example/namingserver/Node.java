@@ -178,12 +178,14 @@ public class Node {
 
                             // update previousNode
                             if (jsonObject.containsKey("newPreviousNode_id")) {
-                                previousNode_id = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
+                                previousNode_id = Integer.parseInt(jsonObject.get("newPreviousNode_id").toString());
+                                previousNode_ip = InetAddress.getByName(jsonObject.get("newPreviousNode_ip").toString());
                             }
 
                             // update nextNode
                             if (jsonObject.containsKey("newNextNode_id")) {
-                                nextNode_id = Integer.parseInt(jsonObject.get("newNextNode").toString());
+                                nextNode_id = Integer.parseInt(jsonObject.get("newNextNode_id").toString());
+                                nextNode_ip = InetAddress.getByName(jsonObject.get("newNextNode_ip").toString());
                             }
                         }
                     } catch(IOException | ParseException e){
