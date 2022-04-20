@@ -31,7 +31,7 @@ public class Node {
 
         Node cl = new Node();
         address = InetAddress.getLocalHost();
-        System.out.println("I'm node " + hashCode(address.getHostName()) + "and my ip is " + address.getHostAddress());
+        System.out.println("I'm node " + hashCode(address.getHostName()) + " and my ip is " + address.getHostAddress());
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
         cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
@@ -90,7 +90,7 @@ public class Node {
             previousNode_id = Integer.parseInt(jsonObject.get("previousNode_id").toString());
             nextNode_id = Integer.parseInt(jsonObject.get("nextNode_id").toString());
             previousNode_ip = InetAddress.getByName(jsonObject.get("previousNode_ip").toString());
-            nextNode_ip = InetAddress.getByName(jsonObject.get("nextNode_id").toString());
+            nextNode_ip = InetAddress.getByName(jsonObject.get("nextNode_ip").toString());
             System.out.println("In discovery: The previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
             return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
 
