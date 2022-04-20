@@ -31,7 +31,7 @@ public class Node {
 
         Node cl = new Node();
         address = InetAddress.getLocalHost();
-        System.out.println("I'm nodel " + hashCode(address.getHostName() + "and my ip is " + address.getHostAddress()));
+        System.out.println("I'm node " + hashCode(address.getHostName()) + "and my ip is " + address.getHostAddress());
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode_id + " (" + previousNode_ip + ") and the next node is " + nextNode_id + " (" + nextNode_ip + ")");
         cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
