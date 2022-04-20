@@ -25,7 +25,7 @@ public class Node {
     private int hashThisNode;
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
@@ -38,6 +38,9 @@ public class Node {
         // cl.addNode(address);
         cl.namingRequest("testfile name.txt");
         //cl.removeNode("testnodename");
+        cl.shutdownListener();
+        Thread.sleep(20000);
+        cl.shutdown();
 
     }
 
@@ -163,7 +166,7 @@ public class Node {
     }
 
 
-    public static void shutdownListener(){
+    public void shutdownListener(){
         System.out.println("Starting Shutdown Listener");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(SHUTDOWNPORT);
