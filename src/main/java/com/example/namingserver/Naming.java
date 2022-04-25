@@ -29,9 +29,18 @@ public class Naming {
         return checkID(hash);
     }
 
-    public static Inet4Address getNodeInfo(int id) throws UnknownHostException {
-        System.out.println("De id die ik binnen krijg is " + id + " en de node die er aan is gelinkt is " + nodesList.get(id));;
-        return nodesList.get(id) != null ? nodesList.get(id) : (Inet4Address) Inet4Address.getByName("0.0.0.0");
+    public static Inet4Address getNodeInfo(int id) {
+        System.out.println("De id die ik binnen krijg is " + id + " en de node die er aan is gelinkt is " + nodesList.get(id));
+        Lock lock = new ReentrantLock();
+        lock.lock();
+        try {
+            if (nodesList.containsKey(id)) {
+                return nodesList.get(id);
+            }
+        } finally {
+            lock.unlock();
+        }
+        return null;
     }
 
     /**

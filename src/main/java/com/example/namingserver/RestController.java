@@ -37,5 +37,10 @@ public class RestController {
         return Naming.getRequest(fileName);
     }
 
+    @GetMapping(value = "/getNodeInfo")
+    public Inet4Address getNodeInfo(@RequestParam int id) {
+        return Naming.getNodeInfo(id);
+    }
+
 
 }
