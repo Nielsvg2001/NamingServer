@@ -3,6 +3,7 @@ package com.example.namingserver;
 import org.springframework.stereotype.Service;
 
 import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,8 +29,8 @@ public class Naming {
         return checkID(hash);
     }
 
-    public static Inet4Address getNodeInfo(int id) {
-        return nodesList.get(id);
+    public static Inet4Address getNodeInfo(int id) throws UnknownHostException {
+        return nodesList.get(id) != null ? nodesList.get(id) : (Inet4Address) Inet4Address.getByName("0.0.0.0");
     }
 
     /**
