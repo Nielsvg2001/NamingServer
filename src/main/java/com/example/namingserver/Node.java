@@ -21,18 +21,22 @@ public class Node {
     private int hashThisNode;
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
+
         Node cl = new Node();
         address = InetAddress.getLocalHost();
+        System.out.println("I'm node " + hashCode(address.getHostName()) + " and my ip is " + address.getHostAddress());
+        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode + " (" + Naming.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + Naming.getNodeInfo(nextNode) + ")");
         cl.hashThisNode = hashCode(address.getHostName());
-        System.out.println("I'm node " + hashCode(address.getHostName()));
-        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + cl.previousNode + " and the next node is " + cl.nextNode);
         cl.Listen();
         // cl.addNode(address);
         cl.namingRequest("testfile name.txt");
         //cl.removeNode("testnodename");
+        cl.shutdownListener();
+        Thread.sleep(120000);
+        cl.shutdown();
 
     }
 
@@ -104,14 +108,13 @@ public class Node {
                         datagramSocket.receive(packet);
                         String hostname = new String(packet.getData(), 0, packet.getLength());
                         int hash = hashCode(hostname);
-                        System.out.println("In Listen: Received packet from " + hostname + " with hash " + hash);
                         if ((hash < nextNode && hash > hashThisNode) || (nextNode<=hashThisNode && hash>hashThisNode) || (nextNode<=hashThisNode && hash<nextNode)) {
                             nextNode = hash;
                         }
                         if ((hash>previousNode && hash<hashThisNode) ||(previousNode>=hashThisNode && hash<hashThisNode) || (previousNode>=hashThisNode && hash>previousNode)) {
                             previousNode = hash;
                         }
-                        System.out.println("In Listen: The previous node is " + previousNode + " and the next node is " + nextNode);
+                        System.out.println("In listen: The previous node is " + previousNode + " (" + Naming.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + Naming.getNodeInfo(nextNode) + ")");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -132,16 +135,14 @@ public class Node {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("newNextNode", nextNode);
                 byte[] buf = jsonObject.toString().getBytes();
-                // !!!!!!!!!!! verzend adres nog aanpassen !!!!!!!!!!!!
-                DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(previousNode), SHUTDOWNPORT);
                 socket.send(packet);
 
                 // Sending previousNode to nextNode
                 jsonObject = new JSONObject();
                 jsonObject.put("newPreviousNode", previousNode);
                 buf = jsonObject.toString().getBytes();
-                // !!!!!!!!!!! verzend adres nog aanpassen !!!!!!!!!!!!
-                packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), SHUTDOWNPORT);
+                packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(nextNode), SHUTDOWNPORT);
                 socket.send(packet);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -154,7 +155,7 @@ public class Node {
     }
 
 
-    public static void shutdownListener(){
+    public void shutdownListener(){
         System.out.println("Starting Shutdown Listener");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(SHUTDOWNPORT);
@@ -177,6 +178,7 @@ public class Node {
                             if (jsonObject.containsKey("newNextNode")) {
                                 nextNode = Integer.parseInt(jsonObject.get("newNextNode").toString());
                             }
+                            System.out.println("In shutdonwListener: The previous node is " + previousNode + " (" + Naming.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + Naming.getNodeInfo(nextNode) + ")");
                         }
                     } catch(IOException | ParseException e){
                         e.printStackTrace();

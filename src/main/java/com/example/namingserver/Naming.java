@@ -28,6 +28,10 @@ public class Naming {
         return checkID(hash);
     }
 
+    public static Inet4Address getNodeInfo(int id) {
+        return nodesList.get(id);
+    }
+
     /**
      * @param hostName name of the node
      * @param ipadres  ipadres of the node
