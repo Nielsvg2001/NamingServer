@@ -29,7 +29,7 @@ public class Node {
         address = InetAddress.getLocalHost();
         System.out.println("I'm node " + hashCode(address.getHostName()) + " and my ip is " + address.getHostAddress());
         System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode + " and the next node is " + nextNode);
-        System.out.println("PrevNode: " + Naming.getNodeInfo(previousNode));
+        System.out.println("PrevNode: " + cl.getNodeInfo(previousNode));
         cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
         // cl.addNode(address);
@@ -60,6 +60,15 @@ public class Node {
         HttpResponse<String> response = Unirest.delete("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/removeNode")
                 .queryString("nodeName", nodeName)
                 .asString();
+    }
+
+    public Inet4Address getNodeInfo(int id) {
+        System.out.println("getNodeInfo");
+        HttpResponse<String> response = Unirest.delete("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
+                .queryString("id", id)
+                .asString();
+        System.out.println(response.getBody());
+        return null;
     }
 
     public void namingRequest(String fileName) {
@@ -115,7 +124,7 @@ public class Node {
                         if ((hash>previousNode && hash<hashThisNode) ||(previousNode>=hashThisNode && hash<hashThisNode) || (previousNode>=hashThisNode && hash>previousNode)) {
                             previousNode = hash;
                         }
-                        System.out.println("In listen: The previous node is " + previousNode + " (" + Naming.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + Naming.getNodeInfo(nextNode) + ")");
+                        System.out.println("In listen: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -136,14 +145,14 @@ public class Node {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("newNextNode", nextNode);
                 byte[] buf = jsonObject.toString().getBytes();
-                DatagramPacket packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(previousNode), SHUTDOWNPORT);
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), SHUTDOWNPORT);
                 socket.send(packet);
 
                 // Sending previousNode to nextNode
                 jsonObject = new JSONObject();
                 jsonObject.put("newPreviousNode", previousNode);
                 buf = jsonObject.toString().getBytes();
-                packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(nextNode), SHUTDOWNPORT);
+                packet = new DatagramPacket(buf, buf.length, getNodeInfo(nextNode), SHUTDOWNPORT);
                 socket.send(packet);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -179,7 +188,7 @@ public class Node {
                             if (jsonObject.containsKey("newNextNode")) {
                                 nextNode = Integer.parseInt(jsonObject.get("newNextNode").toString());
                             }
-                            System.out.println("In shutdonwListener: The previous node is " + previousNode + " (" + Naming.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + Naming.getNodeInfo(nextNode) + ")");
+                            System.out.println("In shutdonwListener: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                         }
                     } catch(IOException | ParseException e){
                         e.printStackTrace();
