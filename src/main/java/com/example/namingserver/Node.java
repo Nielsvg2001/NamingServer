@@ -64,7 +64,7 @@ public class Node {
 
     public Inet4Address getNodeInfo(int id) {
         System.out.println("getNodeInfo");
-        HttpResponse<String> response = Unirest.delete("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
+        HttpResponse<String> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
                 .asString();
         System.out.println(response.getBody());
