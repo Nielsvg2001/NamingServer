@@ -64,11 +64,11 @@ public class Node {
 
     public Inet4Address getNodeInfo(int id) {
         System.out.println("getNodeInfo");
-        HttpResponse<String> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
+        HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
-                .asString();
+                .asObject(Inet4Address.class);
         System.out.println(response.getBody());
-        return null;
+        return response.getBody();
     }
 
     public void namingRequest(String fileName) {
