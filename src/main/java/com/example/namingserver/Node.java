@@ -28,8 +28,8 @@ public class Node {
         Node cl = new Node();
         address = InetAddress.getLocalHost();
         System.out.println("I'm node " + hashCode(address.getHostName()) + " and my ip is " + address.getHostAddress());
-        System.out.println("There are " + cl.dicovery() + " nodes in the network)");
-        System.out.println("The previous node is " + previousNode + " (" + Naming.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + Naming.getNodeInfo(nextNode) + ")");
+        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode + " and the next node is " + nextNode);
+        System.out.println("PrevNode: " + Naming.getNodeInfo(previousNode));
         cl.hashThisNode = hashCode(address.getHostName());
         cl.Listen();
         // cl.addNode(address);
