@@ -30,7 +30,7 @@ public class Naming {
     }
 
     public static Inet4Address getNodeInfo(int id) throws UnknownHostException {
-        System.out.println(nodesList.get(id));;
+        System.out.println("De id die ik binnen krijg is " + id + " en de node die er aan is gelinkt is " + nodesList.get(id));;
         return nodesList.get(id) != null ? nodesList.get(id) : (Inet4Address) Inet4Address.getByName("0.0.0.0");
     }
 
