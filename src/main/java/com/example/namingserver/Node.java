@@ -11,12 +11,12 @@ import java.net.*;
 
 
 public class Node {
-    public static String hostName;
-    private static int currentID;
-    private static InetAddress ipAddress;
-    private static int numNodesWhenEntered;
-    private static int previousNode;
-    private static int nextNode;
+    public String hostName;
+    private int currentID;
+    private InetAddress ipAddress;
+    private final int numNodesWhenEntered;
+    private int previousNode;
+    private int nextNode;
     public static final int LISTENPORT = 9999;
     public static final String NAMINGPORT = "8080";
     public static int SHUTDOWNPORT = 9998;
@@ -28,8 +28,8 @@ public class Node {
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         Node cl = new Node();
-        System.out.println("I'm node " + hostName + " and my ip is " + ipAddress);
-        System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + cl.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + cl.getNodeInfo(nextNode) + ")");
+        System.out.println("I'm node " + cl.hostName + " and my ip is " + cl.ipAddress);
+        System.out.println("There are " + cl.numNodesWhenEntered + " nodes in the network \nThe previous node is " + cl.previousNode + " (" + cl.getNodeInfo(cl.previousNode) + ") and the next node is " + cl.nextNode + " (" + cl.getNodeInfo(cl.nextNode) + ")");
         cl.namingRequest("testfile name.txt");
         Thread.sleep(120000);
         cl.shutdown();
@@ -41,10 +41,10 @@ public class Node {
         try {
             hostName = InetAddress.getLocalHost().getHostName();
             ipAddress = InetAddress.getLocalHost();
+            currentID = hashCode(hostName);
         }catch (UnknownHostException e) {
             System.out.println("Could not get LocalHost information: " + e.getMessage());
         }
-        currentID = hashCode(hostName);
 
         // start services
         numNodesWhenEntered = dicovery();
