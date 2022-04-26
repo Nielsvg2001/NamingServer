@@ -11,33 +11,45 @@ import java.net.*;
 
 
 public class Node {
-    public static InetAddress address;
-    public static final int LISTENPORT = 9999;
-    public static final String NAMINGPORT = "8080";
-    public String NAMINGSERVERADDRESS = "localhost";
-    public static int SHUTDOWNPORT = 9998;
+    public static String hostName;
+    private static int currentID;
+    private static InetAddress ipAddress;
+    private static int numNodesWhenEntered;
     private static int previousNode;
     private static int nextNode;
-    private int hashThisNode;
+    public static final int LISTENPORT = 9999;
+    public static final String NAMINGPORT = "8080";
+    public static int SHUTDOWNPORT = 9998;
+    public String NAMINGSERVERADDRESS = "localhost";
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         Node cl = new Node();
-        address = InetAddress.getLocalHost();
-        System.out.println("I'm node " + hashCode(address.getHostName()) + " and my ip is " + address.getHostAddress());
-        System.out.println("There are " + cl.dicovery() + " nodes in the network \nThe previous node is " + previousNode + " (" + cl.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + cl.getNodeInfo(nextNode) + ")");
-        cl.hashThisNode = hashCode(address.getHostName());
-        cl.Listen();
-        // cl.addNode(address);
+        System.out.println("I'm node " + hostName + " and my ip is " + ipAddress);
+        System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + cl.getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + cl.getNodeInfo(nextNode) + ")");
         cl.namingRequest("testfile name.txt");
-        //cl.removeNode("testnodename");
-        cl.shutdownListener();
         Thread.sleep(120000);
         cl.shutdown();
 
+    }
+
+    public Node() {
+        // get own infromation
+        try {
+            hostName = InetAddress.getLocalHost().getHostName();
+            ipAddress = InetAddress.getLocalHost();
+        }catch (UnknownHostException e) {
+            System.out.println("Could not get LocalHost information: " + e.getMessage());
+        }
+        currentID = hashCode(hostName);
+
+        // start services
+        numNodesWhenEntered = dicovery();
+        listenForNewNodes();
+        shutdownListener();
     }
 
     public static int hashCode(String toHash) {
@@ -105,7 +117,7 @@ public class Node {
     }
 
     // listens and if it receives a packet, the node checks if it must update the previous or next node
-    public void Listen() {
+    public void listenForNewNodes() {
         System.out.println("Starting Listening");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(LISTENPORT);
@@ -116,10 +128,10 @@ public class Node {
                         datagramSocket.receive(packet);
                         String hostname = new String(packet.getData(), 0, packet.getLength());
                         int hash = hashCode(hostname);
-                        if ((hash < nextNode && hash > hashThisNode) || (nextNode<=hashThisNode && hash>hashThisNode) || (nextNode<=hashThisNode && hash<nextNode)) {
+                        if ((hash < nextNode && hash > currentID) || (nextNode<= currentID && hash> currentID) || (nextNode<= currentID && hash<nextNode)) {
                             nextNode = hash;
                         }
-                        if ((hash>previousNode && hash<hashThisNode) ||(previousNode>=hashThisNode && hash<hashThisNode) || (previousNode>=hashThisNode && hash>previousNode)) {
+                        if ((hash>previousNode && hash< currentID) ||(previousNode>= currentID && hash< currentID) || (previousNode>= currentID && hash>previousNode)) {
                             previousNode = hash;
                         }
                         System.out.println("In listen: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
@@ -159,7 +171,7 @@ public class Node {
             e.printStackTrace();
         }
         // Remove this node from the list of nodes
-        removeNode(address.getHostName());
+        removeNode(hostName);
     }
 
 
@@ -172,7 +184,7 @@ public class Node {
                     try {
                         DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                         datagramSocket.receive(datagramPacket);
-                        if (datagramPacket.getAddress() != address) {
+                        if (datagramPacket.getAddress() != ipAddress) {
                             // Handle received data
                             JSONParser parser = new JSONParser();
                             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
