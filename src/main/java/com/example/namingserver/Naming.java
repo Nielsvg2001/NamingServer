@@ -14,7 +14,7 @@ public class Naming {
 
     public Naming() {
         nodesList = jsonHelper.readFromFile();
-        Discovery.start();
+        new Thread(Discovery::start).start();
     }
 
     /**

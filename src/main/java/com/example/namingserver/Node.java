@@ -48,8 +48,8 @@ public class Node {
 
         // start services
         numNodesWhenEntered = dicovery();
-        listenForNewNodes();
-        shutdownListener();
+        new Thread(this::listenForNewNodes).start();
+        new Thread(this::shutdownListener).start();
     }
 
     public static int hashCode(String toHash) {

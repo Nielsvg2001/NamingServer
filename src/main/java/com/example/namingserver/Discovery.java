@@ -9,7 +9,6 @@ import java.net.Inet4Address;
 
 public class Discovery {
     private static final int PORT = 9999;
-    private static final int SHUTDOWNPORT = 9998;
 
     public Discovery() {
     }
