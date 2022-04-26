@@ -118,7 +118,7 @@ public class Node {
 
     // listens and if it receives a packet, the node checks if it must update the previous or next node
     public void listenForNewNodes() {
-        System.out.println("Starting Listening");
+        System.out.println("Starting listenForNewNodes");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(LISTENPORT);
             Thread thread = new Thread(() -> {
@@ -134,7 +134,7 @@ public class Node {
                         if ((hash>previousNode && hash< currentID) ||(previousNode>= currentID && hash< currentID) || (previousNode>= currentID && hash>previousNode)) {
                             previousNode = hash;
                         }
-                        System.out.println("In listen: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
+                        System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
