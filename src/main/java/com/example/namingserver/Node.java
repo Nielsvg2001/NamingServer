@@ -17,7 +17,7 @@ public class Node {
     private final int numNodesWhenEntered;
     private int previousNode;
     private int nextNode;
-    public static final int LISTENPORT = 9999;
+    public static final int DISCOVERYPORT = 9999;
     public static final String NAMINGPORT = "8080";
     public static int SHUTDOWNPORT = 9998;
     public String NAMINGSERVERADDRESS = "localhost";
@@ -91,13 +91,13 @@ public class Node {
 
     public int dicovery() {
         try {
-            // Send hostname (+ ip) to naming server
+            // Send hostname (+ ip) to naming server and other nodes.
             DatagramSocket socket = new DatagramSocket();
-            byte[] buf = Inet4Address.getLocalHost().getHostName().getBytes();
-            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"), 9999);
+            byte[] buf = hostName.getBytes();
+            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"), DISCOVERYPORT);
             socket.send(datagramPacket);
 
-            // Receive a response
+            // Receive response from naming server
             datagramPacket = new DatagramPacket(new byte[1024], 1024);
             socket.receive(datagramPacket);
 
@@ -120,7 +120,7 @@ public class Node {
     public void listenForNewNodes() {
         System.out.println("Starting listenForNewNodes");
         try {
-            DatagramSocket datagramSocket = new DatagramSocket(LISTENPORT);
+            DatagramSocket datagramSocket = new DatagramSocket(DISCOVERYPORT);
             Thread thread = new Thread(() -> {
                 while (true) {
                     try {
