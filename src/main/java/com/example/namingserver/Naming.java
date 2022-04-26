@@ -3,7 +3,6 @@ package com.example.namingserver;
 import org.springframework.stereotype.Service;
 
 import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

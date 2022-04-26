@@ -42,7 +42,7 @@ public class Node {
             hostName = InetAddress.getLocalHost().getHostName();
             ipAddress = InetAddress.getLocalHost();
             currentID = hashCode(hostName);
-        }catch (UnknownHostException e) {
+        } catch (UnknownHostException e) {
             System.out.println("Could not get LocalHost information: " + e.getMessage());
         }
 
@@ -121,26 +121,22 @@ public class Node {
         System.out.println("Starting listenForNewNodes");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(DISCOVERYPORT);
-            Thread thread = new Thread(() -> {
-                while (true) {
-                    try {
-                        DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-                        datagramSocket.receive(packet);
-                        String hostname = new String(packet.getData(), 0, packet.getLength());
-                        int hash = hashCode(hostname);
-                        if ((hash < nextNode && hash > currentID) || (nextNode<= currentID && hash> currentID) || (nextNode<= currentID && hash<nextNode)) {
-                            nextNode = hash;
-                        }
-                        if ((hash>previousNode && hash< currentID) ||(previousNode>= currentID && hash< currentID) || (previousNode>= currentID && hash>previousNode)) {
-                            previousNode = hash;
-                        }
-                        System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            while (true) {
+                DatagramPacket packet = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(packet);
+                Thread thread = new Thread(() -> {
+                    String hostname = new String(packet.getData(), 0, packet.getLength());
+                    int hash = hashCode(hostname);
+                    if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
+                        nextNode = hash;
                     }
-                }
-            });
-            thread.start();
+                    if ((hash > previousNode && hash < currentID) || (previousNode >= currentID && hash < currentID) || (previousNode >= currentID && hash > previousNode)) {
+                        previousNode = hash;
+                    }
+                    System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
+                });
+                thread.start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -175,15 +171,15 @@ public class Node {
     }
 
 
-    public void shutdownListener(){
+    public void shutdownListener() {
         System.out.println("Starting Shutdown Listener");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(SHUTDOWNPORT);
-            Thread thread = new Thread(() -> {
-                while (true) {
+            while (true) {
+                DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(datagramPacket);
+                Thread thread = new Thread(() -> {
                     try {
-                        DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
-                        datagramSocket.receive(datagramPacket);
                         if (datagramPacket.getAddress() != ipAddress) {
                             // Handle received data
                             JSONParser parser = new JSONParser();
@@ -200,12 +196,12 @@ public class Node {
                             }
                             System.out.println("In shutdonwListener: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                         }
-                    } catch(IOException | ParseException e){
+                    } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                }
-            });
-            thread.start();
+                });
+                thread.start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

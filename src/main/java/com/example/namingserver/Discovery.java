@@ -1,8 +1,6 @@
 package com.example.namingserver;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -20,40 +18,40 @@ public class Discovery {
         System.out.println("Starting Discovery");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(PORT);
-            Thread thread = new Thread(() -> {
-                while (true) {
+            while (true) {
+                DatagramPacket packet = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(packet);
+                Thread thread = new Thread(() -> {
+                    // Receiving new node
+                    String hostname = new String(packet.getData(), 0, packet.getLength());
+
+                    // Adding new node to the list
+                    Naming.addNode(hostname, (Inet4Address) packet.getAddress());
+
+                    // Creating response
+                    Integer hash = Naming.hashCode(hostname);
+                    Integer previousNode = Naming.getNodesList().lowerKey(hash);
+                    Integer nextNode = Naming.getNodesList().higherKey(hash);
+
+                    // Structuring response
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("numberOfNodes", Naming.numberOfNodes());
+                    jsonObject.put("previousNode", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode);
+                    jsonObject.put("nextNode", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode);
+
+                    // Send numberOfNodes, previousNode and nextNode to the new node
+                    byte[] data = jsonObject.toJSONString().getBytes();
+                    DatagramPacket reply = new DatagramPacket(data, data.length, packet.getAddress(), packet.getPort());
                     try {
-                        // Receiving new node
-                        DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-                        datagramSocket.receive(packet);
-                        String hostname = new String(packet.getData(), 0, packet.getLength());
-
-                        // Adding new node to the list
-                        Naming.addNode(hostname, (Inet4Address) packet.getAddress());
-
-                        // Creating response
-                        Integer hash = Naming.hashCode(hostname);
-                        Integer previousNode = Naming.getNodesList().lowerKey(hash);
-                        Integer nextNode = Naming.getNodesList().higherKey(hash);
-
-                        // Structuring response
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("numberOfNodes", Naming.numberOfNodes());
-                        jsonObject.put("previousNode", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode);
-                        jsonObject.put("nextNode", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode);
-
-                        // Send numberOfNodes, previousNode and nextNode to the new node
-                        byte[] data = jsonObject.toJSONString().getBytes();
-                        DatagramPacket reply = new DatagramPacket(data, data.length, packet.getAddress(), packet.getPort());
                         datagramSocket.send(reply);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
-                }
-            });
-            thread.start();
+                });
+                thread.start();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
