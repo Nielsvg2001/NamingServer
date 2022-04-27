@@ -8,7 +8,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 
 
 public class Node {
@@ -31,11 +30,11 @@ public class Node {
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         Node cl = new Node();
-        System.out.println("I'm node " + cl.hostName + " and my ip is " + cl.ipAddress);
+        System.out.println("I'm node " + cl.hostName + "(" + cl.currentID + ")" + " and my ip is " + cl.ipAddress);
         System.out.println("There are " + cl.numNodesWhenEntered + " nodes in the network \nThe previous node is " + cl.previousNode + " (" + cl.getNodeInfo(cl.previousNode) + ") and the next node is " + cl.nextNode + " (" + cl.getNodeInfo(cl.nextNode) + ")");
         cl.namingRequest("testfile name.txt");
-        Thread.sleep(120000);
-        cl.shutdown();
+        //Thread.sleep(120000);
+        //cl.shutdown();
 
     }
 
@@ -79,7 +78,7 @@ public class Node {
     }
 
     public Inet4Address getNodeInfo(int id) {
-        System.out.println("getNodeInfo");
+        //System.out.println("getNodeInfo");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
                 .asObject(Inet4Address.class);
@@ -190,6 +189,8 @@ public class Node {
                             JSONParser parser = new JSONParser();
                             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
 
+                            System.out.println("In shudownListener: Received " + jsonObject.toJSONString());
+
                             // update previousNode
                             if (jsonObject.containsKey("newPreviousNode")) {
                                 previousNode = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
@@ -219,7 +220,7 @@ public class Node {
             DatagramSocket socket = new DatagramSocket();
 
             byte[] buf = "test".getBytes();
-            while(true) {
+            while (true) {
                 try {
                     socket.setSoTimeout(100);
                     DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
@@ -232,20 +233,19 @@ public class Node {
                         failure(previousNode);
                     }
                 } catch (SocketTimeoutException e) {
+                    System.out.println("Teller is " + teller);
                     teller++;
                     if (teller>3){
                         failure(previousNode);
-                        teller = 0;
+                        System.out.println("In checkNeighbors: Aanroepen failure");
                         Thread.sleep(2000);
                     }
                 }
                 Thread.sleep(1000);
             }
-        }
-        catch(InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             failure(previousNode);
         }
@@ -256,7 +256,7 @@ public class Node {
         System.out.println("Starting FailureCheckListener");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(CHECKPORT);
-            while(true){
+            while (true) {
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
 
@@ -264,7 +264,7 @@ public class Node {
                 DatagramPacket reply = new DatagramPacket(response, response.length, datagramPacket.getAddress(), datagramPacket.getPort());
                 datagramSocket.send(reply);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -278,6 +278,7 @@ public class Node {
             try {
                 // sending hostname of failed node to the Naming server
                 byte[] buf = String.valueOf(hash).getBytes();
+                System.out.println("In failure: " + hostName);
                 DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), FAILUREPORT);
                 datagramSocket.send(datagramPacket);
 

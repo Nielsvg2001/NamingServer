@@ -5,7 +5,6 @@ import org.json.simple.JSONObject;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.SocketException;
 
 public class Failure {
@@ -35,6 +34,12 @@ public class Failure {
                     previousNode = previousNode == null ? Naming.getNodesList().lastKey() : previousNode;
                     nextNode = nextNode == null ? Naming.getNodesList().firstKey() : nextNode;
 
+                    System.out.println("Failed hostname: " + hostname);
+                    System.out.println("Hash van hostname: " + hash);
+                    System.out.println("previousNode: " + previousNode + " with ip: " + Naming.getNodeInfo(previousNode));
+                    System.out.println("nextNode: " + nextNode + " with  ip: " + Naming.getNodeInfo(nextNode));
+
+
                     try {
                         DatagramSocket socket = new DatagramSocket();
                         try {
@@ -51,7 +56,6 @@ public class Failure {
                             buf = jsonObject.toString().getBytes();
                             packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(nextNode), SHUTDOWNPORT);
                             socket.send(packet);
-                            datagramSocket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
