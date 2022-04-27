@@ -1,4 +1,4 @@
-package com.example.namingserver;
+package fileManager.NamingServer;
 
 import org.springframework.stereotype.Service;
 

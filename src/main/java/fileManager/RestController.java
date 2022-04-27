@@ -1,6 +1,7 @@
-package com.example.namingserver;
+package fileManager;
 
 
+import fileManager.NamingServer.Naming;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;

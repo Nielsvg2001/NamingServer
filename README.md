@@ -8,7 +8,7 @@ mvn package
 mvn spring-boot:run
 
 /* run Client */
-mvn exec:java -Dexec.mainClass=com.example.namingserver.Node
+mvn exec:java -Dexec.mainClass=Node
 
 
 
@@ -19,7 +19,7 @@ rm -R NamingServer
 git clone -b Discovery https://github.com/Nielsvg2001/NamingServer.git
 cd NamingServer
 mvn package
-mvn exec:java -Dexec.mainClass=com.example.namingserver.Node
+mvn exec:java -Dexec.mainClass=Node
 
 bash runNaming.sh
 
