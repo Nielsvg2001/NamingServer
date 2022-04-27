@@ -30,7 +30,7 @@ public class Node {
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         Node cl = new Node();
-        System.out.println("I'm node " + cl.hostName + " and my ip is " + cl.ipAddress);
+        System.out.println("I'm node " + cl.hostName + "(" + cl.currentID + ")" + " and my ip is " + cl.ipAddress);
         System.out.println("There are " + cl.numNodesWhenEntered + " nodes in the network \nThe previous node is " + cl.previousNode + " (" + cl.getNodeInfo(cl.previousNode) + ") and the next node is " + cl.nextNode + " (" + cl.getNodeInfo(cl.nextNode) + ")");
         cl.namingRequest("testfile name.txt");
         //Thread.sleep(120000);
@@ -277,6 +277,7 @@ public class Node {
             try {
                 // sending hostname of failed node to the Naming server
                 byte[] buf = hostName.getBytes();
+                System.out.println("In failure: " + hostName);
                 DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), FAILUREPORT);
                 datagramSocket.send(datagramPacket);
 
