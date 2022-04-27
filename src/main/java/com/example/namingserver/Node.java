@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 
 public class Node {
@@ -20,6 +21,7 @@ public class Node {
     public static final int DISCOVERYPORT = 9999;
     public static final String NAMINGPORT = "8080";
     public static int SHUTDOWNPORT = 9998;
+    public static int CHECKPORT = 9987;
     public String NAMINGSERVERADDRESS = "localhost";
 
 
@@ -50,6 +52,7 @@ public class Node {
         numNodesWhenEntered = dicovery();
         new Thread(this::listenForNewNodes).start();
         new Thread(this::shutdownListener).start();
+        new Thread(this::checkNeighbors).start();
     }
 
     public static int hashCode(String toHash) {
