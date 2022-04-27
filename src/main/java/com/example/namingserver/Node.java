@@ -235,7 +235,7 @@ public class Node {
                 } catch (SocketTimeoutException e) {
                     System.out.println("Teller is " + teller);
                     teller++;
-                    if (teller>3){
+                    if (teller > 3) {
                         failure(previousNode);
                         System.out.println("In checkNeighbors: Aanroepen failure");
                         Thread.sleep(2000);
@@ -268,7 +268,6 @@ public class Node {
             e.printStackTrace();
         }
     }
-
 
 
     public void failure(int hash) {
