@@ -229,13 +229,14 @@ public class Node {
                     teller = 0;
                     String packetString = new String(packet.getData(), 0, packet.getLength());
                     if (!packetString.equals("OK")) {
-                        failure(getNodeInfo(previousNode).getHostName());
+                        failure(previousNode);
                     }
                 } catch (SocketTimeoutException e) {
                     teller++;
                     if (teller>3){
-                        failure(getNodeInfo(previousNode).getHostName());
+                        failure(previousNode);
                         teller = 0;
+                        Thread.sleep(2000);
                     }
                 }
                 Thread.sleep(1000);
@@ -246,7 +247,7 @@ public class Node {
         }
         catch (IOException e) {
             e.printStackTrace();
-            failure(getNodeInfo(previousNode).getHostName());
+            failure(previousNode);
         }
     }
 
@@ -270,13 +271,13 @@ public class Node {
 
 
 
-    public void failure(String hostName) {
+    public void failure(int hash) {
         System.out.println("Failure detected");
         try {
             DatagramSocket datagramSocket = new DatagramSocket();
             try {
                 // sending hostname of failed node to the Naming server
-                byte[] buf = hostName.getBytes();
+                byte[] buf = String.valueOf(hash).getBytes();
                 DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), FAILUREPORT);
                 datagramSocket.send(datagramPacket);
 

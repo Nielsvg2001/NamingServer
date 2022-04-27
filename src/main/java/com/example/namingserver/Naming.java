@@ -84,6 +84,21 @@ public class Naming {
         return -1;
     }
 
+    public static int removeNode(int hash) {
+        Lock lock = new ReentrantLock();
+        lock.lock();
+        try {
+            if (nodesList.containsKey(hash)) {
+                nodesList.remove(hash);
+                jsonHelper.writeToFile(nodesList);
+                return hash;
+            }
+        } finally {
+            lock.unlock();
+        }
+        return -1;
+    }
+
     /**
      * @param hashFilename hash of the filename
      * @return ipadres of the node that has the file

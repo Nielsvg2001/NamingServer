@@ -25,10 +25,9 @@ public class Failure {
                 datagramSocket.receive(received);
                 Thread thread = new Thread(() -> {
                     // Receiving failed node
-                    String hostname = new String(received.getData(), 0, received.getLength());
+                    int hash = Integer.parseInt(new String(received.getData(), 0, received.getLength()));
 
                     // Creating response
-                    Integer hash = Naming.hashCode(hostname);
                     Integer previousNode = Naming.getNodesList().lowerKey(hash);
                     Integer nextNode = Naming.getNodesList().higherKey(hash);
 
@@ -61,7 +60,7 @@ public class Failure {
                     }
 
                     // Remove failed node to the list
-                    Naming.removeNode(hostname);
+                    Naming.removeNode(hash);
                 });
                 thread.start();
             }
