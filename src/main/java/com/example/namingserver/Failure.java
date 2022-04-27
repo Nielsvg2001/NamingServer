@@ -26,6 +26,9 @@ public class Failure {
                     // Receiving failed node
                     String hostname = new String(received.getData(), 0, received.getLength());
 
+                    // Remove failed node to the list
+                    Naming.removeNode(hostname);
+
                     // Creating response
                     Integer hash = Naming.hashCode(hostname);
                     Integer previousNode = Naming.getNodesList().lowerKey(hash);
@@ -51,16 +54,12 @@ public class Failure {
                             buf = jsonObject.toString().getBytes();
                             packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(nextNode), SHUTDOWNPORT);
                             socket.send(packet);
-                            datagramSocket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } catch (SocketException e) {
                         e.printStackTrace();
                     }
-
-                    // Remove failed node to the list
-                    Naming.removeNode(hostname);
                 });
                 thread.start();
             }

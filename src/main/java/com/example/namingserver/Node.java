@@ -78,7 +78,7 @@ public class Node {
     }
 
     public Inet4Address getNodeInfo(int id) {
-        System.out.println("getNodeInfo");
+        //System.out.println("getNodeInfo");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
                 .asObject(Inet4Address.class);
@@ -224,9 +224,7 @@ public class Node {
                     DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
                     socket.send(packet);
                     packet = new DatagramPacket(new byte[256], 256);
-                    System.out.println("Waiting for packet");
                     socket.receive(packet);
-                    System.out.println("Packet received");;
                     teller = 0;
                     String packetString = new String(packet.getData(), 0, packet.getLength());
                     if (!packetString.equals("OK")) {
