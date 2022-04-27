@@ -206,4 +206,29 @@ public class Node {
             e.printStackTrace();
         }
     }
+
+    public void checkNeighbors() {
+        System.out.println("Checking for failure...");
+        try {
+            DatagramSocket socket = new DatagramSocket();
+            byte[] buf = "test".getBytes();
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
+            socket.send(packet);
+            packet = new DatagramPacket(new byte[256], 256);
+            socket.receive(packet);
+            String packetString = new String(packet.getData(), 0, packet.getLength());
+            if (!packetString.equals("OK")) {
+                failure(getNodeInfo(previousNode).getHostName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            failure(getNodeInfo(previousNode).getHostName());
+        }
+    }
+
+
+    public void failure(String hostName) {
+        System.out.println("Checking for failure...");
+
+    }
 }
