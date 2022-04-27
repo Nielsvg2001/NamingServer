@@ -8,7 +8,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.Arrays;
 
 
 public class Node {
@@ -238,8 +237,7 @@ public class Node {
                     teller++;
                     if (teller > 3) {
                         System.out.println("In checkNeighbors: Aanroepen failure");
-                        Inet4Address test = (Inet4Address) Inet4Address.getByName(Arrays.toString(getNodeInfo(previousNode).getAddress()));
-                        failure(test.getHostName());
+                        failure(getNodeInfo(previousNode).getHostName());
                         teller = 0;
                     }
                 }
