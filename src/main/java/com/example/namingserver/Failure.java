@@ -37,8 +37,8 @@ public class Failure {
 
                     System.out.println("Failed hostname: " + hostname);
                     System.out.println("Hash van hostname: " + hash);
-                    System.out.println("previousNode: " + previousNode + "with ip: " + Naming.getNodeInfo(previousNode));
-                    System.out.println("nextNode: " + nextNode + "with  ip: " + Naming.getNodeInfo(nextNode));
+                    System.out.println("previousNode: " + previousNode + " with ip: " + Naming.getNodeInfo(previousNode));
+                    System.out.println("nextNode: " + nextNode + " with  ip: " + Naming.getNodeInfo(nextNode));
 
 
                     try {

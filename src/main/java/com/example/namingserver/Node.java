@@ -77,11 +77,11 @@ public class Node {
                 .asString();
     }
 
-    public InetAddress getNodeInfo(int id) {
+    public Inet4Address getNodeInfo(int id) {
         //System.out.println("getNodeInfo");
-        HttpResponse<InetAddress> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
+        HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
-                .asObject(InetAddress.class);
+                .asObject(Inet4Address.class);
         return response.getBody();
     }
 
@@ -237,7 +237,7 @@ public class Node {
                     teller++;
                     if (teller > 3) {
                         System.out.println("In checkNeighbors: Aanroepen failure");
-                        failure(getNodeInfo(previousNode).getHostName());
+                        failure(getNodeInfo(previousNode).getCanonicalHostName());
                         teller = 0;
                     }
                 }
@@ -247,7 +247,7 @@ public class Node {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-            failure(getNodeInfo(previousNode).getHostName());
+            failure(getNodeInfo(previousNode).getCanonicalHostName());
         }
     }
 
