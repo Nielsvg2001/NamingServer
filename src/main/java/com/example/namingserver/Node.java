@@ -8,7 +8,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 
 
 public class Node {
@@ -34,8 +33,8 @@ public class Node {
         System.out.println("I'm node " + cl.hostName + " and my ip is " + cl.ipAddress);
         System.out.println("There are " + cl.numNodesWhenEntered + " nodes in the network \nThe previous node is " + cl.previousNode + " (" + cl.getNodeInfo(cl.previousNode) + ") and the next node is " + cl.nextNode + " (" + cl.getNodeInfo(cl.nextNode) + ")");
         cl.namingRequest("testfile name.txt");
-        Thread.sleep(120000);
-        cl.shutdown();
+        //Thread.sleep(120000);
+        //cl.shutdown();
 
     }
 
@@ -219,32 +218,34 @@ public class Node {
             DatagramSocket socket = new DatagramSocket();
 
             byte[] buf = "test".getBytes();
-            while(true) {
+            while (true) {
                 try {
                     socket.setSoTimeout(100);
                     DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
                     socket.send(packet);
                     packet = new DatagramPacket(new byte[256], 256);
+                    System.out.println("Waiting for packet");
                     socket.receive(packet);
+                    System.out.println("Packet received");;
                     teller = 0;
                     String packetString = new String(packet.getData(), 0, packet.getLength());
                     if (!packetString.equals("OK")) {
                         failure(getNodeInfo(previousNode).getHostName());
                     }
                 } catch (SocketTimeoutException e) {
+                    System.out.println("Teller is " + teller);
                     teller++;
-                    if (teller>3){
+                    if (teller > 3) {
+                        System.out.println("In checkNeighbors: Aanroepen failure");
                         failure(getNodeInfo(previousNode).getHostName());
                         teller = 0;
                     }
                 }
                 Thread.sleep(1000);
             }
-        }
-        catch(InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             failure(getNodeInfo(previousNode).getHostName());
         }
@@ -255,7 +256,7 @@ public class Node {
         System.out.println("Starting FailureCheckListener");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(CHECKPORT);
-            while(true){
+            while (true) {
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
 
@@ -263,11 +264,10 @@ public class Node {
                 DatagramPacket reply = new DatagramPacket(response, response.length, datagramPacket.getAddress(), datagramPacket.getPort());
                 datagramSocket.send(reply);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
 
     public void failure(String hostName) {
