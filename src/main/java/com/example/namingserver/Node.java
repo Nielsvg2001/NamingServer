@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 
 public class Node {
@@ -21,6 +22,7 @@ public class Node {
     public static final String NAMINGPORT = "8080";
     public static int SHUTDOWNPORT = 9998;
     public static int FAILUREPORT = 9997;
+    public static int CHECKPORT = 9987;
     public String NAMINGSERVERADDRESS = "localhost";
 
 
@@ -51,6 +53,7 @@ public class Node {
         numNodesWhenEntered = dicovery();
         new Thread(this::listenForNewNodes).start();
         new Thread(this::shutdownListener).start();
+        new Thread(this::checkNeighbors).start();
     }
 
     public static int hashCode(String toHash) {
@@ -207,6 +210,44 @@ public class Node {
             e.printStackTrace();
         }
     }
+
+    public void checkNeighbors() {
+        System.out.println("Checking for failure...");
+        try {
+            DatagramSocket socket = new DatagramSocket();
+            byte[] buf = "test".getBytes();
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
+            socket.send(packet);
+            packet = new DatagramPacket(new byte[256], 256);
+            socket.receive(packet);
+            String packetString = new String(packet.getData(), 0, packet.getLength());
+            if (!packetString.equals("OK")) {
+                failure(getNodeInfo(previousNode).getHostName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            failure(getNodeInfo(previousNode).getHostName());
+        }
+    }
+
+
+    public void failureCheckListener() {
+        System.out.println("Starting FailureCheckListener");
+        try {
+            DatagramSocket datagramSocket = new DatagramSocket(CHECKPORT);
+            while(true){
+                DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(datagramPacket);
+
+                byte[] response = "OK".getBytes();
+                DatagramPacket reply = new DatagramPacket(response, response.length, datagramPacket.getAddress(), datagramPacket.getPort());
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
 
     public void failure(String hostName) {
         System.out.println("Failure detected");

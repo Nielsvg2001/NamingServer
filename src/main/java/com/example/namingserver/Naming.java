@@ -29,7 +29,6 @@ public class Naming {
     }
 
     public static Inet4Address getNodeInfo(int id) {
-        System.out.println("De id die ik binnen krijg is " + id + " en de node die er aan is gelinkt is " + nodesList.get(id));
         Lock lock = new ReentrantLock();
         lock.lock();
         try {
