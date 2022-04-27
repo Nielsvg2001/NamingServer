@@ -26,9 +26,6 @@ public class Failure {
                     // Receiving failed node
                     String hostname = new String(received.getData(), 0, received.getLength());
 
-                    // Remove failed node to the list
-                    Naming.removeNode(hostname);
-
                     // Creating response
                     Integer hash = Naming.hashCode(hostname);
                     Integer previousNode = Naming.getNodesList().lowerKey(hash);
@@ -37,6 +34,11 @@ public class Failure {
                     // Extreme case
                     previousNode = previousNode == null ? Naming.getNodesList().lastKey() : previousNode;
                     nextNode = nextNode == null ? Naming.getNodesList().firstKey() : nextNode;
+
+                    System.out.println("Failed hostname: " + hostname);
+                    System.out.println("previousNode: " + previousNode + "with ip: " + Naming.getNodeInfo(previousNode));
+                    System.out.println("nextNode: " + nextNode + "with  ip: " + Naming.getNodeInfo(nextNode));
+
 
                     try {
                         DatagramSocket socket = new DatagramSocket();
@@ -60,6 +62,9 @@ public class Failure {
                     } catch (SocketException e) {
                         e.printStackTrace();
                     }
+
+                    // Remove failed node to the list
+                    Naming.removeNode(hostname);
                 });
                 thread.start();
             }

@@ -189,6 +189,8 @@ public class Node {
                             JSONParser parser = new JSONParser();
                             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
 
+                            System.out.println("In shudownListener: Received " + jsonObject.toJSONString());
+
                             // update previousNode
                             if (jsonObject.containsKey("newPreviousNode")) {
                                 previousNode = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
