@@ -77,11 +77,11 @@ public class Node {
                 .asString();
     }
 
-    public Inet4Address getNodeInfo(int id) {
+    public InetAddress getNodeInfo(int id) {
         //System.out.println("getNodeInfo");
-        HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
+        HttpResponse<InetAddress> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
-                .asObject(Inet4Address.class);
+                .asObject(InetAddress.class);
         return response.getBody();
     }
 
