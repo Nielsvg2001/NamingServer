@@ -53,6 +53,7 @@ public class Node {
         new Thread(this::listenForNewNodes).start();
         new Thread(this::shutdownListener).start();
         new Thread(this::checkNeighbors).start();
+        new Thread(this::failureCheckListener).start();
     }
 
     public static int hashCode(String toHash) {
@@ -212,18 +213,37 @@ public class Node {
 
     public void checkNeighbors() {
         System.out.println("Checking for failure...");
+        int teller = 0;
         try {
             DatagramSocket socket = new DatagramSocket();
+
             byte[] buf = "test".getBytes();
-            DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
-            socket.send(packet);
-            packet = new DatagramPacket(new byte[256], 256);
-            socket.receive(packet);
-            String packetString = new String(packet.getData(), 0, packet.getLength());
-            if (!packetString.equals("OK")) {
-                failure(getNodeInfo(previousNode).getHostName());
+            while(true) {
+                try {
+                    socket.setSoTimeout(100);
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
+                    socket.send(packet);
+                    packet = new DatagramPacket(new byte[256], 256);
+                    socket.receive(packet);
+                    teller = 0;
+                    String packetString = new String(packet.getData(), 0, packet.getLength());
+                    if (!packetString.equals("OK")) {
+                        failure(getNodeInfo(previousNode).getHostName());
+                    }
+                } catch (SocketTimeoutException e) {
+                    teller++;
+                    if (teller>3){
+                        failure(getNodeInfo(previousNode).getHostName());
+                        teller = 0;
+                    }
+                }
+                Thread.sleep(1000);
             }
-        } catch (IOException e) {
+        }
+        catch(InterruptedException e){
+            e.printStackTrace();
+        }
+        catch (IOException e) {
             e.printStackTrace();
             failure(getNodeInfo(previousNode).getHostName());
         }
@@ -246,6 +266,7 @@ public class Node {
 
                 byte[] response = "OK".getBytes();
                 DatagramPacket reply = new DatagramPacket(response, response.length, datagramPacket.getAddress(), datagramPacket.getPort());
+                datagramSocket.send(reply);
             }
         }catch (IOException e){
             e.printStackTrace();
