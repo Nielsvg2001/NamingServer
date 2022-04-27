@@ -206,4 +206,23 @@ public class Node {
             e.printStackTrace();
         }
     }
+
+
+    public void failureCheckListener() {
+        System.out.println("Starting FailureCheckListener");
+        try {
+            DatagramSocket datagramSocket = new DatagramSocket(CHECKPORT);
+            while(true){
+                DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(datagramPacket);
+
+                byte[] response = "OK".getBytes();
+                DatagramPacket reply = new DatagramPacket(response, response.length, datagramPacket.getAddress(), datagramPacket.getPort());
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
 }
