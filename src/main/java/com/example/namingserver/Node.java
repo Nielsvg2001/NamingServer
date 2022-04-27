@@ -21,6 +21,7 @@ public class Node {
     public static final int DISCOVERYPORT = 9999;
     public static final String NAMINGPORT = "8080";
     public static int SHUTDOWNPORT = 9998;
+    public static int FAILUREPORT = 9997;
     public static int CHECKPORT = 9987;
     public String NAMINGSERVERADDRESS = "localhost";
 
@@ -250,12 +251,6 @@ public class Node {
     }
 
 
-    public void failure(String hostName) {
-        System.out.println("Checking for failure...");
-
-    }
-
-
     public void failureCheckListener() {
         System.out.println("Starting FailureCheckListener");
         try {
@@ -274,4 +269,23 @@ public class Node {
     }
 
 
+
+    public void failure(String hostName) {
+        System.out.println("Failure detected");
+        try {
+            DatagramSocket datagramSocket = new DatagramSocket();
+            try {
+                // sending hostname of failed node to the Naming server
+                byte[] buf = hostName.getBytes();
+                DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName(NAMINGSERVERADDRESS), FAILUREPORT);
+                datagramSocket.send(datagramPacket);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
 }
