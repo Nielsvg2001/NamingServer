@@ -33,8 +33,8 @@ public class Node {
         System.out.println("I'm node " + cl.hostName + "(" + cl.currentID + ")" + " and my ip is " + cl.ipAddress);
         System.out.println("There are " + cl.numNodesWhenEntered + " nodes in the network \nThe previous node is " + cl.previousNode + " (" + cl.getNodeInfo(cl.previousNode) + ") and the next node is " + cl.nextNode + " (" + cl.getNodeInfo(cl.nextNode) + ")");
         cl.namingRequest("testfile name.txt");
-        //Thread.sleep(120000);
-        //cl.shutdown();
+        Thread.sleep(120000);
+        cl.shutdown();
 
     }
 
