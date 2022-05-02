@@ -23,7 +23,7 @@ public class Node {
     public static int FAILUREPORT = 9997;
     public static int CHECKPORT = 9987;
     public String NAMINGSERVERADDRESS = "localhost";
-    private final String multicastAddress = "228.5.6.7";
+    private final String multicastAddress = "230.0.0.1";
     private MulticastSocket msocket;
     private InetAddress multicastGroup;
 
