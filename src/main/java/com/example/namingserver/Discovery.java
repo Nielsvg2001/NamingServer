@@ -15,7 +15,7 @@ public class Discovery {
         System.out.println("Starting Discovery");
         try {
             MulticastSocket mSocket = new MulticastSocket(PORT);
-            String multicastAddress = "230.0.0.0";
+            String multicastAddress = "230.0.0.1";
             InetAddress mGroup = InetAddress.getByName(multicastAddress);
             mSocket.joinGroup(mGroup);
             while (true) {
