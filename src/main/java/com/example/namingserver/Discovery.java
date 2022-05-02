@@ -43,7 +43,8 @@ public class Discovery {
                     byte[] data = jsonObject.toJSONString().getBytes();
                     DatagramPacket reply = new DatagramPacket(data, data.length, packet.getAddress(), packet.getPort());
                     try {
-                        mSocket.send(reply);
+                        DatagramSocket datagramSocket = new DatagramSocket(packet.getPort());
+                        datagramSocket.send(reply);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
