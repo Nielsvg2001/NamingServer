@@ -130,6 +130,8 @@ public class Node {
         System.out.println("Starting listenForNewNodes");
         try {
             //DatagramSocket datagramSocket = new DatagramSocket(DISCOVERYPORT);
+            msocket = new MulticastSocket();
+            msocket.joinGroup(multicastGroup);
             while (true) {
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
                 msocket.receive(packet);
