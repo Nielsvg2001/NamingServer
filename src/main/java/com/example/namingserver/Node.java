@@ -36,8 +36,8 @@ public class Node {
         System.out.println("I'm node " + cl.hostName + "(" + cl.currentID + ")" + " and my ip is " + cl.ipAddress);
         System.out.println("There are " + cl.numNodesWhenEntered + " nodes in the network \nThe previous node is " + cl.previousNode + " (" + cl.getNodeInfo(cl.previousNode) + ") and the next node is " + cl.nextNode + " (" + cl.getNodeInfo(cl.nextNode) + ")");
         cl.namingRequest("testfile name.txt");
-        //Thread.sleep(120000);
-        //cl.shutdown();
+        Thread.sleep(120000);
+        cl.shutdown();
 
     }
 
@@ -241,7 +241,7 @@ public class Node {
                 } catch (SocketTimeoutException e) {
                     System.out.println("Teller is " + teller);
                     teller++;
-                    if (teller>3){
+                    if (teller > 3) {
                         failure(previousNode);
                         System.out.println("In checkNeighbors: Aanroepen failure");
                         Thread.sleep(2000);
@@ -274,7 +274,6 @@ public class Node {
             e.printStackTrace();
         }
     }
-
 
 
     public void failure(int hash) {
