@@ -23,9 +23,12 @@ public class Node {
     public static int FAILUREPORT = 9997;
     public static int CHECKPORT = 9987;
     public String NAMINGSERVERADDRESS = "localhost";
+    private final String multicastAddress = "10.11.12.13";
+    private MulticastSocket msocket;
+    private InetAddress multicastGroup;
 
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
@@ -96,14 +99,16 @@ public class Node {
     public int dicovery() {
         try {
             // Send hostname (+ ip) to naming server and other nodes.
-            DatagramSocket socket = new DatagramSocket();
+            msocket = new MulticastSocket();
             byte[] buf = hostName.getBytes();
-            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"), DISCOVERYPORT);
-            socket.send(datagramPacket);
+            multicastGroup = InetAddress.getByName(multicastAddress);
+            msocket.joinGroup(multicastGroup);
+            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, DISCOVERYPORT);
+            msocket.send(datagramPacket);
 
             // Receive response from naming server
             datagramPacket = new DatagramPacket(new byte[1024], 1024);
-            socket.receive(datagramPacket);
+            msocket.receive(datagramPacket);
 
             // Handle received data
             JSONParser parser = new JSONParser();
@@ -124,10 +129,10 @@ public class Node {
     public void listenForNewNodes() {
         System.out.println("Starting listenForNewNodes");
         try {
-            DatagramSocket datagramSocket = new DatagramSocket(DISCOVERYPORT);
+            //DatagramSocket datagramSocket = new DatagramSocket(DISCOVERYPORT);
             while (true) {
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-                datagramSocket.receive(packet);
+                msocket.receive(packet);
                 Thread thread = new Thread(() -> {
                     String hostname = new String(packet.getData(), 0, packet.getLength());
                     int hash = hashCode(hostname);
@@ -164,6 +169,7 @@ public class Node {
                 buf = jsonObject.toString().getBytes();
                 packet = new DatagramPacket(buf, buf.length, getNodeInfo(nextNode), SHUTDOWNPORT);
                 socket.send(packet);
+                msocket.leaveGroup(multicastGroup);
             } catch (IOException e) {
                 e.printStackTrace();
             }

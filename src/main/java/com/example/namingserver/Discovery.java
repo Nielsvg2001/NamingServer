@@ -3,9 +3,7 @@ package com.example.namingserver;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
+import java.net.*;
 
 public class Discovery {
     private static final int PORT = 9999;
@@ -16,10 +14,13 @@ public class Discovery {
     public static void start() {
         System.out.println("Starting Discovery");
         try {
-            DatagramSocket datagramSocket = new DatagramSocket(PORT);
+            MulticastSocket mSocket = new MulticastSocket(PORT);
+            String multicastAddress = "10.11.12.13";
+            InetAddress mGroup = InetAddress.getByName(multicastAddress);
+            mSocket.joinGroup(mGroup);
             while (true) {
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-                datagramSocket.receive(packet);
+                mSocket.receive(packet);
                 Thread thread = new Thread(() -> {
                     // Receiving new node
                     String hostname = new String(packet.getData(), 0, packet.getLength());
@@ -42,7 +43,7 @@ public class Discovery {
                     byte[] data = jsonObject.toJSONString().getBytes();
                     DatagramPacket reply = new DatagramPacket(data, data.length, packet.getAddress(), packet.getPort());
                     try {
-                        datagramSocket.send(reply);
+                        mSocket.send(reply);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
