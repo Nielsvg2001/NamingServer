@@ -135,8 +135,10 @@ public class Node {
             while (true) {
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
                 msocket.receive(packet);
+                System.out.println("in listenfornewnodes packet received");
                 Thread thread = new Thread(() -> {
                     String hostname = new String(packet.getData(), 0, packet.getLength());
+                    System.out.println("in listenfornewnodes hostname : "+ hostname);
                     int hash = hashCode(hostname);
                     if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
                         nextNode = hash;
