@@ -23,12 +23,12 @@ public class Node {
     public static int FAILUREPORT = 9997;
     public static int CHECKPORT = 9987;
     public String NAMINGSERVERADDRESS = "localhost";
-    private final String multicastAddress = "10.11.12.13";
+    private final String multicastAddress = "228.5.6.7";
     private MulticastSocket msocket;
     private InetAddress multicastGroup;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
