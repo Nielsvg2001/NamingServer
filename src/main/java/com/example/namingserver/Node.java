@@ -28,7 +28,7 @@ public class Node {
     private InetAddress multicastGroup;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
