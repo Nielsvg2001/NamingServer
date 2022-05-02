@@ -104,6 +104,7 @@ public class Node {
             multicastGroup = InetAddress.getByName(multicastAddress);
             msocket.joinGroup(multicastGroup);
             DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, DISCOVERYPORT);
+            datagramPacket.setAddress(multicastGroup);
             msocket.send(datagramPacket);
 
             // Receive response from naming server
