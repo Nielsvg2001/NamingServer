@@ -183,6 +183,7 @@ public class Node {
         }
         // Remove this node from the list of nodes
         removeNode(hostName);
+        System.exit(0);
     }
 
 
