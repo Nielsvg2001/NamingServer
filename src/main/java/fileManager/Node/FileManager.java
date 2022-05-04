@@ -50,7 +50,7 @@ public class FileManager {
 
     public void shutdown() {
         System.out.println("shutdown! sending replicated files to previous node");
-        File path = new File("Replicated_files");
+        File path = new File("src/main/java/fileManager/Node/Replicated_files");
         File[] files = path.listFiles();
 
         assert files != null;

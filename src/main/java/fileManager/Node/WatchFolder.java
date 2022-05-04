@@ -4,12 +4,16 @@ import java.nio.file.*;
 
 // https://fullstackdeveloper.guru/2020/12/23/how-to-watch-a-folder-directory-or-changes-using-java/
 public class WatchFolder {
+    public FileManager fileManager;
+    public FileTransfer fileTransfer;
 
-    public static void main(String[] args) {
-        new WatchFolder().WatchFolder();
+    public WatchFolder(FileManager fileManagere) {
+        fileManager = fileManagere;
+        fileTransfer = fileManager.fileTransfer;
+        new Thread(this::startWatchFolder).start();
     }
 
-    public void WatchFolder() {
+    private void startWatchFolder() {
 
         try {
 
@@ -41,6 +45,7 @@ public class WatchFolder {
                     if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
 
                         System.out.println("A new file is created : " + fileName);
+                        //fileTransfer.sendFile(fileManager.namingRequest(Node.hashCode(fileName)),file);
                     }
 
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
