@@ -2,9 +2,14 @@ package fileManager.Node;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Inet4Address;
+import java.net.SocketException;
 
 public class FileManager {
     FileTransfer fileTransfer;
@@ -37,4 +42,13 @@ public class FileManager {
         System.out.println("responsebody: " + response.getBody());
         return response.getBody();
     }
+
+    public void shutdown() {
+        System.out.println("shutdown");
+        File path = new File("Replicated_files");
+        File [] files = path.listFiles();
+        fileTransfer.sendFile(, files);
+        System.exit(0);
+    }
+
 }

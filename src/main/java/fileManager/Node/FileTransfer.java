@@ -17,7 +17,7 @@ public class FileTransfer {
     }
 
     // sent file (filePath) to node (ID)
-    public void sentFile(int ID, String filePath) {
+    public void sendFile(int ID, String filePath) {
         System.out.println("Sending file");
         File fileToSend = new File(filePath);
 
