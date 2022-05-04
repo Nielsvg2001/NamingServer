@@ -77,7 +77,7 @@ public class FileTransfer {
                                 }
 
                                 if (isALocalFile) {
-                                    sendFile(networkManager.getPreviousIP(), );
+                                    //sendFile(networkManager.getPreviousIP(), );
                                 }
                                 else {
                                     int fileContentLenght = dataInputStream.readInt();
