@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.*;
 
 
@@ -222,7 +222,7 @@ public class NetworkManager {
                 } catch (SocketTimeoutException e) {
                     System.out.println("Teller is " + teller);
                     teller++;
-                    if (teller>3){
+                    if (teller > 3) {
                         failure(previousNode);
                         System.out.println("In checkNeighbors: Aanroepen failure");
                         Thread.sleep(2000);
@@ -255,7 +255,6 @@ public class NetworkManager {
             e.printStackTrace();
         }
     }
-
 
 
     public void failure(int hash) {
