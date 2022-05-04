@@ -29,7 +29,7 @@ public class Node {
 
     public Node() {
         // get own infromation
-        TCPListener();
+        new Thread(this::TCPListener).start();
         networkManager = new NetworkManager();
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
