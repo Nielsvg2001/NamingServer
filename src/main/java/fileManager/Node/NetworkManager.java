@@ -89,6 +89,8 @@ public class NetworkManager {
             datagramPacket = new DatagramPacket(new byte[1024], 1024);
             msocket.receive(datagramPacket);
 
+            System.out.println(new String(datagramPacket.getData(),0, datagramPacket.getLength()));
+
             // Handle received data
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
