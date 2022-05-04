@@ -4,18 +4,20 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.SocketException;
+import java.net.*;
+import java.util.Arrays;
 
 public class FileManager {
     FileTransfer fileTransfer;
+    NetworkManager networkManager;
 
-    public FileManager() {
-        fileTransfer = new FileTransfer();
+    public FileManager(NetworkManager networkManager) {
+        fileTransfer = new FileTransfer(networkManager);
+        this.networkManager = networkManager;
         startUp();
     }
 
@@ -44,11 +46,13 @@ public class FileManager {
     }
 
     public void shutdown() {
-        System.out.println("shutdown");
+        System.out.println("shutdown! sending replicated files to previous node");
         File path = new File("Replicated_files");
-        File [] files = path.listFiles();
-        fileTransfer.sendFile(, files);
-        System.exit(0);
-    }
+        File[] files = path.listFiles();
 
+        assert files != null;
+        for (File file : files) {
+            fileTransfer.sendFile(networkManager.getPreviousIP(), file);
+        }
+    }
 }

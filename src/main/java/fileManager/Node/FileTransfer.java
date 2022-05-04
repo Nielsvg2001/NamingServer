@@ -10,9 +10,10 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
+    NetworkManager networkManager;
 
-
-    public FileTransfer() {
+    public FileTransfer(NetworkManager networkManager) {
+        this.networkManager = networkManager;
         new Thread(this::fileListener).start();
     }
 
@@ -56,16 +57,31 @@ public class FileTransfer {
                                 byte[] fileNameBytes = new byte[fileNameLenght];
                                 dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
                                 String fileName = new String(fileNameBytes);
-                                int fileContentLenght = dataInputStream.readInt();
-                                if (fileContentLenght > 0) {
-                                    byte[] fileContentBytes = new byte[fileContentLenght];
-                                    dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-                                    File fileToDownload = new File("Repclicated_files/" +fileName);
-                                    FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
-                                    fileOutputStream.write(fileContentBytes);
-                                    fileOutputStream.close();
-                                    System.out.println(fileName);
-                                    System.out.println(Arrays.toString(fileContentBytes));
+
+                                boolean isALocalFile = false;
+                                File path = new File("Local_files");
+                                File[] files = path.listFiles();
+                                for (File file: files) {
+                                    if (Node.hashCode(file.toString()) == Node.hashCode(fileName)) {
+                                        isALocalFile = true;
+                                    }
+                                }
+
+                                if (isALocalFile) {
+                                    sendFile(networkManager.getPreviousIP(), );
+                                }
+                                else {
+                                    int fileContentLenght = dataInputStream.readInt();
+                                    if (fileContentLenght > 0) {
+                                        byte[] fileContentBytes = new byte[fileContentLenght];
+                                        dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
+                                        File fileToDownload = new File("Replicated_files/" +fileName);
+                                        FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
+                                        fileOutputStream.write(fileContentBytes);
+                                        fileOutputStream.close();
+                                        System.out.println(fileName);
+                                        System.out.println(Arrays.toString(fileContentBytes));
+                                    }
                                 }
                             }
 

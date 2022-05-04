@@ -67,12 +67,16 @@ public class NetworkManager {
                 .asString();
     }
 
-    public static Inet4Address getNodeInfo(int id) {
+    public Inet4Address getNodeInfo(int id) {
         //System.out.println("getNodeInfo");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
                 .asObject(Inet4Address.class);
         return response.getBody();
+    }
+
+    public Inet4Address getPreviousIP() {
+        return getNodeInfo(previousNode);
     }
 
     public int dicovery() {
@@ -158,7 +162,6 @@ public class NetworkManager {
         }
         // Remove this node from the list of nodes
         removeNode(hostName);
-        System.exit(0);
     }
 
 
