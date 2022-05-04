@@ -212,6 +212,7 @@ public class NetworkManager {
             while (true) {
                 try {
                     socket.setSoTimeout(100);
+                    System.out.println("in checkneighbors getnodeinfo prev " + getNodeInfo(previousNode));
                     DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
                     socket.send(packet);
                     packet = new DatagramPacket(new byte[256], 256);
