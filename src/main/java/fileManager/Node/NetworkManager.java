@@ -180,15 +180,11 @@ public class NetworkManager {
             while (true) {
                 try {
                     socket.setSoTimeout(100);
-                    DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 777);
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 7777);
                     socket.send(packet);
                     packet = new DatagramPacket(new byte[256], 256);
                     socket.receive(packet);
                     teller = 0;
-                    String packetString = new String(packet.getData(), 0, packet.getLength());
-                    if (!packetString.equals("OK")) {
-                        failure(previousNode);
-                    }
                 } catch (SocketTimeoutException e) {
                     System.out.println("Teller is " + teller);
                     teller++;
