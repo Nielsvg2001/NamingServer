@@ -19,7 +19,7 @@ public class FileTransfer {
         try {
             Path path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         new Thread(this::fileListener).start();
@@ -43,7 +43,7 @@ public class FileTransfer {
             dataOutputStream.writeInt(fileContentBytes.length);
             dataOutputStream.write(fileContentBytes);
 
-            System.out.println("File is sent! : "+ filename);
+            System.out.println("File is sent! : " + filename);
         } catch (IOException error) {
             error.printStackTrace();
         }
@@ -58,7 +58,7 @@ public class FileTransfer {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {
-                        while(!socket.isClosed()) {
+                        while (!socket.isClosed()) {
                             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                             int fileNameLenght = dataInputStream.readInt();
                             if (fileNameLenght > 0) {
@@ -70,7 +70,7 @@ public class FileTransfer {
                                     byte[] fileContentBytes = new byte[fileContentLenght];
                                     dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
 
-                                    File fileToDownload = new File(path_ReplicationFiles +fileName);
+                                    File fileToDownload = new File(path_ReplicationFiles + fileName);
                                     FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                     fileOutputStream.write(fileContentBytes);
                                     fileOutputStream.close();

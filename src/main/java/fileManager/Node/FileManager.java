@@ -15,17 +15,17 @@ public class FileManager {
         startUp();
     }
 
-    public void startUp(){
+    public void startUp() {
         System.out.println("startup files");
         File path = new File("src/main/java/fileManager/Node/Local_files");
-        File [] files = path.listFiles();
+        File[] files = path.listFiles();
         System.out.println(Arrays.toString(files));
-        if(files!= null) {
+        if (files != null) {
             for (File file : files) {
                 if (file.isFile()) { //this line weeds out other directories/folders
                     System.out.println(file);
                     System.out.println(namingRequest(file.getName()));
-                    fileTransfer.sendFile(namingRequest(file.getName()),file);
+                    fileTransfer.sendFile(namingRequest(file.getName()), file);
                 }
             }
         }
@@ -36,7 +36,7 @@ public class FileManager {
         System.out.println("request");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NetworkManager.NAMINGSERVERADDRESS + ":" + NetworkManager.NAMINGPORT + "/namingRequest")
                 .queryString("fileName", fileName)
-                        .asObject(Inet4Address.class);
+                .asObject(Inet4Address.class);
         return response.getBody();
     }
 }

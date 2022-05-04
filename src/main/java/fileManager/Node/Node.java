@@ -1,15 +1,5 @@
 package fileManager.Node;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
-import java.net.*;
-
-
 public class Node {
 
     public NetworkManager networkManager;
@@ -20,7 +10,8 @@ public class Node {
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         Node cl = new Node();
-        cl.fileManager.namingRequest("testfile name.txt");;
+        cl.fileManager.namingRequest("testfile name.txt");
+        ;
         //Thread.sleep(120000);
         //cl.shutdown();
 
