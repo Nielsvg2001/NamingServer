@@ -1,11 +1,11 @@
 package fileManager.Node;
 
 import java.io.*;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
-
-import static fileManager.Node.NetworkManager.getNodeInfo;
+import java.util.Arrays;
 
 public class FileTransfer {
 
@@ -17,12 +17,11 @@ public class FileTransfer {
     }
 
     // sent file (filePath) to node (ID)
-    public void sentFile(int ID, String filePath) {
+    public void sendFile(Inet4Address ip, File fileToSend) {
         System.out.println("Sending file");
-        File fileToSend = new File(filePath);
 
         try {
-            Socket socket = new Socket(getNodeInfo(ID), FILEPORT);
+            Socket socket = new Socket(ip, FILEPORT);
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             String filename = fileToSend.getName();
             byte[] fileNameBytes = filename.getBytes();
@@ -35,7 +34,7 @@ public class FileTransfer {
             dataOutputStream.writeInt(fileContentBytes.length);
             dataOutputStream.write(fileContentBytes);
 
-            System.out.println("File is sent!");
+            System.out.println("File is sent! : "+ filename);
         } catch (IOException error) {
             error.printStackTrace();
         }
@@ -61,12 +60,15 @@ public class FileTransfer {
                                 if (fileContentLenght > 0) {
                                     byte[] fileContentBytes = new byte[fileContentLenght];
                                     dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-                                    File fileToDownload = new File(fileName);
+                                    File fileToDownload = new File("Repclicated_files/" +fileName);
                                     FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                     fileOutputStream.write(fileContentBytes);
                                     fileOutputStream.close();
+                                    System.out.println(fileName);
+                                    System.out.println(Arrays.toString(fileContentBytes));
                                 }
                             }
+
                             dataInputStream.close();
                             System.out.println("File received!");
                             socket.close();

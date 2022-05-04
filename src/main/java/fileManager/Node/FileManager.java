@@ -11,10 +11,10 @@ public class FileManager {
 
     public FileManager() {
         fileTransfer = new FileTransfer();
+        startUp();
     }
 
     public void startUp(){
-        fileTransfer.receive();
         File path = new File("Local_files");
         File [] files = path.listFiles();
         if(files!= null) {
