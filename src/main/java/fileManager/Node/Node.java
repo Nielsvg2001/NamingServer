@@ -100,9 +100,11 @@ public class Node {
                     String type = jsonObject.get("type").toString();
                     switch (type) {
                         case "checkNeighbors":
+                            System.out.println("in node in udp listener2 : checkneighbors");
                             networkManager.failureCheckListener(datagramPacket, datagramSocket);
                             break;
                         case "shutdown":
+                            System.out.println("in node in udp listener2 : shutdown");
                             networkManager.shutdownListener(jsonObject);
                             break;
                         default:
