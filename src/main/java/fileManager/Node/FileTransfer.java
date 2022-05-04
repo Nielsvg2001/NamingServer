@@ -71,7 +71,7 @@ public class FileTransfer {
 
                                 // check if received file isn't already a local file of the node
                                 boolean isALocalFile = false;
-                                File path = new File("NamingServer/src/main/java/fileManager/Node/Local_files");
+                                File path = new File("src/main/java/fileManager/Node/Local_files");
                                 File[] files = path.listFiles();
                                 assert files != null;
                                 for (File file: files) {
