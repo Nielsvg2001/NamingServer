@@ -20,7 +20,7 @@ public class Node {
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         Node cl = new Node();
-        //cl.fileManager.namingRequest("testfile name.txt");;
+        cl.fileManager.namingRequest("testfile name.txt");;
         //Thread.sleep(120000);
         //cl.shutdown();
 
@@ -29,7 +29,7 @@ public class Node {
     public Node() {
         // get own infromation
         networkManager = new NetworkManager();
-        //fileManager = new FileManager();
+        fileManager = new FileManager();
     }
 
     public static int hashCode(String toHash) {

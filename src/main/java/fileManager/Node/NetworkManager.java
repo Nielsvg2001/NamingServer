@@ -68,13 +68,9 @@ public class NetworkManager {
     }
 
     public Inet4Address getNodeInfo(int id) {
-        System.out.println("getNodeInfo");
-        System.out.println(NAMINGSERVERADDRESS);
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
                 .asObject(Inet4Address.class);
-
-        System.out.println(response.getBody());
         return response.getBody();
     }
 
@@ -91,8 +87,6 @@ public class NetworkManager {
             // Receive response from naming server
             datagramPacket = new DatagramPacket(new byte[1024], 1024);
             msocket.receive(datagramPacket);
-
-            System.out.println(new String(datagramPacket.getData(),0, datagramPacket.getLength()));
 
             // Handle received data
             JSONParser parser = new JSONParser();
@@ -181,8 +175,6 @@ public class NetworkManager {
                             JSONParser parser = new JSONParser();
                             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
 
-                            System.out.println("In shudownListener: Received " + jsonObject.toJSONString());
-
                             // update previousNode
                             if (jsonObject.containsKey("newPreviousNode")) {
                                 previousNode = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
@@ -215,7 +207,6 @@ public class NetworkManager {
             while (true) {
                 try {
                     socket.setSoTimeout(100);
-                    System.out.println("in checkneighbors getnodeinfo prev " + getNodeInfo(previousNode));
                     DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
                     socket.send(packet);
                     packet = new DatagramPacket(new byte[256], 256);

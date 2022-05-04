@@ -25,7 +25,6 @@ public class Naming {
      */
     public static Inet4Address getRequest(String fileName) {
         int hash = hashCode(fileName);
-        System.out.println("Requesting file: " + fileName + " with hash: " + hash);
         return checkID(hash);
     }
 
@@ -34,13 +33,9 @@ public class Naming {
         lock.lock();
         try {
             if (nodesList.containsKey(id)) {
-                System.out.println("in Naming getnodeinfo returns " + nodesList.containsKey(id));
+
                 return nodesList.get(id);
             }
-            for (int item: nodesList.keySet()){
-                System.out.println("for loop: " + item + nodesList.get(item));
-            }
-
         } finally {
             lock.unlock();
         }
