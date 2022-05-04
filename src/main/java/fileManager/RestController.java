@@ -40,6 +40,8 @@ public class RestController {
 
     @GetMapping(value = "/getNodeInfo")
     public Inet4Address getNodeInfo(@RequestParam int id) {
+        System.out.println("in restco" + id);
+        System.out.println("in restc returns : " +Naming.getNodeInfo(id));
         return Naming.getNodeInfo(id);
     }
 

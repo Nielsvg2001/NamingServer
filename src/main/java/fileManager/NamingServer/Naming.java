@@ -34,8 +34,13 @@ public class Naming {
         lock.lock();
         try {
             if (nodesList.containsKey(id)) {
+                System.out.println("in Naming getnodeinfo returns " + nodesList.containsKey(id));
                 return nodesList.get(id);
             }
+            for (int item: nodesList.keySet()){
+                System.out.println("for loop: " + item + nodesList.get(item));
+            }
+
         } finally {
             lock.unlock();
         }
