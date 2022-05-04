@@ -206,14 +206,12 @@ public class NetworkManager {
 
 
     public void failureCheckListener(DatagramPacket datagramPacket, DatagramSocket datagramSocket) {
-        System.out.println("Starting FailureCheckListener");
 try {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("type","responseOK");
     byte[] buf = jsonObject.toJSONString().getBytes();
     DatagramPacket reply = new DatagramPacket(buf, buf.length, datagramPacket.getAddress(), datagramPacket.getPort());
     datagramSocket.send(reply);
-    System.out.println("send response");
 }
 catch (Exception e){
     e.printStackTrace();
