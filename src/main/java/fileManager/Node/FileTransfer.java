@@ -81,8 +81,10 @@ public class FileTransfer {
                                         break;
                                     }
                                 }
-
+                                System.out.println("verder");
                                 int fileContentLenght = dataInputStream.readInt();
+                                System.out.println("filecontentlength: " + fileContentLenght);
+                                System.out.println("datainputstream: " + dataInputStream);
                                 if (fileContentLenght > 0) {
                                     if (isALocalFile) {
                                         System.out.println("send file to previous ip");
