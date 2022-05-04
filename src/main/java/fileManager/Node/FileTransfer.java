@@ -50,12 +50,11 @@ public class FileTransfer {
         }
     }
 
-    // filepath moet nog aangepast worden afhankelijk van waar we files opslaan
     public void fileListener() {
         System.out.println("Start fileListener");
         try {
             ServerSocket serverSocket = new ServerSocket(FILEPORT);
-            while (true) {
+            while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {
@@ -89,6 +88,7 @@ public class FileTransfer {
                                     if (isALocalFile) {
                                         System.out.println("send file to previous ip");
                                         File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
+                                        // sendFile niet zomaar doen, als bij test.txt in begin blijven deze berichten ronddraaien omdat iedereeen dit als local file heeft en dit verder doorstuurd
                                         //sendFile(networkManager.getPreviousIP(), fileToSend);
                                     }
                                     else {
