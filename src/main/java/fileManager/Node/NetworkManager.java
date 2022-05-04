@@ -41,9 +41,7 @@ public class NetworkManager {
 
         // start services
         numNodesWhenEntered = dicovery();
-        new Thread(this::shutdownListener).start();
         new Thread(this::checkNeighbors).start();
-        new Thread(this::failureCheckListener).start();
 
         System.out.println("I'm node " + hostName + "(" + currentID + ")" + " and my ip is " + ipAddress);
         System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
@@ -133,16 +131,18 @@ public class NetworkManager {
             try {
                 // Sending nextNode to previousNode
                 JSONObject jsonObject = new JSONObject();
+                jsonObject.put("type","shutdown");
                 jsonObject.put("newNextNode", nextNode);
                 byte[] buf = jsonObject.toString().getBytes();
-                DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), SHUTDOWNPORT);
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 7777);
                 socket.send(packet);
 
                 // Sending previousNode to nextNode
                 jsonObject = new JSONObject();
+                jsonObject.put("type","shutdown");
                 jsonObject.put("newPreviousNode", previousNode);
                 buf = jsonObject.toString().getBytes();
-                packet = new DatagramPacket(buf, buf.length, getNodeInfo(nextNode), SHUTDOWNPORT);
+                packet = new DatagramPacket(buf, buf.length, getNodeInfo(nextNode), 7777);
                 socket.send(packet);
                 msocket.leaveGroup(multicastGroup);
             } catch (IOException e) {
@@ -156,53 +156,31 @@ public class NetworkManager {
     }
 
 
-    public void shutdownListener() {
+    public void shutdownListener(JSONObject jsonObject) {
         System.out.println("Starting Shutdown Listener");
-        try {
-            DatagramSocket datagramSocket = new DatagramSocket(SHUTDOWNPORT);
-            while (true) {
-                DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
-                datagramSocket.receive(datagramPacket);
-                Thread thread = new Thread(() -> {
-                    try {
-                        if (datagramPacket.getAddress() != ipAddress) {
-                            // Handle received data
-                            JSONParser parser = new JSONParser();
-                            JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
-
                             // update previousNode
                             if (jsonObject.containsKey("newPreviousNode")) {
                                 previousNode = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
                             }
-
                             // update nextNode
                             if (jsonObject.containsKey("newNextNode")) {
                                 nextNode = Integer.parseInt(jsonObject.get("newNextNode").toString());
                             }
                             System.out.println("In shutdonwListener: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                         }
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                });
-                thread.start();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void checkNeighbors() {
         System.out.println("Checking for failure...");
         int teller = 0;
         try {
             DatagramSocket socket = new DatagramSocket();
-
-            byte[] buf = "test".getBytes();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type","checkNeighbors");
+            byte[] buf = jsonObject.toJSONString().getBytes();
             while (true) {
                 try {
                     socket.setSoTimeout(100);
-                    DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 777);
                     socket.send(packet);
                     packet = new DatagramPacket(new byte[256], 256);
                     socket.receive(packet);
@@ -231,21 +209,19 @@ public class NetworkManager {
     }
 
 
-    public void failureCheckListener() {
+    public void failureCheckListener(DatagramPacket datagramPacket, DatagramSocket datagramSocket) {
         System.out.println("Starting FailureCheckListener");
-        try {
-            DatagramSocket datagramSocket = new DatagramSocket(CHECKPORT);
-            while (true) {
-                DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
-                datagramSocket.receive(datagramPacket);
-
-                byte[] response = "OK".getBytes();
-                DatagramPacket reply = new DatagramPacket(response, response.length, datagramPacket.getAddress(), datagramPacket.getPort());
-                datagramSocket.send(reply);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+try {
+    DatagramSocket socket = new DatagramSocket();
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("type","responseOK");
+    byte[] buf = jsonObject.toJSONString().getBytes();
+    DatagramPacket reply = new DatagramPacket(buf, buf.length, datagramPacket.getAddress(), datagramPacket.getPort());
+    datagramSocket.send(reply);
+}
+catch (Exception e){
+    e.printStackTrace();
+}
     }
 
 

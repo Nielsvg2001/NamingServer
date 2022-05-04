@@ -22,14 +22,14 @@ public class Node {
 
         Node cl = new Node();
         //cl.fileManager.namingRequest("testfile name.txt");;
-        //Thread.sleep(120000);
-        //cl.shutdown();
+        Thread.sleep(120000);
+        cl.shutdown();
 
     }
 
     public Node() {
         // get own infromation
-        new Thread(this::TCPListener).start();
+        new Thread(this::UDPListener).start();
         networkManager = new NetworkManager();
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
@@ -46,14 +46,14 @@ public class Node {
         return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
     }
 
-    public void TCPListener()  {
+    public void UDPListener() {
         try {
             MulticastSocket msocket = new MulticastSocket(9999);
             String multicastAddress = "230.0.0.1";
             InetAddress multicastGroup = InetAddress.getByName(multicastAddress);
             msocket.joinGroup(multicastGroup);
             DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-            while(!msocket.isClosed()) {
+            while (!msocket.isClosed()) {
                 msocket.receive(packet);
                 Thread thread = new Thread(() -> {
                     JSONParser parser = new JSONParser();
@@ -69,17 +69,48 @@ public class Node {
                         case "discovery":
                             networkManager.listenForNewNodes((String) jsonObject.get("hostname"));
                             break;
-                        case "else":
-                            //code
-                            break;
-
                     }
 
                 });
                 thread.start();
             }
 
-        }catch (IOException e){
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void UDPListener2() {
+        try {
+            DatagramSocket datagramSocket = new DatagramSocket(7777);
+            while (!datagramSocket.isClosed()) {
+                DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(datagramPacket);
+                Thread thread = new Thread(() -> {
+                    JSONParser parser = new JSONParser();
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    assert jsonObject != null;
+                    String type = jsonObject.get("type").toString();
+                    switch (type) {
+                        case "checkNeighbors":
+                            networkManager.failureCheckListener(datagramPacket, datagramSocket);
+                            break;
+                        case "shutdown":
+                            networkManager.shutdownListener(jsonObject);
+                            break;
+
+                    }
+                });
+                thread.start();
+
+            }
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
