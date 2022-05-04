@@ -40,7 +40,7 @@ public class WatchFolder {
                     WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
 
                     Path fileName = pathEvent.context();
-                    File file = new File(String.valueOf(directory) + fileName);
+                    File file = new File(directory + "/"+ fileName);
 
                     // STEP6: Check type of event.
                     WatchEvent.Kind<?> kind = event.kind();
