@@ -26,12 +26,16 @@ public class NetworkManager {
     public static int CHECKPORT = 9987;
     public static int FILEPORT = 9996;
     public static String NAMINGSERVERADDRESS = "localhost";
+    private final String multicastAddress = "230.0.0.1";
+    private MulticastSocket msocket;
+    private InetAddress multicastGroup;
 
     public NetworkManager() {
         try {
             hostName = InetAddress.getLocalHost().getHostName();
             ipAddress = InetAddress.getLocalHost();
             currentID = Node.hashCode(hostName);
+            multicastGroup = InetAddress.getByName(multicastAddress);
         } catch (UnknownHostException e) {
             System.out.println("Could not get LocalHost information: " + e.getMessage());
         }
@@ -76,14 +80,16 @@ public class NetworkManager {
     public int dicovery() {
         try {
             // Send hostname (+ ip) to naming server and other nodes.
-            DatagramSocket socket = new DatagramSocket();
+            msocket = new MulticastSocket();
             byte[] buf = hostName.getBytes();
-            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, InetAddress.getByName("255.255.255.255"), DISCOVERYPORT);
-            socket.send(datagramPacket);
+            msocket.joinGroup(multicastGroup);
+            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, DISCOVERYPORT);
+            datagramPacket.setAddress(multicastGroup);
+            msocket.send(datagramPacket);
 
             // Receive response from naming server
             datagramPacket = new DatagramPacket(new byte[1024], 1024);
-            socket.receive(datagramPacket);
+            msocket.receive(datagramPacket);
 
             // Handle received data
             JSONParser parser = new JSONParser();
@@ -104,10 +110,11 @@ public class NetworkManager {
     public void listenForNewNodes() {
         System.out.println("Starting listenForNewNodes");
         try {
-            DatagramSocket datagramSocket = new DatagramSocket(DISCOVERYPORT);
+            msocket = new MulticastSocket(DISCOVERYPORT);
+            msocket.joinGroup(multicastGroup);
             while (true) {
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-                datagramSocket.receive(packet);
+                msocket.receive(packet);
                 Thread thread = new Thread(() -> {
                     String hostname = new String(packet.getData(), 0, packet.getLength());
                     int hash = Node.hashCode(hostname);
@@ -144,6 +151,7 @@ public class NetworkManager {
                 buf = jsonObject.toString().getBytes();
                 packet = new DatagramPacket(buf, buf.length, getNodeInfo(nextNode), SHUTDOWNPORT);
                 socket.send(packet);
+                msocket.leaveGroup(multicastGroup);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -152,6 +160,7 @@ public class NetworkManager {
         }
         // Remove this node from the list of nodes
         removeNode(hostName);
+        System.exit(0);
     }
 
 
