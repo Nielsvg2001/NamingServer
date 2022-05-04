@@ -12,14 +12,15 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
+    NetworkManager networkManager;
     private Path path_ReplicationFiles;
 
-
-    public FileTransfer() {
+    public FileTransfer(NetworkManager networkManager) {
+        this.networkManager = networkManager;
         try {
             Path path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
-        } catch (IOException e) {
+        }catch (IOException e){
             e.printStackTrace();
         }
         new Thread(this::fileListener).start();
@@ -43,7 +44,7 @@ public class FileTransfer {
             dataOutputStream.writeInt(fileContentBytes.length);
             dataOutputStream.write(fileContentBytes);
 
-            System.out.println("File is sent! : " + filename);
+            System.out.println("File is sent! : "+ filename);
         } catch (IOException error) {
             error.printStackTrace();
         }
@@ -58,32 +59,49 @@ public class FileTransfer {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {
-                        while (!socket.isClosed()) {
+                        while(!socket.isClosed()) {
                             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                             int fileNameLenght = dataInputStream.readInt();
                             if (fileNameLenght > 0) {
                                 byte[] fileNameBytes = new byte[fileNameLenght];
                                 dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
                                 String fileName = new String(fileNameBytes);
+
+                                // check if received file isn't already a local file of the node
+                                boolean isALocalFile = false;
+                                File path = new File("src/main/java/fileManager/Node/Local_files");
+                                File[] files = path.listFiles();
+                                assert files != null;
+                                for (File file: files) {
+                                    if (Node.hashCode(file.toString()) == Node.hashCode(fileName)) {
+                                        isALocalFile = true;
+                                    }
+                                }
+
                                 int fileContentLenght = dataInputStream.readInt();
                                 if (fileContentLenght > 0) {
-                                    byte[] fileContentBytes = new byte[fileContentLenght];
-                                    dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-
-                                    File fileToDownload = new File(path_ReplicationFiles + fileName);
-                                    FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
-                                    fileOutputStream.write(fileContentBytes);
-                                    fileOutputStream.close();
-                                    System.out.println(fileName);
-                                    System.out.println(Arrays.toString(fileContentBytes));
+                                    if (isALocalFile) {
+                                        File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
+                                        sendFile(networkManager.getPreviousIP(), fileToSend);
+                                    }
+                                    else {
+                                        byte[] fileContentBytes = new byte[fileContentLenght];
+                                        dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
+                                        File fileToDownload = new File(path_ReplicationFiles +fileName);
+                                        FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
+                                        fileOutputStream.write(fileContentBytes);
+                                        fileOutputStream.close();
+                                        System.out.println(fileName);
+                                        System.out.println(Arrays.toString(fileContentBytes));
+                                    }
                                 }
                             }
 
                             dataInputStream.close();
                             System.out.println("File received!");
                             socket.close();
-                        }
-                    } catch (IOException error) {
+                    }
+                } catch (IOException error) {
                         error.printStackTrace();
                     }
                 });

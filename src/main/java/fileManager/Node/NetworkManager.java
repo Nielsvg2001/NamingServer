@@ -74,6 +74,10 @@ public class NetworkManager {
         return response.getBody();
     }
 
+    public Inet4Address getPreviousIP() {
+        return getNodeInfo(previousNode);
+    }
+
     public int dicovery() {
         try {
             // Send hostname (+ ip) to naming server and other nodes.
@@ -157,7 +161,6 @@ public class NetworkManager {
         }
         // Remove this node from the list of nodes
         removeNode(hostName);
-        System.exit(0);
     }
 
 
