@@ -26,7 +26,7 @@ public class Discovery {
                 Thread thread = new Thread(() -> {
                     // Receiving new node
                     String hostname = new String(packet.getData(), 0, packet.getLength());
-
+                    System.out.println("pakcet received : " + hostname);
                     // Adding new node to the list
                     Naming.addNode(hostname, (Inet4Address) packet.getAddress());
 
@@ -40,6 +40,8 @@ public class Discovery {
                     jsonObject.put("numberOfNodes", Naming.numberOfNodes());
                     jsonObject.put("previousNode", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode);
                     jsonObject.put("nextNode", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode);
+
+                    System.out.println(jsonObject.toJSONString());
 
                     // Send numberOfNodes, previousNode and nextNode to the new node
                     byte[] data = jsonObject.toJSONString().getBytes();
