@@ -26,7 +26,7 @@ public class Discovery {
                 Thread thread = new Thread(() -> {
                     // Receiving new node
                     String hostname = new String(packet.getData(), 0, packet.getLength());
-
+                    System.out.println("pakcet received : " + hostname);
                     // Adding new node to the list
                     Naming.addNode(hostname, (Inet4Address) packet.getAddress());
 
