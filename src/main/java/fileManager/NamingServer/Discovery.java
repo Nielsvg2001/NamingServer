@@ -12,20 +12,10 @@ public class Discovery {
     public Discovery() {
     }
 
-    public static void start() {
+    public void start(String hostname, DatagramPacket packet) {
         System.out.println("Starting Discovery");
-        try {
-            MulticastSocket mSocket = new MulticastSocket(PORT);
-            String multicastAddress = "230.0.0.1";
-            InetAddress mGroup = InetAddress.getByName(multicastAddress);
-            mSocket.joinGroup(mGroup);
-            while (true) {
-
-                DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-                mSocket.receive(packet);
-                Thread thread = new Thread(() -> {
                     // Receiving new node
-                    String hostname = new String(packet.getData(), 0, packet.getLength());
+
                     System.out.println("pakcet received : " + hostname);
                     // Adding new node to the list
                     Naming.addNode(hostname, (Inet4Address) packet.getAddress());
@@ -52,11 +42,6 @@ public class Discovery {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                });
-                thread.start();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 }

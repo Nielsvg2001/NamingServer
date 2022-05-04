@@ -3,6 +3,7 @@ package fileManager.NamingServer;
 import org.springframework.stereotype.Service;
 
 import java.net.Inet4Address;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,7 +15,9 @@ public class Naming {
 
     public Naming() {
         nodesList = jsonHelper.readFromFile();
-        new Thread(Discovery::start).start();
+        Discovery discovery = new Discovery();
+        Listener listener = new Listener(discovery);
+        new Thread(listener::start).start();
         new Thread(Failure::start).start();
     }
 

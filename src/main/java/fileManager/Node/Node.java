@@ -29,6 +29,7 @@ public class Node {
 
     public Node() {
         // get own infromation
+        TCPListener();
         networkManager = new NetworkManager();
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
@@ -43,5 +44,43 @@ public class Node {
 
     public static int hashCode(String toHash) {
         return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
+    }
+
+    public void TCPListener()  {
+        try {
+            MulticastSocket msocket = new MulticastSocket(9999);
+            String multicastAddress = "230.0.0.1";
+            InetAddress multicastGroup = InetAddress.getByName(multicastAddress);
+            msocket.joinGroup(multicastGroup);
+            DatagramPacket packet = new DatagramPacket(new byte[256], 256);
+            while(!msocket.isClosed()) {
+                msocket.receive(packet);
+                Thread thread = new Thread(() -> {
+                    JSONParser parser = new JSONParser();
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = (JSONObject) parser.parse(new String(packet.getData(), 0, packet.getLength()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    assert jsonObject != null;
+                    String type = jsonObject.get("type").toString();
+                    switch (type) {
+                        case "discovery":
+                            networkManager.listenForNewNodes((String) jsonObject.get("hostname"));
+                            break;
+                        case "else":
+                            //code
+                            break;
+
+                    }
+
+                });
+                thread.start();
+            }
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }

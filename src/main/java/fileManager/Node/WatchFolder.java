@@ -72,12 +72,12 @@ public class WatchFolder {
                             fileTransfer.sendFile(ipaddress,file);
                             System.out.println("file send to ipaddress");
                         }
-                        System.out.println("end of watchevent file added");
                     }
 
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
 
                         System.out.println("A file has been deleted: " + fileName);
+                        Inet4Address ipaddress = fileManager.namingRequest(Node.hashCode(String.valueOf(fileName)));
                     }
                     /*
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {

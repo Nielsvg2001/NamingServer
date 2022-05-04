@@ -41,7 +41,6 @@ public class NetworkManager {
 
         // start services
         numNodesWhenEntered = dicovery();
-        new Thread(this::listenForNewNodes).start();
         new Thread(this::shutdownListener).start();
         new Thread(this::checkNeighbors).start();
         new Thread(this::failureCheckListener).start();
@@ -82,7 +81,11 @@ public class NetworkManager {
         try {
             // Send hostname (+ ip) to naming server and other nodes.
             msocket = new MulticastSocket();
-            byte[] buf = hostName.getBytes();
+            JSONObject obj = new JSONObject();
+            obj.put("type","discovery");
+            obj.put("hostname", hostName);
+            byte[] buf = obj.toJSONString().getBytes();
+            //byte[] buf = hostName.getBytes();
             msocket.joinGroup(multicastGroup);
             DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, DISCOVERYPORT);
             datagramPacket.setAddress(multicastGroup);
@@ -108,16 +111,9 @@ public class NetworkManager {
     }
 
     // listens and if it receives a packet, the node checks if it must update the previous or next node
-    public void listenForNewNodes() {
+    public void listenForNewNodes(String hostname) {
         System.out.println("Starting listenForNewNodes");
-        try {
-            msocket = new MulticastSocket(DISCOVERYPORT);
-            msocket.joinGroup(multicastGroup);
-            while (true) {
-                DatagramPacket packet = new DatagramPacket(new byte[256], 256);
-                msocket.receive(packet);
-                Thread thread = new Thread(() -> {
-                    String hostname = new String(packet.getData(), 0, packet.getLength());
+
                     int hash = Node.hashCode(hostname);
                     if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
                         nextNode = hash;
@@ -126,12 +122,8 @@ public class NetworkManager {
                         previousNode = hash;
                     }
                     System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
-                });
-                thread.start();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
     }
 
     public void shutdown() {
