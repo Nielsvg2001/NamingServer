@@ -41,6 +41,8 @@ public class Discovery {
                     jsonObject.put("previousNode", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode);
                     jsonObject.put("nextNode", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode);
 
+                    System.out.println(jsonObject.toJSONString());
+
                     // Send numberOfNodes, previousNode and nextNode to the new node
                     byte[] data = jsonObject.toJSONString().getBytes();
                     DatagramPacket reply = new DatagramPacket(data, data.length, packet.getAddress(), packet.getPort());
