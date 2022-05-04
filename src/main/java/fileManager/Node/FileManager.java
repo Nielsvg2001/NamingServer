@@ -17,7 +17,7 @@ public class FileManager {
 
     public void startUp(){
         System.out.println("startup files");
-        File path = new File("Local_files");
+        File path = new File("src/main/java/fileManager/Node/Local_files");
         File [] files = path.listFiles();
         System.out.println(Arrays.toString(files));
         if(files!= null) {
