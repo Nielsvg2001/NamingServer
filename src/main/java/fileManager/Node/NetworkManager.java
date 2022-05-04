@@ -68,7 +68,6 @@ public class NetworkManager {
     }
 
     public Inet4Address getNodeInfo(int id) {
-        //System.out.println("getNodeInfo");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
                 .asObject(Inet4Address.class);
@@ -178,8 +177,6 @@ public class NetworkManager {
                             // Handle received data
                             JSONParser parser = new JSONParser();
                             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
-
-                            System.out.println("In shudownListener: Received " + jsonObject.toJSONString());
 
                             // update previousNode
                             if (jsonObject.containsKey("newPreviousNode")) {

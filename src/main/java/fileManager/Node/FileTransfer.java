@@ -5,15 +5,24 @@ import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
     NetworkManager networkManager;
+    private Path path_ReplicationFiles;
 
     public FileTransfer(NetworkManager networkManager) {
         this.networkManager = networkManager;
+        try {
+            Path path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
+            Files.createDirectories(path_ReplicationFiles);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         new Thread(this::fileListener).start();
     }
 
@@ -75,7 +84,7 @@ public class FileTransfer {
                                     if (fileContentLenght > 0) {
                                         byte[] fileContentBytes = new byte[fileContentLenght];
                                         dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-                                        File fileToDownload = new File("Replicated_files/" +fileName);
+                                        File fileToDownload = new File(path_ReplicationFiles +fileName);
                                         FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                         fileOutputStream.write(fileContentBytes);
                                         fileOutputStream.close();
