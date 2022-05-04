@@ -24,18 +24,18 @@ public class FileManager {
             for (File file : files) {
                 if (file.isFile()) { //this line weeds out other directories/folders
                     System.out.println(file);
-                    System.out.println(namingRequest(file.getName()));
-                    fileTransfer.sendFile(namingRequest(file.getName()),file);
+                    System.out.println(namingRequest(Node.hashCode(file.getName())));
+                    fileTransfer.sendFile(namingRequest(Node.hashCode(file.getName())),file);
                 }
             }
         }
     }
 
 
-    public Inet4Address namingRequest(String fileName) {
+    public Inet4Address namingRequest(int hash) {
         System.out.println("request");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NetworkManager.NAMINGSERVERADDRESS + ":" + NetworkManager.NAMINGPORT + "/namingRequest")
-                .queryString("fileName", fileName)
+                .queryString("hash", hash)
                         .asObject(Inet4Address.class);
         return response.getBody();
     }

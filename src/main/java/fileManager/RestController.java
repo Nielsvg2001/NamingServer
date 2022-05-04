@@ -34,8 +34,8 @@ public class RestController {
     }
 
     @GetMapping(value = "/namingRequest")
-    public Inet4Address NamingRequest(@RequestParam String fileName) {
-        return Naming.getRequest(fileName);
+    public Inet4Address NamingRequest(@RequestParam int hash) {
+        return Naming.getRequest(hash);
     }
 
     @GetMapping(value = "/getNodeInfo")

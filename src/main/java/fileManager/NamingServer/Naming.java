@@ -19,12 +19,11 @@ public class Naming {
     }
 
     /**
-     * @param fileName name of the file
+     * @param hash of name of the file
      * @return ipadres of the node that has the file
      * Gives the ipadres of the node that has the file.
      */
-    public static Inet4Address getRequest(String fileName) {
-        int hash = hashCode(fileName);
+    public static Inet4Address getRequest(int hash) {
         return checkID(hash);
     }
 

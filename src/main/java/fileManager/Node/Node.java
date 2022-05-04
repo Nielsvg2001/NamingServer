@@ -20,7 +20,7 @@ public class Node {
         root.setLevel(ch.qos.logback.classic.Level.OFF);
 
         Node cl = new Node();
-        cl.fileManager.namingRequest("testfile name.txt");;
+        cl.fileManager.namingRequest(hashCode("testfile name.txt"));
         //Thread.sleep(120000);
         //cl.shutdown();
 
