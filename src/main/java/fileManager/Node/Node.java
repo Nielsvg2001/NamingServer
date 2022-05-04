@@ -69,6 +69,8 @@ public class Node {
                         case "discovery":
                             networkManager.listenForNewNodes((String) jsonObject.get("hostname"));
                             break;
+                        default:
+                            System.out.println("error, foute JSON");
                     }
 
                 });
@@ -103,6 +105,8 @@ public class Node {
                         case "shutdown":
                             networkManager.shutdownListener(jsonObject);
                             break;
+                        default:
+                            System.out.println("error, foute JSON");
 
                     }
                 });
