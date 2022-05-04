@@ -30,7 +30,6 @@ public class Node {
         // get own infromation
         networkManager = new NetworkManager();
         fileManager = new FileManager();
-
     }
 
     public static int hashCode(String toHash) {
