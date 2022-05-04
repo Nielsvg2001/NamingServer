@@ -67,21 +67,24 @@ public class FileTransfer {
                                 dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
                                 String fileName = new String(fileNameBytes);
 
+                                // check if received file isn't already a local file of the node
                                 boolean isALocalFile = false;
                                 File path = new File("Local_files");
                                 File[] files = path.listFiles();
+                                assert files != null;
                                 for (File file: files) {
                                     if (Node.hashCode(file.toString()) == Node.hashCode(fileName)) {
                                         isALocalFile = true;
                                     }
                                 }
 
-                                if (isALocalFile) {
-                                    //sendFile(networkManager.getPreviousIP(), );
-                                }
-                                else {
-                                    int fileContentLenght = dataInputStream.readInt();
-                                    if (fileContentLenght > 0) {
+                                int fileContentLenght = dataInputStream.readInt();
+                                if (fileContentLenght > 0) {
+                                    if (isALocalFile) {
+                                        File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
+                                        sendFile(networkManager.getPreviousIP(), fileToSend);
+                                    }
+                                    else {
                                         byte[] fileContentBytes = new byte[fileContentLenght];
                                         dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
                                         File fileToDownload = new File(path_ReplicationFiles +fileName);
@@ -97,8 +100,8 @@ public class FileTransfer {
                             dataInputStream.close();
                             System.out.println("File received!");
                             socket.close();
-                        }
-                    } catch (IOException error) {
+                    }
+                } catch (IOException error) {
                         error.printStackTrace();
                     }
                 });
