@@ -87,7 +87,7 @@ public class FileTransfer {
                                     if (isALocalFile) {
                                         System.out.println("send file to previous ip");
                                         File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
-                                        sendFile(networkManager.getPreviousIP(), fileToSend);
+                                        //sendFile(networkManager.getPreviousIP(), fileToSend);
                                     }
                                     else {
                                         System.out.println("recieve file");
