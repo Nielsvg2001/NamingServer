@@ -24,7 +24,6 @@ public class NetworkManager {
     public static int SHUTDOWNPORT = 9998;
     public static int FAILUREPORT = 9997;
     public static int CHECKPORT = 9987;
-    public static int FILEPORT = 9996;
     public static String NAMINGSERVERADDRESS = "localhost";
     private final String multicastAddress = "230.0.0.1";
     private MulticastSocket msocket;
@@ -46,7 +45,6 @@ public class NetworkManager {
         new Thread(this::shutdownListener).start();
         new Thread(this::checkNeighbors).start();
         new Thread(this::failureCheckListener).start();
-        new Thread(this::fileListener).start();
 
         System.out.println("I'm node " + hostName + "(" + currentID + ")" + " and my ip is " + ipAddress);
         System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
@@ -69,7 +67,7 @@ public class NetworkManager {
                 .asString();
     }
 
-    public Inet4Address getNodeInfo(int id) {
+    public static Inet4Address getNodeInfo(int id) {
         //System.out.println("getNodeInfo");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
@@ -277,72 +275,6 @@ public class NetworkManager {
 
         } catch (SocketException e) {
             e.printStackTrace();
-        }
-    }
-
-    // sent file (filePath) to node (ID)
-    public void sentFile(int ID, String filePath) {
-        System.out.println("Sending file");
-        File fileToSend = new File(filePath);
-
-        try {
-            Socket socket = new Socket(getNodeInfo(ID), FILEPORT);
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            String filename = fileToSend.getName();
-            byte[] fileNameBytes = filename.getBytes();
-
-            byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
-
-            dataOutputStream.writeInt(fileNameBytes.length);
-            dataOutputStream.write(fileNameBytes);
-
-            dataOutputStream.writeInt(fileContentBytes.length);
-            dataOutputStream.write(fileContentBytes);
-
-            System.out.println("File is sent!");
-        } catch (IOException error) {
-            error.printStackTrace();
-        }
-    }
-
-    // filepath moet nog aangepast worden afhankelijk van waar we files opslaan
-    public void fileListener() {
-        System.out.println("Start fileListener");
-        try {
-            ServerSocket serverSocket = new ServerSocket(FILEPORT);
-            while (true) {
-                Socket socket = serverSocket.accept();
-                Thread thread = new Thread(() -> {
-                    try {
-                        while(!socket.isClosed()) {
-                            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                            int fileNameLenght = dataInputStream.readInt();
-                            if (fileNameLenght > 0) {
-                                byte[] fileNameBytes = new byte[fileNameLenght];
-                                dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
-                                String fileName = new String(fileNameBytes);
-                                int fileContentLenght = dataInputStream.readInt();
-                                if (fileContentLenght > 0) {
-                                    byte[] fileContentBytes = new byte[fileContentLenght];
-                                    dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-                                    File fileToDownload = new File(fileName);
-                                    FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
-                                    fileOutputStream.write(fileContentBytes);
-                                    fileOutputStream.close();
-                                }
-                            }
-                            dataInputStream.close();
-                            System.out.println("File received!");
-                            socket.close();
-                        }
-                    } catch (IOException error) {
-                        error.printStackTrace();
-                    }
-                });
-                thread.start();
-            }
-        } catch (IOException error) {
-            error.printStackTrace();
         }
     }
 }
