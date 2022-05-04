@@ -62,29 +62,35 @@ public class FileTransfer {
                         while(!socket.isClosed()) {
                             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                             int fileNameLenght = dataInputStream.readInt();
+                            System.out.println("filenamelength : "+ fileNameLenght);
                             if (fileNameLenght > 0) {
                                 byte[] fileNameBytes = new byte[fileNameLenght];
                                 dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
                                 String fileName = new String(fileNameBytes);
+                                System.out.println("filename : "+ fileName);
 
                                 // check if received file isn't already a local file of the node
                                 boolean isALocalFile = false;
-                                File path = new File("src/main/java/fileManager/Node/Local_files");
+                                File path = new File("NamingServer/src/main/java/fileManager/Node/Local_files");
                                 File[] files = path.listFiles();
                                 assert files != null;
                                 for (File file: files) {
-                                    if (Node.hashCode(file.toString()) == Node.hashCode(fileName)) {
+                                    if (Node.hashCode(file.getName()) == Node.hashCode(fileName)) {
                                         isALocalFile = true;
+                                        System.out.println("is local file");
+                                        break;
                                     }
                                 }
 
                                 int fileContentLenght = dataInputStream.readInt();
                                 if (fileContentLenght > 0) {
                                     if (isALocalFile) {
+                                        System.out.println("send file to previous ip");
                                         File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
                                         sendFile(networkManager.getPreviousIP(), fileToSend);
                                     }
                                     else {
+                                        System.out.println("recieve file");
                                         byte[] fileContentBytes = new byte[fileContentLenght];
                                         dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
                                         File fileToDownload = new File(path_ReplicationFiles +fileName);

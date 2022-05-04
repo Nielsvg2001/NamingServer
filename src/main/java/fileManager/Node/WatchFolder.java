@@ -26,7 +26,7 @@ public class WatchFolder {
             WatchService watchService = FileSystems.getDefault().newWatchService();
 
             // STEP2: Get the path of the directory which you want to monitor.
-            Path directory = Path.of("src/main/java/fileManager/Node/Local_files/");
+            Path directory = Path.of("/NamingServer/src/main/java/fileManager/Node/Local_files/");
 
             // STEP3: Register the directory with the watch service
             WatchKey watchKey = directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
@@ -53,6 +53,7 @@ public class WatchFolder {
                         System.out.println(file.getAbsolutePath());
                         System.out.println(file);
                         //check replicated node of file
+                        System.out.println("hash = " + Node.hashCode(String.valueOf(fileName)));
                         Inet4Address ipaddress = fileManager.namingRequest(Node.hashCode(String.valueOf(fileName)));
                         System.out.println("ip = " + ipaddress);
                         InetAddress localIP = InetAddress.getLocalHost();
