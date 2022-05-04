@@ -67,7 +67,7 @@ public class NetworkManager {
                 .asString();
     }
 
-    public static Inet4Address getNodeInfo(int id) {
+    public Inet4Address getNodeInfo(int id) {
         //System.out.println("getNodeInfo");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
