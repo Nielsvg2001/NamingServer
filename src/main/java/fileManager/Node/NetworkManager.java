@@ -137,6 +137,8 @@ public class NetworkManager {
                 jsonObject.put("newNextNode", nextNode);
                 byte[] buf = jsonObject.toString().getBytes();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 7777);
+                System.out.println("ppp" + packet);
+                System.out.println("jsss" + jsonObject);
                 socket.send(packet);
 
                 // Sending previousNode to nextNode
@@ -183,6 +185,9 @@ public class NetworkManager {
                 try {
                     socket.setSoTimeout(100);
                     DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 7777);
+                    System.out.println("prev" + previousNode);
+                    System.out.println("js" + jsonObject);
+                    System.out.println("pak" + packet);
                     socket.send(packet);
                     packet = new DatagramPacket(new byte[256], 256);
                     socket.receive(packet);
