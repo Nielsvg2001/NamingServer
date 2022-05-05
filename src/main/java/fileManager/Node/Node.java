@@ -41,6 +41,7 @@ public class Node {
                 e.printStackTrace();
             }
         }
+        new Thread(networkManager::checkNeighbors).start();
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
 

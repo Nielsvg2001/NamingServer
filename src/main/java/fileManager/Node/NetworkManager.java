@@ -41,7 +41,7 @@ public class NetworkManager {
 
         // start services
         numNodesWhenEntered = dicovery();
-        new Thread(this::checkNeighbors).start();
+
 
         System.out.println("I'm node " + hostName + "(" + currentID + ")" + " and my ip is " + ipAddress);
         //System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
@@ -88,6 +88,7 @@ public class NetworkManager {
             DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, 9999);
             datagramPacket.setAddress(multicastGroup);
             msocket.send(datagramPacket);
+            System.out.println("send discovery multicast");
 
 
         } catch (IOException e) {
@@ -110,6 +111,7 @@ public class NetworkManager {
             System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
             System.out.println("there are " + Integer.parseInt(jsonObject.get("numberOfNodes").toString()) + "in the network");
             Node.started = true;
+            System.out.println("started");
         } catch (Exception e) {
             e.printStackTrace();
         }
