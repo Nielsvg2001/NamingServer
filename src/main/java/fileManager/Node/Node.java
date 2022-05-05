@@ -29,9 +29,10 @@ public class Node {
 
     public Node() {
         // get own infromation
+        networkManager = new NetworkManager();
         new Thread(this::UDPListener).start();
         new Thread(this::UDPListener2).start();
-        networkManager = new NetworkManager();
+
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
 
