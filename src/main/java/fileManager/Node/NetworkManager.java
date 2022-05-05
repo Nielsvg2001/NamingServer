@@ -80,7 +80,7 @@ public class NetworkManager {
             // Send hostname (+ ip) to naming server and other nodes.
             msocket = new MulticastSocket();
             JSONObject obj = new JSONObject();
-            obj.put("type","discovery");
+            obj.put("type", "discovery");
             obj.put("hostname", hostName);
             byte[] buf = obj.toJSONString().getBytes();
             //byte[] buf = hostName.getBytes();
@@ -88,7 +88,6 @@ public class NetworkManager {
             DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, 9999);
             datagramPacket.setAddress(multicastGroup);
             msocket.send(datagramPacket);
-
 
 
         } catch (IOException e) {
@@ -101,18 +100,19 @@ public class NetworkManager {
     public void discoveryResponseListener(DatagramPacket datagramPacket) {
         System.out.println("discoveryResponseListener");
 
-try {
-    // Handle received data
-    JSONParser parser = new JSONParser();
-    JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
-    NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
-    previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
-    nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
-    System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
-    System.out.println("there are " + Integer.parseInt(jsonObject.get("numberOfNodes").toString())+ "in the network");
-}catch (Exception e){
-    e.printStackTrace();
-}
+        try {
+            // Handle received data
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+            NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
+            previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
+            nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
+            System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
+            System.out.println("there are " + Integer.parseInt(jsonObject.get("numberOfNodes").toString()) + "in the network");
+            Node.started = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -120,14 +120,14 @@ try {
     public void listenForNewNodes(String hostname) {
         System.out.println("Starting listenForNewNodes");
 
-                    int hash = Node.hashCode(hostname);
-                    if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
-                        nextNode = hash;
-                    }
-                    if ((hash > previousNode && hash < currentID) || (previousNode >= currentID && hash < currentID) || (previousNode >= currentID && hash > previousNode)) {
-                        previousNode = hash;
-                    }
-                    System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
+        int hash = Node.hashCode(hostname);
+        if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
+            nextNode = hash;
+        }
+        if ((hash > previousNode && hash < currentID) || (previousNode >= currentID && hash < currentID) || (previousNode >= currentID && hash > previousNode)) {
+            previousNode = hash;
+        }
+        System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
 
 
     }
@@ -141,7 +141,7 @@ try {
                 System.out.println(nextNode);
                 // Sending nextNode to previousNode
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("type","shutdown");
+                jsonObject.put("type", "shutdown");
                 jsonObject.put("newNextNode", nextNode);
                 byte[] buf = jsonObject.toString().getBytes();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 7777);
@@ -152,7 +152,7 @@ try {
 
                 // Sending previousNode to nextNode
                 jsonObject = new JSONObject();
-                jsonObject.put("type","shutdown");
+                jsonObject.put("type", "shutdown");
                 jsonObject.put("newPreviousNode", previousNode);
                 buf = jsonObject.toString().getBytes();
                 packet = new DatagramPacket(buf, buf.length, getNodeInfo(nextNode), 7777);
@@ -171,16 +171,16 @@ try {
 
     public void shutdownListener(JSONObject jsonObject) {
         System.out.println("Starting Shutdown Listener");
-                            // update previousNode
-                            if (jsonObject.containsKey("newPreviousNode")) {
-                                previousNode = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
-                            }
-                            // update nextNode
-                            if (jsonObject.containsKey("newNextNode")) {
-                                nextNode = Integer.parseInt(jsonObject.get("newNextNode").toString());
-                            }
-                            System.out.println("In shutdonwListener: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
-                        }
+        // update previousNode
+        if (jsonObject.containsKey("newPreviousNode")) {
+            previousNode = Integer.parseInt(jsonObject.get("newPreviousNode").toString());
+        }
+        // update nextNode
+        if (jsonObject.containsKey("newNextNode")) {
+            nextNode = Integer.parseInt(jsonObject.get("newNextNode").toString());
+        }
+        System.out.println("In shutdonwListener: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
+    }
 
     public void checkNeighbors() {
         System.out.println("Checking for failure...");
@@ -188,7 +188,7 @@ try {
         try {
             DatagramSocket socket = new DatagramSocket();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type","checkNeighbors");
+            jsonObject.put("type", "checkNeighbors");
             byte[] buf = jsonObject.toJSONString().getBytes();
             while (true) {
                 try {
@@ -222,16 +222,15 @@ try {
 
 
     public void failureCheckListener(DatagramPacket datagramPacket, DatagramSocket datagramSocket) {
-try {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("type","responseOK");
-    byte[] buf = jsonObject.toJSONString().getBytes();
-    DatagramPacket reply = new DatagramPacket(buf, buf.length, datagramPacket.getAddress(), datagramPacket.getPort());
-    datagramSocket.send(reply);
-}
-catch (Exception e){
-    e.printStackTrace();
-}
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", "responseOK");
+            byte[] buf = jsonObject.toJSONString().getBytes();
+            DatagramPacket reply = new DatagramPacket(buf, buf.length, datagramPacket.getAddress(), datagramPacket.getPort());
+            datagramSocket.send(reply);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -15,6 +15,7 @@ public class Node {
     public NetworkManager networkManager;
     public FileManager fileManager;
     public WatchFolder watchfolder;
+    public static boolean started = false;
 
     public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
@@ -67,17 +68,18 @@ public class Node {
                     }
                     assert jsonObject != null;
                     String type = jsonObject.get("type").toString();
-                    switch (type) {
-                        case "discovery":
-                            networkManager.listenForNewNodes((String) jsonObject.get("hostname"));
-                            break;
-                        case "responseDiscovery":
-                            System.out.println("response discovery in node udplistener");
-                            networkManager.discoveryResponseListener(packet);
-                            break;
-                        default:
-                            System.out.println("error, foute JSON");
-                    }
+                        switch (type) {
+                            case "discovery":
+                                networkManager.listenForNewNodes((String) jsonObject.get("hostname"));
+                                break;
+                            case "responseDiscovery":
+                                System.out.println("response discovery in node udplistener");
+                                networkManager.discoveryResponseListener(packet);
+                                break;
+                            default:
+                                System.out.println("error, foute JSON");
+                        }
+
 
                 });
                 thread.start();
@@ -104,15 +106,17 @@ public class Node {
                     }
                     assert jsonObject != null;
                     String type = jsonObject.get("type").toString();
-                    switch (type) {
-                        case "checkNeighbors":
-                            networkManager.failureCheckListener(datagramPacket, datagramSocket);
-                            break;
-                        case "shutdown":
-                            networkManager.shutdownListener(jsonObject);
-                            break;
-                        default:
-                            System.out.println("error, foute JSON");
+                    if (started) {
+                        switch (type) {
+                            case "checkNeighbors":
+                                networkManager.failureCheckListener(datagramPacket, datagramSocket);
+                                break;
+                            case "shutdown":
+                                networkManager.shutdownListener(jsonObject);
+                                break;
+                            default:
+                                System.out.println("error, foute JSON");
+                        }
                     }
                 });
                 thread.start();
