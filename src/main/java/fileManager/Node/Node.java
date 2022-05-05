@@ -101,6 +101,8 @@ public class Node {
                     String type = jsonObject.get("type").toString();
                     switch (type) {
                         case "checkNeighbors":
+                            System.out.println("checkneighbors");
+                            System.out.println(datagramPacket.toString() + datagramSocket.toString());
                             networkManager.failureCheckListener(datagramPacket, datagramSocket);
                             break;
                         case "shutdown":
@@ -108,13 +110,10 @@ public class Node {
                             break;
                         default:
                             System.out.println("error, foute JSON");
-
                     }
                 });
                 thread.start();
-
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
