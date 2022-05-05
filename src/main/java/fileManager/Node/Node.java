@@ -102,9 +102,6 @@ public class Node {
                     String type = jsonObject.get("type").toString();
                     switch (type) {
                         case "checkNeighbors":
-                            System.out.println("checkneighbors");
-                            System.out.println(datagramPacket.toString() + datagramSocket.toString());
-                            System.out.println(networkManager);
                             networkManager.failureCheckListener(datagramPacket, datagramSocket);
                             break;
                         case "shutdown":

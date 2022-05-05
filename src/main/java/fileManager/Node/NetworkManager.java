@@ -129,6 +129,8 @@ public class NetworkManager {
         try {
             DatagramSocket socket = new DatagramSocket();
             try {
+                System.out.println(previousNode);
+                System.out.println(nextNode);
                 // Sending nextNode to previousNode
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("type","shutdown");

@@ -44,16 +44,18 @@ public class Failure {
                         try {
                             // Sending nextNode to previousNode
                             JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("type","shutdown");
                             jsonObject.put("newNextNode", nextNode);
                             byte[] buf = jsonObject.toString().getBytes();
-                            DatagramPacket packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(previousNode), SHUTDOWNPORT);
+                            DatagramPacket packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(previousNode), 7777);
                             socket.send(packet);
 
                             // Sending previousNode to nextNode
                             jsonObject = new JSONObject();
+                            jsonObject.put("type","shutdown");
                             jsonObject.put("newPreviousNode", previousNode);
                             buf = jsonObject.toString().getBytes();
-                            packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(nextNode), SHUTDOWNPORT);
+                            packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(nextNode), 7777);
                             socket.send(packet);
                         } catch (IOException e) {
                             e.printStackTrace();
