@@ -34,6 +34,13 @@ public class Node {
         new Thread(this::UDPListener).start();
         new Thread(this::UDPListener2).start();
 
+        while(!started) {
+            try {
+                Thread.sleep(1);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
 
