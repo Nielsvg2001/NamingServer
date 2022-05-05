@@ -44,7 +44,7 @@ public class NetworkManager {
         new Thread(this::checkNeighbors).start();
 
         System.out.println("I'm node " + hostName + "(" + currentID + ")" + " and my ip is " + ipAddress);
-        System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
+        //System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
     }
 
     public void addNode(InetAddress ipaddr) {
