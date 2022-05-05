@@ -58,6 +58,7 @@ public class Node {
     }
 
     public void UDPListener() {
+        System.out.println("start UDDPLISTERNER");
         try {
             MulticastSocket msocket = new MulticastSocket(9999);
             String multicastAddress = "230.0.0.1";
@@ -65,7 +66,9 @@ public class Node {
             msocket.joinGroup(multicastGroup);
             DatagramPacket packet = new DatagramPacket(new byte[256], 256);
             while (!msocket.isClosed()) {
+                System.out.println("wainting on pakcet");
                 msocket.receive(packet);
+                System.out.println("recieved packet msocket");
                 Thread thread = new Thread(() -> {
                     JSONParser parser = new JSONParser();
                     JSONObject jsonObject = null;
