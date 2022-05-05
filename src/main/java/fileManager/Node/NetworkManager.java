@@ -139,6 +139,7 @@ public class NetworkManager {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), 7777);
                 System.out.println("ppp" + packet);
                 System.out.println("jsss" + jsonObject);
+                System.out.println("socket" + socket);
                 socket.send(packet);
 
                 // Sending previousNode to nextNode
