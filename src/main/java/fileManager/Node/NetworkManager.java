@@ -89,25 +89,32 @@ public class NetworkManager {
             datagramPacket.setAddress(multicastGroup);
             msocket.send(datagramPacket);
 
-            // Receive response from naming server
-            datagramPacket = new DatagramPacket(new byte[1024], 1024);
-            msocket.receive(datagramPacket);
-            msocket.close();
 
-            // Handle received data
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
-            NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
-            previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
-            nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
-            System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
-            return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
 
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return -1;
     }
+
+
+    public void discoveryResponseListener(DatagramPacket datagramPacket) {
+        System.out.println("discoveryResponseListener");
+
+try {
+    // Handle received data
+    JSONParser parser = new JSONParser();
+    JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
+    NAMINGSERVERADDRESS = datagramPacket.getAddress().getHostAddress();
+    previousNode = Integer.parseInt(jsonObject.get("previousNode").toString());
+    nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
+    System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
+    System.out.println("there are " + Integer.parseInt(jsonObject.get("numberOfNodes").toString())+ "in the network");
+}catch (Exception e){
+    e.printStackTrace();
+}
+    }
+
 
     // listens and if it receives a packet, the node checks if it must update the previous or next node
     public void listenForNewNodes(String hostname) {

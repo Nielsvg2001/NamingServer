@@ -71,6 +71,10 @@ public class Node {
                         case "discovery":
                             networkManager.listenForNewNodes((String) jsonObject.get("hostname"));
                             break;
+                        case "responseDiscovery":
+                            System.out.println("response discovery in node udplistener");
+                            networkManager.discoveryResponseListener(packet);
+                            break;
                         default:
                             System.out.println("error, foute JSON");
                     }

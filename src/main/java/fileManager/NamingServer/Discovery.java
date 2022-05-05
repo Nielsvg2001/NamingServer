@@ -27,6 +27,7 @@ public class Discovery {
 
                     // Structuring response
                     JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("type","responseDiscovery");
                     jsonObject.put("numberOfNodes", Naming.numberOfNodes());
                     jsonObject.put("previousNode", (previousNode == null) ? Naming.getNodesList().lastKey() : previousNode);
                     jsonObject.put("nextNode", (nextNode == null) ? Naming.getNodesList().firstKey() : nextNode);
