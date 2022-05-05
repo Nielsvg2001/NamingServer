@@ -36,9 +36,9 @@ public class Discovery {
 
                     // Send numberOfNodes, previousNode and nextNode to the new node
                     byte[] data = jsonObject.toJSONString().getBytes();
-                    DatagramPacket reply = new DatagramPacket(data, data.length, packet.getAddress(), packet.getPort());
+                    DatagramPacket reply = new DatagramPacket(data, data.length, packet.getAddress(), 9999);
                     try {
-                        DatagramSocket datagramSocket = new DatagramSocket(packet.getPort());
+                        DatagramSocket datagramSocket = new DatagramSocket(9999);
                         datagramSocket.send(reply);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
