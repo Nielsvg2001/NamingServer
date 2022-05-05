@@ -103,6 +103,7 @@ public class Node {
                         case "checkNeighbors":
                             System.out.println("checkneighbors");
                             System.out.println(datagramPacket.toString() + datagramSocket.toString());
+                            System.out.println(networkManager);
                             networkManager.failureCheckListener(datagramPacket, datagramSocket);
                             break;
                         case "shutdown":
