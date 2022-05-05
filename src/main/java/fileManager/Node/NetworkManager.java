@@ -85,13 +85,14 @@ public class NetworkManager {
             byte[] buf = obj.toJSONString().getBytes();
             //byte[] buf = hostName.getBytes();
             msocket.joinGroup(multicastGroup);
-            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, DISCOVERYPORT);
+            DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, 9999);
             datagramPacket.setAddress(multicastGroup);
             msocket.send(datagramPacket);
 
             // Receive response from naming server
             datagramPacket = new DatagramPacket(new byte[1024], 1024);
             msocket.receive(datagramPacket);
+            msocket.close();
 
             // Handle received data
             JSONParser parser = new JSONParser();
