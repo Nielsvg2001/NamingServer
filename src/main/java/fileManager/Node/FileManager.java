@@ -1,20 +1,13 @@
 package fileManager.Node;
 
-import jdk.jshell.spi.ExecutionControlProvider;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
 import java.net.Inet4Address;
-import java.util.Arrays;
 
 public class FileManager {
     FileTransfer fileTransfer;
@@ -25,6 +18,7 @@ public class FileManager {
         fileTransfer = new FileTransfer(networkManager);
         this.networkManager = networkManager;
         startUp();
+        new Thread(this::shutdownListener).start();
     }
 
     public void startUp(){
