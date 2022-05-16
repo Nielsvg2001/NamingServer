@@ -14,6 +14,7 @@ public class Node {
 
     public NetworkManager networkManager;
     public FileManager fileManager;
+    public WatchFolder watchfolder;
 
     public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
@@ -30,6 +31,8 @@ public class Node {
         // get own infromation
         networkManager = new NetworkManager();
         fileManager = new FileManager(networkManager);
+        watchfolder = new WatchFolder(fileManager);
+
     }
 
     public void shutdown() {
