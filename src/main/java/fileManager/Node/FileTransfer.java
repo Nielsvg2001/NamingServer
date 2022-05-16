@@ -12,11 +12,14 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
+    private LogHandler logHandler;
     NetworkManager networkManager;
     private Path path_ReplicationFiles;
 
     public FileTransfer(NetworkManager networkManager) {
         this.networkManager = networkManager;
+        this.logHandler = new LogHandler();
+
         try {
             Path path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
@@ -38,6 +41,11 @@ public class FileTransfer {
 
             byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
 
+            byte[] hostname = Inet4Address.getLocalHost().getHostName().getBytes();
+
+            dataOutputStream.writeInt(hostname.length);
+            dataOutputStream.write(hostname);
+
             dataOutputStream.writeInt(fileNameBytes.length);
             dataOutputStream.write(fileNameBytes);
 
@@ -58,40 +66,38 @@ public class FileTransfer {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {
-                        DataInputStream dataInputStream = null;
                         while (!socket.isClosed()) {
-                            dataInputStream = new DataInputStream(socket.getInputStream());
-                            int fileNameLenght = dataInputStream.readInt();
-                            System.out.println("filenamelength : " + fileNameLenght);
-                            if (fileNameLenght > 0) {
-                                byte[] fileNameBytes = new byte[fileNameLenght];
-                                dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
-                                String fileName = new String(fileNameBytes);
-                                System.out.println("filename : " + fileName);
-                                int fileContentLenght = dataInputStream.readInt();
-                                System.out.println("filecontentlength: " + fileContentLenght);
-                                System.out.println("datainputstream: " + dataInputStream);
-                                if (fileContentLenght > 0) {
-                                    File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
-                                    // sendFile niet zomaar doen, als bij test.txt in begin blijven deze berichten ronddraaien omdat iedereeen dit als local file heeft en dit verder doorstuurd
-                                    //sendFile(networkManager.getPreviousIP(), fileToSend);
+                            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                            int hostnameLenght = dataInputStream.readInt();
+                            if (hostnameLenght > 0) {
+                                byte[] hostnameBytes = new byte[hostnameLenght];
+                                dataInputStream.readFully(hostnameBytes, 0, hostnameBytes.length);
+                                String hostname = new String(hostnameBytes);
 
-                                    System.out.println("recieve file");
-                                    byte[] fileContentBytes = new byte[fileContentLenght];
-                                    dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-                                    File fileToDownload = new File(path_ReplicationFiles + fileName);
-                                    FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
-                                    fileOutputStream.write(fileContentBytes);
-                                    fileOutputStream.close();
-                                    System.out.println(fileName);
-                                    System.out.println(Arrays.toString(fileContentBytes));
+                                int fileNameLenght = dataInputStream.readInt();
+                                if (fileNameLenght > 0) {
+                                    byte[] fileNameBytes = new byte[fileNameLenght];
+                                    dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
+                                    String fileName = new String(fileNameBytes);
+
+                                    int fileContentLenght = dataInputStream.readInt();
+                                    if (fileContentLenght > 0) {
+                                        byte[] fileContentBytes = new byte[fileContentLenght];
+                                        dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
+                                        File fileToDownload = new File(path_ReplicationFiles + fileName);
+                                        FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
+                                        fileOutputStream.write(fileContentBytes);
+                                        fileOutputStream.close();
+                                        logHandler.addFileToLog(fileName, Node.hashCode(hostname), "replicated");
+                                        System.out.println(fileName);
+                                        System.out.println(Arrays.toString(fileContentBytes));
+                                    }
                                 }
                             }
+                            dataInputStream.close();
+                            System.out.println("File received!");
+                            socket.close();
                         }
-
-                        dataInputStream.close();
-                        System.out.println("File received!");
-                        socket.close();
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
                     } catch (IOException e) {

@@ -222,13 +222,13 @@ public class NetworkManager {
                 } catch (SocketTimeoutException e) {
                     System.out.println("Teller is " + teller);
                     teller++;
-                    if (teller > 3) {
+                    if (teller > 10) {
                         failure(previousNode);
                         System.out.println("In checkNeighbors: Aanroepen failure");
                         Thread.sleep(2000);
                     }
                 }
-                Thread.sleep(1000);
+                Thread.sleep(4000);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
