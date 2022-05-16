@@ -26,7 +26,7 @@ public class FileTransfer {
         new Thread(this::fileListener).start();
     }
 
-    // sent file (filePath) to node (ID)
+    // sent file (fileToSend) to node with ip (ip)
     public void sendFile(Inet4Address ip, File fileToSend) {
         System.out.println("Sending file");
 
@@ -58,65 +58,50 @@ public class FileTransfer {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {
-                        while(!socket.isClosed()) {
-                            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                        DataInputStream dataInputStream = null;
+                        while (!socket.isClosed()) {
+                            dataInputStream = new DataInputStream(socket.getInputStream());
                             int fileNameLenght = dataInputStream.readInt();
-                            System.out.println("filenamelength : "+ fileNameLenght);
+                            System.out.println("filenamelength : " + fileNameLenght);
                             if (fileNameLenght > 0) {
                                 byte[] fileNameBytes = new byte[fileNameLenght];
                                 dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
                                 String fileName = new String(fileNameBytes);
-                                System.out.println("filename : "+ fileName);
-
-                                // check if received file isn't already a local file of the node
-                                boolean isALocalFile = false;
-                                File path = new File("src/main/java/fileManager/Node/Local_files");
-                                File[] files = path.listFiles();
-                                assert files != null;
-                                for (File file: files) {
-                                    if (Node.hashCode(file.getName()) == Node.hashCode(fileName)) {
-                                        isALocalFile = true;
-                                        System.out.println("is local file");
-                                        break;
-                                    }
-                                }
-                                System.out.println("verder");
+                                System.out.println("filename : " + fileName);
                                 int fileContentLenght = dataInputStream.readInt();
                                 System.out.println("filecontentlength: " + fileContentLenght);
                                 System.out.println("datainputstream: " + dataInputStream);
                                 if (fileContentLenght > 0) {
-                                    if (isALocalFile) {
-                                        System.out.println("send file to previous ip");
-                                        File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
-                                        // sendFile niet zomaar doen, als bij test.txt in begin blijven deze berichten ronddraaien omdat iedereeen dit als local file heeft en dit verder doorstuurd
-                                        //sendFile(networkManager.getPreviousIP(), fileToSend);
-                                    }
-                                    else {
-                                        System.out.println("recieve file");
-                                        byte[] fileContentBytes = new byte[fileContentLenght];
-                                        dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-                                        File fileToDownload = new File(path_ReplicationFiles +fileName);
-                                        FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
-                                        fileOutputStream.write(fileContentBytes);
-                                        fileOutputStream.close();
-                                        System.out.println(fileName);
-                                        System.out.println(Arrays.toString(fileContentBytes));
-                                    }
+                                    File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
+                                    // sendFile niet zomaar doen, als bij test.txt in begin blijven deze berichten ronddraaien omdat iedereeen dit als local file heeft en dit verder doorstuurd
+                                    //sendFile(networkManager.getPreviousIP(), fileToSend);
+
+                                    System.out.println("recieve file");
+                                    byte[] fileContentBytes = new byte[fileContentLenght];
+                                    dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
+                                    File fileToDownload = new File(path_ReplicationFiles + fileName);
+                                    FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
+                                    fileOutputStream.write(fileContentBytes);
+                                    fileOutputStream.close();
+                                    System.out.println(fileName);
+                                    System.out.println(Arrays.toString(fileContentBytes));
                                 }
                             }
+                        }
 
-                            dataInputStream.close();
-                            System.out.println("File received!");
-                            socket.close();
-                    }
-                } catch (IOException error) {
-                        error.printStackTrace();
+                        dataInputStream.close();
+                        System.out.println("File received!");
+                        socket.close();
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 });
                 thread.start();
             }
-        } catch (IOException error) {
-            error.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
