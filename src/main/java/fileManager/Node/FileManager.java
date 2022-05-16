@@ -1,5 +1,6 @@
 package fileManager.Node;
 
+import jdk.jshell.spi.ExecutionControlProvider;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
@@ -51,7 +52,7 @@ public class FileManager {
         return response.getBody();
     }
 
-    public void shutdown() throws SocketException {
+    public void shutdown() {
         System.out.println("shutdown! sending replicated files to previous node");
         File path = new File("src/main/java/fileManager/Node/Replicated_files");
         File[] files = path.listFiles();
@@ -59,8 +60,12 @@ public class FileManager {
         assert files != null;
         for (File file : files) {
             String fileName = file.getName();
-            Inet4Address IP = checkIsALocalFile(fileName);
-            fileTransfer.sendFile(IP, file);
+            try {
+                Inet4Address IP = checkIsALocalFile(fileName);
+                fileTransfer.sendFile(IP, file);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
