@@ -75,15 +75,15 @@ public class FileTransfer {
                                 dataInputStream.readFully(hostnameBytes, 0, hostnameBytes.length);
                                 String hostname = new String(hostnameBytes);
 
-                                int fileNameLenght = dataInputStream.readInt();
-                                if (fileNameLenght > 0) {
-                                    byte[] fileNameBytes = new byte[fileNameLenght];
+                                int fileNameLength = dataInputStream.readInt();
+                                if (fileNameLength > 0) {
+                                    byte[] fileNameBytes = new byte[fileNameLength];
                                     dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
                                     String fileName = new String(fileNameBytes);
 
-                                    int fileContentLenght = dataInputStream.readInt();
-                                    if (fileContentLenght > 0) {
-                                        byte[] fileContentBytes = new byte[fileContentLenght];
+                                    int fileContentLength = dataInputStream.readInt();
+                                    if (fileContentLength > 0) {
+                                        byte[] fileContentBytes = new byte[fileContentLength];
                                         dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
                                         File fileToDownload = new File(path_ReplicationFiles + fileName);
                                         FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
