@@ -75,10 +75,9 @@ public class FileManager {
         }
     }
 
-    public Inet4Address checkIsALocalFile(String fileName) throws SocketException {
+    public Inet4Address checkIsALocalFile(String fileName) {
         try {
             DatagramSocket datagramSocket = new DatagramSocket();
-            //DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
 
             byte[] bytes = fileName.getBytes();
             while (true) {
