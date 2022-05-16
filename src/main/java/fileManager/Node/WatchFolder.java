@@ -65,7 +65,7 @@ public class WatchFolder {
                         System.out.println("hash = " + Node.hashCode(String.valueOf(fileName)));
                         Inet4Address ipaddress = fileManager.namingRequest(Node.hashCode(String.valueOf(fileName)));
                         System.out.println("ip = " + ipaddress);
-                        InetAddress localIP = InetAddress.getLocalHost();
+                        Inet4Address localIP = (Inet4Address) InetAddress.getLocalHost();
                         //check if replicated node is itself, then send it to previous node
                         if(localIP == ipaddress){
                             System.out.println("ip = zelfde");
