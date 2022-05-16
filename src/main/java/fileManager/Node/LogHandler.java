@@ -38,7 +38,7 @@ public class LogHandler {
         }
     }
 
-    private void addFileToLog(String fileName, int downloadlocation, String location) {
+    public void addFileToLog(String fileName, int downloadlocation, String location) {
         JSONArray locationArray = (JSONArray) log.get(location);
 
         JSONObject jsonObject = new JSONObject();
@@ -50,7 +50,7 @@ public class LogHandler {
         writeLog();
     }
 
-    private JSONObject removeFileLog(String fileName, String location) {
+    public JSONObject removeFileLog(String fileName, String location) {
         JSONArray locationArray = (JSONArray) log.get(location);
 
         for (Object object : locationArray) {
