@@ -37,7 +37,19 @@ public class FileManager {
                 if (file.isFile()) { //this line weeds out other directories/folders
                     System.out.println(file);
                     System.out.println(namingRequest(Node.hashCode(file.getName())));
-                    fileTransfer.sendFile(namingRequest(Node.hashCode(file.getName())),file);
+                    Inet4Address nodeIp = namingRequest(Node.hashCode(file.getName()));
+                    try{
+                        if(nodeIp != InetAddress.getLocalHost()){
+                            fileTransfer.sendFile(nodeIp,file);
+                        }
+                        else if (Inet4Address.getLocalHost() != networkManager.getPreviousIP()){
+                            fileTransfer.sendFile(networkManager.getPreviousIP(),file);
+                        }
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+
                 }
             }
         }
@@ -93,9 +105,7 @@ public class FileManager {
                     throw new RuntimeException(e);
                 }
             }
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        } catch (RuntimeException e) {
+        } catch (SocketException | RuntimeException e) {
             throw new RuntimeException(e);
         }
     }

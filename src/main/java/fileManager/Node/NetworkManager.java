@@ -111,12 +111,15 @@ public class NetworkManager {
     public void listenForNewNodes() {
         System.out.println("Starting listenForNewNodes");
         try {
+
             msocket = new MulticastSocket(DISCOVERYPORT);
             msocket.joinGroup(multicastGroup);
             while (true) {
+
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
                 msocket.receive(packet);
                 Thread thread = new Thread(() -> {
+                    boolean onlynode = nextNode == previousNode && nextNode == currentID;
                     String hostname = new String(packet.getData(), 0, packet.getLength());
                     int hash = Node.hashCode(hostname);
                     if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
@@ -126,6 +129,9 @@ public class NetworkManager {
                         previousNode = hash;
                     }
                     System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
+                    if(onlynode && nextNode!=currentID){
+                        Node.sendReplicatedfiles();
+                    }
                 });
                 thread.start();
             }

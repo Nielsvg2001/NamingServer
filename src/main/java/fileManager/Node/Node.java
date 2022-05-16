@@ -13,7 +13,7 @@ import java.net.*;
 public class Node {
 
     public NetworkManager networkManager;
-    public FileManager fileManager;
+    public static FileManager fileManager;
     public WatchFolder watchfolder;
 
     public static void main(String[] args) throws InterruptedException {
@@ -43,5 +43,9 @@ public class Node {
 
     public static int hashCode(String toHash) {
         return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
+    }
+
+    public static void sendReplicatedfiles(){
+        fileManager.startUp();
     }
 }
