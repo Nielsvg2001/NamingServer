@@ -10,9 +10,18 @@ public class WatchFolder {
     public FileManager fileManager;
     public FileTransfer fileTransfer;
 
+    public String localPath;
+
     public WatchFolder(FileManager fileManagere) {
         fileManager = fileManagere;
         fileTransfer = fileManager.fileTransfer;
+        localPath = "src/main/java/fileManager/Node/Local_files/";
+
+        File folder = new File(localPath);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
         new Thread(this::startWatchFolder).start();
     }
 

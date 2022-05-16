@@ -2,6 +2,7 @@ package fileManager.Node;
 
 import java.io.*;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -66,11 +67,11 @@ public class FileTransfer {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {
-                        while (!socket.isClosed()) {
+                        while(!socket.isClosed()) {
                             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                            int hostnameLenght = dataInputStream.readInt();
-                            if (hostnameLenght > 0) {
-                                byte[] hostnameBytes = new byte[hostnameLenght];
+                            int hostnameLength = dataInputStream.readInt();
+                            if (hostnameLength > 0) {
+                                byte[] hostnameBytes = new byte[hostnameLength];
                                 dataInputStream.readFully(hostnameBytes, 0, hostnameBytes.length);
                                 String hostname = new String(hostnameBytes);
 
@@ -97,17 +98,15 @@ public class FileTransfer {
                             dataInputStream.close();
                             System.out.println("File received!");
                             socket.close();
-                        }
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    }
+                } catch (IOException error) {
+                        error.printStackTrace();
                     }
                 });
                 thread.start();
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException error) {
+            error.printStackTrace();
         }
     }
 }
