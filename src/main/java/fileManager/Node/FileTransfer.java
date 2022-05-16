@@ -2,6 +2,7 @@ package fileManager.Node;
 
 import java.io.*;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -95,7 +96,9 @@ public class FileTransfer {
                                     if (fileContentLenght > 0) {
                                         if (isALocalFile) {
                                             File fileToSend = new File("src/main/java/fileManager/Node/Local_files/" + fileName);
-                                            sendFile(networkManager.getPreviousIP(), fileToSend);
+                                            if(networkManager.getPreviousIP() != InetAddress.getLocalHost()) {
+                                                sendFile(networkManager.getPreviousIP(), fileToSend);
+                                            }
                                         } else {
                                             byte[] fileContentBytes = new byte[fileContentLenght];
                                             dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
