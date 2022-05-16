@@ -58,12 +58,11 @@ public class FileTransfer {
         }
     }
 
-    // filepath moet nog aangepast worden afhankelijk van waar we files opslaan
     public void fileListener() {
         System.out.println("Start fileListener");
         try {
             ServerSocket serverSocket = new ServerSocket(FILEPORT);
-            while (true) {
+            while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {

@@ -40,7 +40,7 @@ public class WatchFolder {
                     WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
 
                     Path fileName = pathEvent.context();
-                    File file = new File(String.valueOf(directory) + fileName);
+                    File file = new File(directory + "/"+ fileName);
 
                     // STEP6: Check type of event.
                     WatchEvent.Kind<?> kind = event.kind();
@@ -49,20 +49,30 @@ public class WatchFolder {
                     if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
 
                         System.out.println("A new file is created : " + fileName);
+                        System.out.println(file.getName());
+                        System.out.println(file.getAbsolutePath());
+                        System.out.println(file);
                         //check replicated node of file
+                        System.out.println("hash = " + Node.hashCode(String.valueOf(fileName)));
                         Inet4Address ipaddress = fileManager.namingRequest(Node.hashCode(String.valueOf(fileName)));
+                        System.out.println("ip = " + ipaddress);
                         InetAddress localIP = InetAddress.getLocalHost();
                         //check if replicated node is itself, then send it to previous node
                         if(localIP == ipaddress){
+                            System.out.println("ip = zelfde");
                             Inet4Address previousIP = fileManager.networkManager.getPreviousIP();
+                            System.out.println("ip vorige node : "+ previousIP);
                             //if previous node is itself, then it is the only node in the netwerk so don't send it
                             if(!(previousIP == localIP)){
                                 fileTransfer.sendFile(previousIP,file);
+                                System.out.println("file send to priveous node");
                             }
                         }
                         else{
                             fileTransfer.sendFile(ipaddress,file);
+                            System.out.println("file send to ipaddress");
                         }
+                        System.out.println("end of watchevent file added");
                     }
 
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
