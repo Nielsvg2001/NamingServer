@@ -132,13 +132,13 @@ public class FileManager {
                         try {
                             // if he already has the local file, send ip address of previous node to the sender
                             if (isALocalFile) {
-                                bytes = networkManager.getPreviousIP().toString().getBytes();
+                                bytes = Arrays.toString(networkManager.getPreviousIP().getAddress()).getBytes();
                                 DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
                             // if he doesn't have the local file, send ip address of current node to the sender
                             else {
-                                bytes = InetAddress.getLocalHost().toString().getBytes();
+                                bytes = Arrays.toString(InetAddress.getLocalHost().getAddress()).getBytes();
                                 DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
