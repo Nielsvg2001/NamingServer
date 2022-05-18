@@ -1,7 +1,5 @@
 package fileManager.NamingServer;
-
 import org.json.simple.JSONObject;
-
 import java.io.IOException;
 import java.net.*;
 
@@ -9,20 +7,30 @@ import java.net.*;
 public class Discovery {
     private static final int PORT = 9999;
 
+    /**
+     * Constructor
+     */
     public Discovery() {
     }
 
+    /**
+     * Start starts the discovery on the NamingServer
+     * It listens to all the multicasts that new nodes send and it responds with the numberofnodes, previousnode and nextnode
+     */
     public static void start() {
         System.out.println("Starting Discovery");
         try {
+            //listen to multicastaddress
             MulticastSocket mSocket = new MulticastSocket(PORT);
             String multicastAddress = "230.0.0.1";
             InetAddress mGroup = InetAddress.getByName(multicastAddress);
             mSocket.joinGroup(mGroup);
-            while (true) {
 
+            //keep listening
+            while (!mSocket.isClosed()) {
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
                 mSocket.receive(packet);
+                //for every packet a new thread is created
                 Thread thread = new Thread(() -> {
                     // Receiving new node
                     String hostname = new String(packet.getData(), 0, packet.getLength());

@@ -22,8 +22,8 @@ public class Node {
 
         Node cl = new Node();
         //cl.fileManager.namingRequest("testfile name.txt");;
-        //Thread.sleep(120000);
-        //cl.shutdown();
+        Thread.sleep(60000);
+        cl.shutdown();
 
     }
 
@@ -43,5 +43,9 @@ public class Node {
 
     public static int hashCode(String toHash) {
         return (int) ((toHash.hashCode() + 2147483648.0) * (32768 / (2147483648.0 + Math.abs(-2147483648.0))));
+    }
+
+    public static void sendReplicatedfiles(){
+        fileManager.startUp();
     }
 }
