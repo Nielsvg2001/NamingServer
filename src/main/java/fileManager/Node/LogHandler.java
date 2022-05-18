@@ -70,6 +70,9 @@ public class LogHandler {
     public JSONObject removeFileLog(String fileName, String location) {
         JSONArray locationArray = (JSONArray) log.get(location);
 
+        System.out.println("RefomveFileLog: " + fileName + " " + location);
+        System.out.println("RefomveFileLog: " + locationArray.toJSONString());
+
         for (Object object : locationArray) {
             JSONObject jsonObject = (JSONObject) object;
             if (jsonObject.get("fileName").equals(fileName)) {
