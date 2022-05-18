@@ -12,6 +12,7 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
+
     private final LogHandler logHandler;
     NetworkManager networkManager;
     private Path path_ReplicationFiles;
@@ -118,5 +119,9 @@ public class FileTransfer {
         } catch (IOException error) {
             error.printStackTrace();
         }
+    }
+
+    public LogHandler getLogHandler() {
+        return logHandler;
     }
 }
