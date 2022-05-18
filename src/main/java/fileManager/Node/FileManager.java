@@ -25,7 +25,7 @@ public class FileManager {
         System.out.println("startup files");
         File path = new File("src/main/java/fileManager/Node/Local_files");
         File [] files = path.listFiles();
-        System.out.println(Arrays.toString(files));
+        System.out.println("array of files" + Arrays.toString(files));
         if(files!= null) {
             for (File file : files) {
                 if (file.isFile()) { //this line weeds out other directories/folders
