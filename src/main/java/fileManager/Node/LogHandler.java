@@ -58,6 +58,7 @@ public class LogHandler {
         jsonObject.put("fileName", fileName);
         jsonObject.put("downloadlocation", downloadlocation);
         locationArray.add(jsonObject);
+        System.out.println("AddFileToLog: " + log.toJSONString());
         writeLog();
     }
 
