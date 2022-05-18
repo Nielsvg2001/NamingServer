@@ -31,7 +31,7 @@ public class FileTransfer {
     }
 
     // sent file (fileToSend) to node with ip (ip)
-    public void sendFile(Inet4Address ip, File fileToSend) {
+    public void sendFile(Inet4Address ip, File fileToSend, int hostnamehash) {
         System.out.println("Sending file");
 
         try {
@@ -42,10 +42,10 @@ public class FileTransfer {
 
             byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
 
-            byte[] hostname = Inet4Address.getLocalHost().getHostName().getBytes();
+            byte[] hostnamehashbyte = String.valueOf(hostnamehash).getBytes();
 
-            dataOutputStream.writeInt(hostname.length);
-            dataOutputStream.write(hostname);
+            dataOutputStream.writeInt(hostnamehashbyte.length);
+            dataOutputStream.write(hostnamehashbyte);
 
             dataOutputStream.writeInt(fileNameBytes.length);
             dataOutputStream.write(fileNameBytes);
@@ -73,7 +73,7 @@ public class FileTransfer {
                             if (hostnameLength > 0) {
                                 byte[] hostnameBytes = new byte[hostnameLength];
                                 dataInputStream.readFully(hostnameBytes, 0, hostnameBytes.length);
-                                String hostname = new String(hostnameBytes);
+                                int hostnamehash = Integer.parseInt(new String(hostnameBytes));
 
                                 int fileNameLength = dataInputStream.readInt();
                                 if (fileNameLength > 0) {
@@ -91,7 +91,7 @@ public class FileTransfer {
                                         FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                         fileOutputStream.write(fileContentBytes);
                                         fileOutputStream.close();
-                                        logHandler.addFileToLog(fileName, Node.hashCode(hostname), "replicated");
+                                        logHandler.addFileToLog(fileName, hostnamehash, "replicated");
                                         System.out.println("in file listener filename: " + fileName);
                                     }
                                 }
