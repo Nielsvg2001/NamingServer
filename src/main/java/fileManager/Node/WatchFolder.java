@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.file.*;
+import java.util.Arrays;
 
 // https://fullstackdeveloper.guru/2020/12/23/how-to-watch-a-folder-directory-or-changes-using-java/
 public class WatchFolder {
@@ -67,7 +68,7 @@ public class WatchFolder {
                         System.out.println("ip = " + ipaddress);
                         Inet4Address localIP = (Inet4Address) InetAddress.getLocalHost();
                         //check if replicated node is itself, then send it to previous node
-                        if(localIP == ipaddress){
+                        if(Arrays.equals(localIP.getAddress(), ipaddress.getAddress())){
                             System.out.println("ip = zelfde");
                             Inet4Address previousIP = fileManager.networkManager.getPreviousIP();
                             System.out.println("ip vorige node : "+ previousIP);

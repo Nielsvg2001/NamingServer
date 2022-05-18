@@ -22,7 +22,7 @@ public class FileTransfer {
         this.logHandler = new LogHandler();
 
         try {
-            Path path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
+            path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
         }catch (IOException e){
             e.printStackTrace();
@@ -85,13 +85,14 @@ public class FileTransfer {
                                     if (fileContentLength > 0) {
                                         byte[] fileContentBytes = new byte[fileContentLength];
                                         dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
+                                        System.out.println(Arrays.toString(fileContentBytes));
                                         File fileToDownload = new File(path_ReplicationFiles + fileName);
+                                        System.out.println(fileToDownload);
                                         FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                         fileOutputStream.write(fileContentBytes);
                                         fileOutputStream.close();
                                         logHandler.addFileToLog(fileName, Node.hashCode(hostname), "replicated");
                                         System.out.println("in file listener filename: " + fileName);
-                                        System.out.println(Arrays.toString(fileContentBytes));
                                     }
                                 }
                             }
