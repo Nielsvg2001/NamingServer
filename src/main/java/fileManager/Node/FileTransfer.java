@@ -14,10 +14,15 @@ public class FileTransfer {
 
     private static final int FILEPORT = 9996;
 
-    private LogHandler logHandler;
-
+    private final LogHandler logHandler;
     NetworkManager networkManager;
     private Path path_ReplicationFiles;
+
+    /**
+     * constructor
+     * starts fileListener in new thread
+     * @param networkManager Networkmanager that does everything with the network
+     */
     public FileTransfer(NetworkManager networkManager) {
         this.networkManager = networkManager;
         this.logHandler = new LogHandler();
@@ -31,23 +36,26 @@ public class FileTransfer {
         new Thread(this::fileListener).start();
     }
 
-    // sent file (fileToSend) to node with ip (ip)
-
-    public void sendFile(Inet4Address ip, File fileToSend) {
+    /**
+     * send the file to the node with IP
+     * @param ip ip where to send the file
+     * @param fileToSend file to send
+     */
+    public void sendFile(Inet4Address ip, File fileToSend, int hostnamehash) {
         System.out.println("Sending file");
-
         try {
             Socket socket = new Socket(ip, FILEPORT);
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             String filename = fileToSend.getName();
+            //3 packets: filename, filecontent and hash of hostname
             byte[] fileNameBytes = filename.getBytes();
 
             byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
 
-            byte[] hostname = Inet4Address.getLocalHost().getHostName().getBytes();
+            byte[] hostnamehashbyte = String.valueOf(hostnamehash).getBytes();
 
-            dataOutputStream.writeInt(hostname.length);
-            dataOutputStream.write(hostname);
+            dataOutputStream.writeInt(hostnamehashbyte.length);
+            dataOutputStream.write(hostnamehashbyte);
 
             dataOutputStream.writeInt(fileNameBytes.length);
             dataOutputStream.write(fileNameBytes);
@@ -60,6 +68,10 @@ public class FileTransfer {
             error.printStackTrace();
         }
     }
+
+    /**
+     * listens to all incomming files and puts them in Replicated files and add it to log
+     */
     public void fileListener() {
         System.out.println("Start fileListener");
         try {
@@ -74,7 +86,7 @@ public class FileTransfer {
                             if (hostnameLength > 0) {
                                 byte[] hostnameBytes = new byte[hostnameLength];
                                 dataInputStream.readFully(hostnameBytes, 0, hostnameBytes.length);
-                                String hostname = new String(hostnameBytes);
+                                int hostnamehash = Integer.parseInt(new String(hostnameBytes));
 
                                 int fileNameLength = dataInputStream.readInt();
                                 if (fileNameLength > 0) {
@@ -92,7 +104,7 @@ public class FileTransfer {
                                         FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                         fileOutputStream.write(fileContentBytes);
                                         fileOutputStream.close();
-                                        logHandler.addFileToLog(fileName, Node.hashCode(hostname), "replicated");
+                                        logHandler.addFileToLog(fileName, hostnamehash, "replicated");
                                         System.out.println("in file listener filename: " + fileName);
                                     }
                                 }
