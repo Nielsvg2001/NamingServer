@@ -1,12 +1,14 @@
 package fileManager.Node;
 
 
+import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 
@@ -121,6 +123,7 @@ public class NetworkManager {
                     int hash = Node.hashCode(hostname);
                     if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
                         nextNode = hash;
+                        checkReplicationValidity(hash,(Inet4Address) packet.getAddress()); // check if new node should be the owner of replicated files in this node
                     }
                     if ((hash > previousNode && hash < currentID) || (previousNode >= currentID && hash < currentID) || (previousNode >= currentID && hash > previousNode)) {
                         previousNode = hash;
@@ -131,6 +134,18 @@ public class NetworkManager {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void checkReplicationValidity(int insertedNodeHash, Inet4Address address){
+        File path = new File("src/main/java/fileManager/Node/Replicated_files");
+        File[] files = path.listFiles();
+        assert files != null;
+        // check if replicated file hashes are closer to hash of inserted node than the hash of the owner
+        for (File file: files) {
+            if(insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()){
+                Node.fileManager.fileTransfer.sendFile(address, file);
+            }
         }
     }
 

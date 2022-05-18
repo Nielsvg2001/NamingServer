@@ -13,7 +13,7 @@ import java.net.*;
 public class Node {
 
     public NetworkManager networkManager;
-    public FileManager fileManager;
+    public static FileManager fileManager;
     public WatchFolder watchfolder;
 
     public static void main(String[] args) throws InterruptedException {
@@ -28,7 +28,7 @@ public class Node {
     }
 
     public Node() {
-        // get own infromation
+        // get own information
         networkManager = new NetworkManager();
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
