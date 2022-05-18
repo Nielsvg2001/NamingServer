@@ -94,6 +94,7 @@ public class FileManager {
             try {
                 Inet4Address IP = checkIsALocalFile(fileName);
                 JSONObject log = logHandler.removeFileLog(fileName, "replicated");
+                System.out.println(log.toJSONString());
                 int hostnamehash = (int) log.get("downloadlocation");
                 fileTransfer.sendFile(IP, file, hostnamehash);
             }catch (Exception e){
