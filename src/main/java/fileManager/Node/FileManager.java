@@ -90,6 +90,7 @@ public class FileManager {
                     datagramSocket.receive(packet);
                     byte[] bytes1_= packet.getData();
                     String IP = Arrays.toString(bytes1_);
+                    System.out.println("IP to send:" + IP);
                     Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName(IP);
                     System.out.println("Adres: " + inet4Address);
                     return inet4Address;
@@ -114,7 +115,7 @@ public class FileManager {
                         DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                         datagramSocket.receive(datagramPacket);
                         byte[] bytes = datagramPacket.getData();
-                        String fileName = bytes.toString();
+                        String fileName = Arrays.toString(bytes);
 
                         boolean isALocalFile = false;
                         File path = new File("src/main/java/fileManager/Node/Local_files");
