@@ -22,8 +22,8 @@ public class Node {
 
         Node cl = new Node();
         //cl.fileManager.namingRequest("testfile name.txt");;
-        //Thread.sleep(120000);
-        //cl.shutdown();
+        Thread.sleep(60000);
+        cl.shutdown();
 
     }
 

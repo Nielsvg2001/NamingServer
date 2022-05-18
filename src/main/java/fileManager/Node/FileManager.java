@@ -113,7 +113,9 @@ public class FileManager {
                     packet = new DatagramPacket(new byte[256], 256);
                     datagramSocket.receive(packet);
                     byte[] bytes1_= packet.getData();
-                    String IP = Arrays.toString(bytes1_);
+                    System.out.println("IP received in bytes:" + Arrays.toString(packet.getData()));
+                    String IP = new String(bytes1_, 0, packet.getLength());
+                    System.out.println("IP received:" + IP);
                     Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName(IP);
                     System.out.println("Adres: " + inet4Address);
                     return inet4Address;
@@ -138,7 +140,7 @@ public class FileManager {
                         DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                         datagramSocket.receive(datagramPacket);
                         byte[] bytes = datagramPacket.getData();
-                        String fileName = bytes.toString();
+                        String fileName = Arrays.toString(bytes);
 
                         boolean isALocalFile = false;
                         File path = new File("src/main/java/fileManager/Node/Local_files");
@@ -155,14 +157,18 @@ public class FileManager {
                         try {
                             // if he already has the local file, send ip address of previous node to the sender
                             if (isALocalFile) {
-                                bytes = networkManager.getPreviousIP().toString().getBytes();
-                                DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramPacket.getAddress(), datagramPacket.getPort());
+                                String IP = networkManager.getPreviousIP().getHostAddress();
+                                byte[] bytes1 = IP.getBytes();
+                                System.out.println("IP send: " + IP);
+                                DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
                             // if he doesn't have the local file, send ip address of current node to the sender
                             else {
-                                bytes = InetAddress.getLocalHost().toString().getBytes();
-                                DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramPacket.getAddress(), datagramPacket.getPort());
+                                String IP = Inet4Address.getLocalHost().getHostAddress();
+                                byte[] bytes1 = IP.getBytes();
+                                System.out.println("IP send: " + IP);
+                                DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
                         } catch (IOException e) {
