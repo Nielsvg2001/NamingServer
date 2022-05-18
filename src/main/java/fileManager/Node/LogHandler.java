@@ -36,7 +36,7 @@ public class LogHandler {
         logFile = new File("src/main/java/fileManager/Node/Log.json");
         try {
             if (!logFile.createNewFile()){
-                System.out.println("print error while creating New File");
+                System.out.println("file already exists");
             }
             log.put("local", new JSONArray());
             log.put("replicated", new JSONArray());

@@ -107,6 +107,11 @@ public class NetworkManager {
         return getNodeInfo(previousNode);
     }
 
+    /**
+     * sends a multicast to all nodes in the network to join the network
+     * then it get a response from the namingserver with the previousNode and nextnode and set these variables
+     * @return number of nodes in the network
+     */
     public int dicovery() {
         try {
             // Send hostname (+ ip) to naming server and other nodes.
@@ -129,36 +134,45 @@ public class NetworkManager {
             nextNode = Integer.parseInt(jsonObject.get("nextNode").toString());
             System.out.println("In discovery: The previous node is " + previousNode + " and the next node is " + nextNode);
             return Integer.parseInt(jsonObject.get("numberOfNodes").toString());
-
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
         return -1;
     }
 
-    // listens and if it receives a packet, the node checks if it must update the previous or next node
+    /**
+     * listens to multicasts from nodes that join the network and if it receives a packet, the node checks if it must update the previous or next node
+     */
     public void listenForNewNodes() {
         System.out.println("Starting listenForNewNodes");
         try {
-
+            // join multicastgroup
             msocket = new MulticastSocket(DISCOVERYPORT);
             msocket.joinGroup(multicastGroup);
-            while (true) {
-
+            while (!msocket.isClosed()) {
+                //receive packet
                 DatagramPacket packet = new DatagramPacket(new byte[256], 256);
                 msocket.receive(packet);
+                //create new thread for every packet
                 Thread thread = new Thread(() -> {
+                    //if it is the only node in the network set onlynode
                     boolean onlynode = nextNode == previousNode && nextNode == currentID;
+                    //get hostname of node where the packet came from
                     String hostname = new String(packet.getData(), 0, packet.getLength());
                     int hash = Node.hashCode(hostname);
+                    //set new nextnode if the newnode is between the nextnode and the current id
+                    //or if the current node has the biggest hash, then  the new nextnode is set if the new node has the biggest or smallest hash
                     if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
                         nextNode = hash;
                         checkReplicationValidity(hash,(Inet4Address) packet.getAddress()); // check if new node should be the owner of replicated files in this node
                     }
+                    //set new previousnode if the newnode is between the previousnode and the current id
+                    // or if the currentnode has the smallest hash, then the previousnode is set if the newnode has the smallest or the biggest hash
                     if ((hash > previousNode && hash < currentID) || (previousNode >= currentID && hash < currentID) || (previousNode >= currentID && hash > previousNode)) {
                         previousNode = hash;
                     }
                     System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
+                    //if the node was the only node in the network and now there is another nextnode, it has to send its local files to be replicated
                     if(onlynode && nextNode!=currentID){
                         Node.sendReplicatedfiles();
                     }
@@ -170,6 +184,11 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * check for every file of replicated_files if it is smaller than the hash of the new node -> then new node becomes owner of these files
+     * @param insertedNodeHash hash of hostname new node
+     * @param address Inet4Address IP address of new node
+     */
     public void checkReplicationValidity(int insertedNodeHash, Inet4Address address){
         File path = new File("src/main/java/fileManager/Node/Replicated_files");
         File[] files = path.listFiles();
@@ -187,6 +206,11 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * shutdown: sends nextnode to previousnode
+     * sends previousnode to nextnode
+     * remove hostname from list of nodes in Namingserver
+     */
     public void shutdown() {
         System.out.println("shutdown");
         try {
@@ -217,13 +241,18 @@ public class NetworkManager {
     }
 
 
+    /**
+     * listens to shutdown packets of neighbors or Namingserver (if a node has failed) and updates the next or previous node
+     */
     public void shutdownListener() {
         System.out.println("Starting Shutdown Listener");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(SHUTDOWNPORT);
-            while (true) {
+            while (!datagramSocket.isClosed()) {
+                //receive packet
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
+                //create new thread for every new packet
                 Thread thread = new Thread(() -> {
                     try {
                         if (datagramPacket.getAddress() != ipAddress) {
@@ -253,6 +282,9 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * Check the neighbors by sending UDP packets every 4s and waiting for a response
+     */
     public void checkNeighbors() {
         System.out.println("Checking for failure...");
         int teller = 0;
@@ -260,7 +292,7 @@ public class NetworkManager {
             DatagramSocket socket = new DatagramSocket();
 
             byte[] buf = "test".getBytes();
-            while (true) {
+            while (!socket.isClosed()) {
                 try {
                     socket.setSoTimeout(100);
                     DatagramPacket packet = new DatagramPacket(buf, buf.length, getNodeInfo(previousNode), CHECKPORT);
@@ -272,9 +304,11 @@ public class NetworkManager {
                     if (!packetString.equals("OK")) {
                         failure(previousNode);
                     }
+                    //after 100ms a timeout exception is trown
                 } catch (SocketTimeoutException e) {
                     System.out.println("Teller is " + teller);
                     teller++;
+                    // if teller reaches 11 failure is called
                     if (teller > 10) {
                         failure(previousNode);
                         System.out.println("In checkNeighbors: Aanroepen failure");
@@ -292,14 +326,17 @@ public class NetworkManager {
     }
 
 
+    /**
+     * listen for UDP packets to check if the node is still working and sending a response
+     */
     public void failureCheckListener() {
         System.out.println("Starting FailureCheckListener");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(CHECKPORT);
-            while (true) {
+            while (!datagramSocket.isClosed()) {
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
-
+                //send response
                 byte[] response = "OK".getBytes();
                 DatagramPacket reply = new DatagramPacket(response, response.length, datagramPacket.getAddress(), datagramPacket.getPort());
                 datagramSocket.send(reply);
@@ -310,6 +347,10 @@ public class NetworkManager {
     }
 
 
+    /**
+     * if failure is detected, the hostname is send to the namingserver
+     * @param hash hash of hostname that failed
+     */
     public void failure(int hash) {
         System.out.println("Failure detected");
         try {
