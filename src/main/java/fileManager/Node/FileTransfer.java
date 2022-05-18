@@ -2,6 +2,7 @@ package fileManager.Node;
 
 import java.io.*;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
+
     private final LogHandler logHandler;
     NetworkManager networkManager;
     private Path path_ReplicationFiles;
@@ -24,6 +26,7 @@ public class FileTransfer {
     public FileTransfer(NetworkManager networkManager) {
         this.networkManager = networkManager;
         this.logHandler = new LogHandler();
+
         try {
             path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
@@ -46,6 +49,7 @@ public class FileTransfer {
             String filename = fileToSend.getName();
             //3 packets: filename, filecontent and hash of hostname
             byte[] fileNameBytes = filename.getBytes();
+
             byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
 
             byte[] hostnamehashbyte = String.valueOf(hostnamehash).getBytes();
@@ -118,5 +122,9 @@ public class FileTransfer {
         } catch (IOException error) {
             error.printStackTrace();
         }
+    }
+
+    public LogHandler getLogHandler() {
+        return logHandler;
     }
 }

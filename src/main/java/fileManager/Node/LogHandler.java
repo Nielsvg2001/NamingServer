@@ -58,6 +58,7 @@ public class LogHandler {
         jsonObject.put("fileName", fileName);
         jsonObject.put("downloadlocation", downloadlocation);
         locationArray.add(jsonObject);
+        System.out.println("AddFileToLog: " + log.toJSONString());
         writeLog();
     }
 
@@ -68,7 +69,11 @@ public class LogHandler {
      * @return returns the jsonObject if it is removed, otherwise it returns null
      */
     public JSONObject removeFileLog(String fileName, String location) {
+        System.out.println("RefomveFileLog: " + fileName + " " + location);
+        System.out.println("RefomveFileLog: " + log.toJSONString());
+
         JSONArray locationArray = (JSONArray) log.get(location);
+
 
         for (Object object : locationArray) {
             JSONObject jsonObject = (JSONObject) object;

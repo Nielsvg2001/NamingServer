@@ -18,7 +18,6 @@ public class FileManager {
     FileTransfer fileTransfer;
     NetworkManager networkManager;
 
-    LogHandler logHandler;
     public static int EDGEPORT = 9995;
 
     /**
@@ -28,7 +27,6 @@ public class FileManager {
     public FileManager(NetworkManager networkManager) {
         fileTransfer = new FileTransfer(networkManager); // to transfer the files
         this.networkManager = networkManager;
-        logHandler = new LogHandler();
         startUp();
         new Thread(this::shutdownListener).start();
     }
@@ -93,7 +91,7 @@ public class FileManager {
             String fileName = file.getName();
             try {
                 Inet4Address IP = checkIsALocalFile(fileName);
-                JSONObject log = logHandler.removeFileLog(fileName, "replicated");
+                JSONObject log = fileTransfer.getLogHandler().removeFileLog(fileName, "replicated");
                 System.out.println(log.toJSONString());
                 int hostnamehash = (int) log.get("downloadlocation");
                 fileTransfer.sendFile(IP, file, hostnamehash);
@@ -187,4 +185,5 @@ public class FileManager {
             throw new RuntimeException(e);
         }
     }
+
 }

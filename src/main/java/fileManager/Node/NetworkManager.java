@@ -30,16 +30,6 @@ public class NetworkManager {
     private MulticastSocket msocket;
     private InetAddress multicastGroup;
 
-    /**
-     * constructor
-     * set hostname, ipaddress, currentId (hash of hostname) and multicastgroup
-     * starts services:
-     *  - discovery
-     *  - listenForNewNodes
-     *  - shutdownListener
-     *  - checkNeighbors
-     *  - failureCheckListener
-     */
     public NetworkManager() {
         try {
             hostName = InetAddress.getLocalHost().getHostName();
@@ -196,12 +186,11 @@ public class NetworkManager {
         // check if replicated file hashes are closer to hash of inserted node than the hash of the owner
         for (File file: files) {
             if(insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()){
-                try{
-                    Node.fileManager.fileTransfer.sendFile(address, file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
-                }
-                catch(IOException e){
-                    e.printStackTrace();
-                }
+                LogHandler logHandler = Node.fileManager.fileTransfer.getLogHandler();
+                JSONObject log = logHandler.removeFileLog(file.getName(), "replicated"); // remove file from the log file
+                int hostnamehash = (int) log.get("downloadlocation");
+                Node.fileManager.fileTransfer.sendFile(address, file, hostnamehash); // send file to node
+                file.delete();  // delete file out of location
             }
         }
     }
