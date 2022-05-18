@@ -150,7 +150,13 @@ public class NetworkManager {
         // check if replicated file hashes are closer to hash of inserted node than the hash of the owner
         for (File file: files) {
             if(insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()){
-                Node.fileManager.fileTransfer.sendFile(address, file);
+
+                Node.fileManager.fileTransfer.sendFile(address, file);  // send file to node
+
+                file.delete();  // delete file out of location
+
+                LogHandler logHandler = Node.fileManager.fileTransfer.getLogHandler();
+                logHandler.removeFileLog(file.getName(), "replicated"); // remove file from the log file
             }
         }
     }

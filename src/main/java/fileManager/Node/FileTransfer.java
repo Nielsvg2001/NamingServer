@@ -13,10 +13,11 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
+
     private LogHandler logHandler;
+
     NetworkManager networkManager;
     private Path path_ReplicationFiles;
-
     public FileTransfer(NetworkManager networkManager) {
         this.networkManager = networkManager;
         this.logHandler = new LogHandler();
@@ -31,6 +32,7 @@ public class FileTransfer {
     }
 
     // sent file (fileToSend) to node with ip (ip)
+
     public void sendFile(Inet4Address ip, File fileToSend) {
         System.out.println("Sending file");
 
@@ -58,7 +60,6 @@ public class FileTransfer {
             error.printStackTrace();
         }
     }
-
     public void fileListener() {
         System.out.println("Start fileListener");
         try {
@@ -109,5 +110,9 @@ public class FileTransfer {
         } catch (IOException error) {
             error.printStackTrace();
         }
+    }
+
+    public LogHandler getLogHandler() {
+        return logHandler;
     }
 }
