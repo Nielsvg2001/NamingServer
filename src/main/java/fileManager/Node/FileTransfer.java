@@ -86,7 +86,7 @@ public class FileTransfer {
                                         byte[] fileContentBytes = new byte[fileContentLength];
                                         dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
                                         System.out.println(Arrays.toString(fileContentBytes));
-                                        File fileToDownload = new File(path_ReplicationFiles + fileName);
+                                        File fileToDownload = new File(path_ReplicationFiles + "/" + fileName);
                                         System.out.println(fileToDownload);
                                         FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                         fileOutputStream.write(fileContentBytes);
