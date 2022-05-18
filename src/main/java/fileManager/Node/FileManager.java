@@ -89,7 +89,7 @@ public class FileManager {
                     packet = new DatagramPacket(new byte[256], 256);
                     datagramSocket.receive(packet);
                     byte[] bytes1_= packet.getData();
-                    String IP = new String(bytes1_, 0, packet.getLength());
+                    String IP = Arrays.toString(bytes1_);
                     System.out.println("IP to send:" + IP);
                     Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName(IP);
                     System.out.println("Adres: " + inet4Address);
