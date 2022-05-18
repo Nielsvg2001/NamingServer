@@ -89,11 +89,8 @@ public class FileManager {
                     packet = new DatagramPacket(new byte[256], 256);
                     datagramSocket.receive(packet);
                     byte[] bytes1_= packet.getData();
-                    System.out.println("IP received in bytes:" + Arrays.toString(packet.getData()));
                     String IP = new String(bytes1_, 0, packet.getLength());
-                    System.out.println("IP received:" + IP);
                     Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName(IP);
-                    System.out.println("Adres: " + inet4Address);
                     return inet4Address;
 
                 } catch (IOException e) {
@@ -135,7 +132,6 @@ public class FileManager {
                             if (isALocalFile) {
                                 String IP = networkManager.getPreviousIP().getHostAddress();
                                 byte[] bytes1 = IP.getBytes();
-                                System.out.println("IP send: " + IP);
                                 DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
@@ -143,7 +139,6 @@ public class FileManager {
                             else {
                                 String IP = Inet4Address.getLocalHost().getHostAddress();
                                 byte[] bytes1 = IP.getBytes();
-                                System.out.println("IP send: " + IP);
                                 DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
