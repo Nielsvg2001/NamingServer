@@ -90,7 +90,7 @@ public class FileTransfer {
                                         fileOutputStream.write(fileContentBytes);
                                         fileOutputStream.close();
                                         logHandler.addFileToLog(fileName, Node.hashCode(hostname), "replicated");
-                                        System.out.println(fileName);
+                                        System.out.println("in file listener filename: " + fileName);
                                         System.out.println(Arrays.toString(fileContentBytes));
                                     }
                                 }
