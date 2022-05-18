@@ -1,7 +1,6 @@
 package fileManager.NamingServer;
 
 import org.springframework.stereotype.Service;
-
 import java.net.Inet4Address;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
@@ -12,6 +11,11 @@ public class Naming {
     private static final JSONHelper jsonHelper = new JSONHelper();
     private static TreeMap<Integer, Inet4Address> nodesList;
 
+    /**
+     * Constructor of Naming
+     * reads in nodeslist from JSONFile
+     * start discovery and Failure
+     */
     public Naming() {
         nodesList = jsonHelper.readFromFile();
         new Thread(Discovery::start).start();
@@ -27,6 +31,11 @@ public class Naming {
         return checkID(hash);
     }
 
+    /**
+     * gets the address over the node with the hash
+     * @param id hash of the node
+     * @return returns the Inet4Address of the node with hash if it is in the list, otherwise it returns null
+     */
     public static Inet4Address getNodeInfo(int id) {
         Lock lock = new ReentrantLock();
         lock.lock();
@@ -83,19 +92,21 @@ public class Naming {
         return -1;
     }
 
-    public static int removeNode(int hash) {
+    /**
+     * @param hash hash of node that must be removed
+     * removes node
+     */
+    public static void removeNode(int hash) {
         Lock lock = new ReentrantLock();
         lock.lock();
         try {
             if (nodesList.containsKey(hash)) {
                 nodesList.remove(hash);
                 jsonHelper.writeToFile(nodesList);
-                return hash;
             }
         } finally {
             lock.unlock();
         }
-        return -1;
     }
 
     /**
@@ -120,10 +131,16 @@ public class Naming {
         return nodesList.get((closestID == -1) ? biggestID : closestID);
     }
 
+    /**
+     * @return number of nodes in the network
+     */
     public static int numberOfNodes() {
         return nodesList.size();
     }
 
+    /**
+     * @return nodeslist TreeMap with the hashes and addresses of all the nodes
+     */
     public static TreeMap<Integer, Inet4Address> getNodesList() {
         return nodesList;
     }
