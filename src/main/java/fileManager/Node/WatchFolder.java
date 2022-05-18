@@ -68,8 +68,6 @@ public class WatchFolder {
                         System.out.println("ip = " + ipaddress);
                         Inet4Address localIP = (Inet4Address) InetAddress.getLocalHost();
                         //check if replicated node is itself, then send it to previous node
-                        System.out.println("local ip = " + Arrays.toString(localIP.getAddress()));
-                        System.out.println("ip = " + Arrays.toString(ipaddress.getAddress()));
                         if(Arrays.equals(localIP.getAddress(), ipaddress.getAddress())){
                             System.out.println("ip = zelfde");
                             Inet4Address previousIP = fileManager.networkManager.getPreviousIP();

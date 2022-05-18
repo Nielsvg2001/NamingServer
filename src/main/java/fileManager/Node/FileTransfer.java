@@ -22,7 +22,7 @@ public class FileTransfer {
         this.logHandler = new LogHandler();
 
         try {
-            Path path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
+            path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
         }catch (IOException e){
             e.printStackTrace();
