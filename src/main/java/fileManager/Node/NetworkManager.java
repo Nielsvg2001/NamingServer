@@ -16,7 +16,6 @@ public class NetworkManager {
     public String hostName;
     private int currentID;
     private InetAddress ipAddress;
-    private final int numNodesWhenEntered;
     private int previousNode;
     private int nextNode;
     public static final int DISCOVERYPORT = 9999;
@@ -25,22 +24,32 @@ public class NetworkManager {
     public static int FAILUREPORT = 9997;
     public static int CHECKPORT = 9987;
     public static String NAMINGSERVERADDRESS = "localhost";
-    private final String multicastAddress = "230.0.0.1";
+    private final String MULTICASTADDRESS = "230.0.0.1";
     private MulticastSocket msocket;
     private InetAddress multicastGroup;
 
+    /**
+     * constructor
+     * set hostname, ipaddress, currentId (hash of hostname) and multicastgroup
+     * starts services:
+     *  - discovery
+     *  - listenForNewNodes
+     *  - shutdownListener
+     *  - checkNeighbors
+     *  - failureCheckListener
+     */
     public NetworkManager() {
         try {
             hostName = InetAddress.getLocalHost().getHostName();
             ipAddress = InetAddress.getLocalHost();
             currentID = Node.hashCode(hostName);
-            multicastGroup = InetAddress.getByName(multicastAddress);
+            multicastGroup = InetAddress.getByName(MULTICASTADDRESS);
         } catch (UnknownHostException e) {
             System.out.println("Could not get LocalHost information: " + e.getMessage());
         }
 
         // start services
-        numNodesWhenEntered = dicovery();
+        int numNodesWhenEntered = dicovery();
         new Thread(this::listenForNewNodes).start();
         new Thread(this::shutdownListener).start();
         new Thread(this::checkNeighbors).start();
@@ -50,6 +59,11 @@ public class NetworkManager {
         System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
     }
 
+    /**
+     * Add Node to the network
+     * sends POST request to REST server
+     * @param ipaddr Ip adress of new node
+     */
     public void addNode(InetAddress ipaddr) {
         System.out.println("addnode");
         System.out.println("nodeName" + ipaddr.getHostName());
@@ -60,6 +74,11 @@ public class NetworkManager {
                 .asString();
     }
 
+    /**
+     * remove Node from the network
+     * sends DELETE request to REST server
+     * @param nodeName String name of node
+     */
     public void removeNode(String nodeName) {
         System.out.println("removenode");
         HttpResponse<String> response = Unirest.delete("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/removeNode")
@@ -67,6 +86,11 @@ public class NetworkManager {
                 .asString();
     }
 
+    /**
+     * returns the Inet4Addres of the node with id
+     * @param id Int hash of the hostname
+     * @return Inet4Address IP address of node
+     */
     public Inet4Address getNodeInfo(int id) {
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NAMINGSERVERADDRESS + ":" + NAMINGPORT + "/getNodeInfo")
                 .queryString("id", id)
@@ -74,6 +98,9 @@ public class NetworkManager {
         return response.getBody();
     }
 
+    /**
+     * @return Inet4Address IP address of previous node
+     */
     public Inet4Address getPreviousIP() {
         return getNodeInfo(previousNode);
     }

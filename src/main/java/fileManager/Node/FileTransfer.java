@@ -2,7 +2,6 @@ package fileManager.Node;
 
 import java.io.*;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -13,14 +12,18 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
-    private LogHandler logHandler;
+    private final LogHandler logHandler;
     NetworkManager networkManager;
     private Path path_ReplicationFiles;
 
+    /**
+     * constructor
+     * starts fileListener in new thread
+     * @param networkManager Networkmanager that does everything with the network
+     */
     public FileTransfer(NetworkManager networkManager) {
         this.networkManager = networkManager;
         this.logHandler = new LogHandler();
-
         try {
             path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
@@ -30,18 +33,20 @@ public class FileTransfer {
         new Thread(this::fileListener).start();
     }
 
-    // sent file (fileToSend) to node with ip (ip)
+    /**
+     * send the file to the node with IP
+     * @param ip ip where to send the file
+     * @param fileToSend file to send
+     */
     public void sendFile(Inet4Address ip, File fileToSend) {
         System.out.println("Sending file");
-
         try {
             Socket socket = new Socket(ip, FILEPORT);
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             String filename = fileToSend.getName();
+            //3 packets: filename, filecontent and hostname
             byte[] fileNameBytes = filename.getBytes();
-
             byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
-
             byte[] hostname = Inet4Address.getLocalHost().getHostName().getBytes();
 
             dataOutputStream.writeInt(hostname.length);
@@ -59,6 +64,9 @@ public class FileTransfer {
         }
     }
 
+    /**
+     * listens to all incomming files and puts them in Replicated files and add it to log
+     */
     public void fileListener() {
         System.out.println("Start fileListener");
         try {
