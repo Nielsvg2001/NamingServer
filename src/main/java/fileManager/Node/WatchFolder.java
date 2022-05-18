@@ -74,12 +74,12 @@ public class WatchFolder {
                             System.out.println("ip vorige node : "+ previousIP);
                             //if previous node is itself, then it is the only node in the netwerk so don't send it
                             if(!(previousIP == localIP)){
-                                fileTransfer.sendFile(previousIP,file);
+                                fileTransfer.sendFile(previousIP,file,  Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                                 System.out.println("file send to priveous node");
                             }
                         }
                         else{
-                            fileTransfer.sendFile(ipaddress,file);
+                            fileTransfer.sendFile(ipaddress,file,  Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                             System.out.println("file send to ipaddress");
                         }
                         System.out.println("end of watchevent file added");

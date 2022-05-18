@@ -1,7 +1,10 @@
 package fileManager.Node;
 
+import com.google.gson.JsonObject;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.json.simple.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
@@ -14,6 +17,8 @@ import java.net.Inet4Address;
 public class FileManager {
     FileTransfer fileTransfer;
     NetworkManager networkManager;
+
+    LogHandler logHandler;
     public static int EDGEPORT = 9995;
 
     /**
@@ -23,6 +28,7 @@ public class FileManager {
     public FileManager(NetworkManager networkManager) {
         fileTransfer = new FileTransfer(networkManager); // to transfer the files
         this.networkManager = networkManager;
+        logHandler = new LogHandler();
         startUp();
         new Thread(this::shutdownListener).start();
     }
@@ -45,11 +51,11 @@ public class FileManager {
                     try{
                         // if the normal replicated node of this file is not this node
                         if(nodeIp != InetAddress.getLocalHost()){
-                            fileTransfer.sendFile(nodeIp,file);
+                            fileTransfer.sendFile(nodeIp,file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
                         // if the normal replicated node of this file is this host, the file is send to the previous node
                         else if (Inet4Address.getLocalHost() != networkManager.getPreviousIP()){
-                            fileTransfer.sendFile(networkManager.getPreviousIP(),file);
+                            fileTransfer.sendFile(networkManager.getPreviousIP(),file,  Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
                     }
                     catch (Exception e){
@@ -87,7 +93,9 @@ public class FileManager {
             String fileName = file.getName();
             try {
                 Inet4Address IP = checkIsALocalFile(fileName);
-                fileTransfer.sendFile(IP, file);
+                JSONObject log = logHandler.removeFileLog(fileName, "replicated");
+                int hostnamehash = (int) log.get("downloadlocation");
+                fileTransfer.sendFile(IP, file, hostnamehash);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -111,11 +119,8 @@ public class FileManager {
                     packet = new DatagramPacket(new byte[256], 256);
                     datagramSocket.receive(packet);
                     byte[] bytes1_= packet.getData();
-                    System.out.println("IP received in bytes:" + Arrays.toString(packet.getData()));
                     String IP = new String(bytes1_, 0, packet.getLength());
-                    System.out.println("IP received:" + IP);
                     Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName(IP);
-                    System.out.println("Adres: " + inet4Address);
                     return inet4Address;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -158,7 +163,6 @@ public class FileManager {
                             if (isALocalFile) {
                                 String IP = networkManager.getPreviousIP().getHostAddress();
                                 byte[] bytes1 = IP.getBytes();
-                                System.out.println("IP send: " + IP);
                                 DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
@@ -166,7 +170,6 @@ public class FileManager {
                             else {
                                 String IP = Inet4Address.getLocalHost().getHostAddress();
                                 byte[] bytes1 = IP.getBytes();
-                                System.out.println("IP send: " + IP);
                                 DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }

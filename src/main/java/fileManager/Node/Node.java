@@ -28,7 +28,7 @@ public class Node {
     }
 
     public Node() {
-        // get own infromation
+        // get own information
         networkManager = new NetworkManager();
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);

@@ -38,19 +38,20 @@ public class FileTransfer {
      * @param ip ip where to send the file
      * @param fileToSend file to send
      */
-    public void sendFile(Inet4Address ip, File fileToSend) {
+    public void sendFile(Inet4Address ip, File fileToSend, int hostnamehash) {
         System.out.println("Sending file");
         try {
             Socket socket = new Socket(ip, FILEPORT);
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             String filename = fileToSend.getName();
-            //3 packets: filename, filecontent and hostname
+            //3 packets: filename, filecontent and hash of hostname
             byte[] fileNameBytes = filename.getBytes();
             byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
-            byte[] hostname = Inet4Address.getLocalHost().getHostName().getBytes();
 
-            dataOutputStream.writeInt(hostname.length);
-            dataOutputStream.write(hostname);
+            byte[] hostnamehashbyte = String.valueOf(hostnamehash).getBytes();
+
+            dataOutputStream.writeInt(hostnamehashbyte.length);
+            dataOutputStream.write(hostnamehashbyte);
 
             dataOutputStream.writeInt(fileNameBytes.length);
             dataOutputStream.write(fileNameBytes);
@@ -81,7 +82,7 @@ public class FileTransfer {
                             if (hostnameLength > 0) {
                                 byte[] hostnameBytes = new byte[hostnameLength];
                                 dataInputStream.readFully(hostnameBytes, 0, hostnameBytes.length);
-                                String hostname = new String(hostnameBytes);
+                                int hostnamehash = Integer.parseInt(new String(hostnameBytes));
 
                                 int fileNameLength = dataInputStream.readInt();
                                 if (fileNameLength > 0) {
@@ -99,7 +100,7 @@ public class FileTransfer {
                                         FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
                                         fileOutputStream.write(fileContentBytes);
                                         fileOutputStream.close();
-                                        logHandler.addFileToLog(fileName, Node.hashCode(hostname), "replicated");
+                                        logHandler.addFileToLog(fileName, hostnamehash, "replicated");
                                         System.out.println("in file listener filename: " + fileName);
                                     }
                                 }
