@@ -2,6 +2,7 @@ package fileManager.Node;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
 import java.io.File;
 import java.io.FileWriter;
 
@@ -35,7 +36,7 @@ public class LogHandler {
     private void createLogFile() {
         logFile = new File("src/main/java/fileManager/Node/Log.json");
         try {
-            if (!logFile.createNewFile()){
+            if (!logFile.createNewFile()) {
                 System.out.println("file already exists");
             }
             log.put("local", new JSONArray());
@@ -48,9 +49,10 @@ public class LogHandler {
 
     /**
      * Adds file to log
-     * @param fileName String :filename to add to log
+     *
+     * @param fileName         String :filename to add to log
      * @param downloadlocation int hash of node that has this file as local file
-     * @param location string: where the file is stored: replicated or local
+     * @param location         string: where the file is stored: replicated or local
      */
     public void addFileToLog(String fileName, int downloadlocation, String location) {
         JSONArray locationArray = (JSONArray) log.get(location);
@@ -64,6 +66,7 @@ public class LogHandler {
 
     /**
      * Removes file from log
+     *
      * @param fileName String filename to remove
      * @param location location to remove
      * @return returns the jsonObject if it is removed, otherwise it returns null
@@ -71,16 +74,32 @@ public class LogHandler {
     public JSONObject removeFileLog(String fileName, String location) {
         System.out.println("RefomveFileLog: " + fileName + " " + location);
         System.out.println("RefomveFileLog: " + log.toJSONString());
-
         JSONArray locationArray = (JSONArray) log.get(location);
-
-
         for (Object object : locationArray) {
             JSONObject jsonObject = (JSONObject) object;
             if (jsonObject.get("fileName").equals(fileName)) {
                 locationArray.remove(jsonObject);
                 writeLog();
                 return jsonObject;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * returns the downloadlocations of a file
+     *
+     * @param fileName name of file
+     * @param location location of file : replicated or local
+     * @return String of downloadlocation (if it exists, otherwise null)
+     */
+    public String checkDownloadlocations(String fileName, String location) {
+        System.out.println("check downloadlocations: " + log.toJSONString());
+        JSONArray locationArray = (JSONArray) log.get(location);
+        for (Object object : locationArray) {
+            JSONObject jsonObject = (JSONObject) object;
+            if (jsonObject.get("fileName").equals(fileName)) {
+                return (String) jsonObject.get("downloadlocation");
             }
         }
         return null;

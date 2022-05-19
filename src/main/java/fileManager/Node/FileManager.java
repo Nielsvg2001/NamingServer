@@ -1,6 +1,7 @@
 package fileManager.Node;
 
 import com.google.gson.JsonObject;
+import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
@@ -22,6 +23,7 @@ public class FileManager {
 
     /**
      * constructor
+     *
      * @param networkManager manager that manages all the network stuff
      */
     public FileManager(NetworkManager networkManager) {
@@ -34,29 +36,28 @@ public class FileManager {
     /**
      * Startup: scans all the files in the Local_files folder and send them to another node to replicate
      */
-    public void startUp(){
+    public void startUp() {
         System.out.println("startup files");
         File path = new File("src/main/java/fileManager/Node/Local_files");
-        File [] files = path.listFiles();
+        File[] files = path.listFiles();
         System.out.println("array of files" + Arrays.toString(files));
-        if(files!= null) {
+        if (files != null) {
             for (File file : files) {
                 if (file.isFile()) { //this line weeds out other directories/folders
                     System.out.println(file);
                     System.out.println(namingRequest(Node.hashCode(file.getName())));
                     //get IP address of replicated node of that file
                     Inet4Address nodeIp = namingRequest(Node.hashCode(file.getName()));
-                    try{
+                    try {
                         // if the normal replicated node of this file is not this node
-                        if(nodeIp != InetAddress.getLocalHost()){
-                            fileTransfer.sendFile(nodeIp,file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
+                        if (nodeIp != InetAddress.getLocalHost()) {
+                            fileTransfer.sendFile(nodeIp, file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
                         // if the normal replicated node of this file is this host, the file is send to the previous node
-                        else if (Inet4Address.getLocalHost() != networkManager.getPreviousIP()){
-                            fileTransfer.sendFile(networkManager.getPreviousIP(),file,  Node.hashCode(Inet4Address.getLocalHost().getHostName()));
+                        else if (Inet4Address.getLocalHost() != networkManager.getPreviousIP()) {
+                            fileTransfer.sendFile(networkManager.getPreviousIP(), file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -67,6 +68,7 @@ public class FileManager {
 
     /**
      * send REST request to Naming to get the IP address of the node that must have the file with hash
+     *
      * @param hash hash of file
      * @return Inet4Address of the node where the file must be
      */
@@ -74,7 +76,7 @@ public class FileManager {
         System.out.println("request");
         HttpResponse<Inet4Address> response = Unirest.get("http://" + NetworkManager.NAMINGSERVERADDRESS + ":" + NetworkManager.NAMINGPORT + "/namingRequest")
                 .queryString("hash", hash)
-                        .asObject(Inet4Address.class);
+                .asObject(Inet4Address.class);
         return response.getBody();
     }
 
@@ -90,12 +92,26 @@ public class FileManager {
         for (File file : files) {
             String fileName = file.getName();
             try {
-                Inet4Address IP = checkIsALocalFile(fileName);
+                Inet4Address IP = checkIsALocalFile(fileName, networkManager.getPreviousIP());
                 JSONObject log = fileTransfer.getLogHandler().removeFileLog(fileName, "replicated");
                 System.out.println(log.toJSONString());
                 int hostnamehash = (int) log.get("downloadlocation");
                 fileTransfer.sendFile(IP, file, hostnamehash);
-            }catch (Exception e){
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //send for all local files a delete message to the owner of the file
+        path = new File("src/main/java/fileManager/Node/Local_files");
+        files = path.listFiles();
+        assert files != null;
+        for (File file : files) {
+            String fileName = file.getName();
+            try {
+                Inet4Address owner = Naming.checkID(Node.hashCode(fileName));
+                Inet4Address IP = checkIsALocalFile(fileName, owner);
+                fileTransfer.sendDeleteMessage(IP, file);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -103,27 +119,27 @@ public class FileManager {
 
     /**
      * checkIsALocalFile checks if the file is a local file of the previous IP, if it is, it returns the IP of the previous node of the previous node
+     *
      * @param fileName file that will get checked
      * @return IP address where to send the file
      */
-    public Inet4Address checkIsALocalFile(String fileName) {
+    public Inet4Address checkIsALocalFile(String fileName, Inet4Address destination) {
         try {
             DatagramSocket datagramSocket = new DatagramSocket();
             byte[] bytes = fileName.getBytes();
-                try {
-                    //sending file name to previous node
-                    DatagramPacket packet = new DatagramPacket(bytes, bytes.length, networkManager.getPreviousIP(), EDGEPORT);
-                    datagramSocket.send(packet);
-                    // listen to response
-                    packet = new DatagramPacket(new byte[256], 256);
-                    datagramSocket.receive(packet);
-                    byte[] bytes1_= packet.getData();
-                    String IP = new String(bytes1_, 0, packet.getLength());
-                    Inet4Address inet4Address = (Inet4Address) Inet4Address.getByName(IP);
-                    return inet4Address;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                //sending file name to previous node
+                DatagramPacket packet = new DatagramPacket(bytes, bytes.length, destination, EDGEPORT);
+                datagramSocket.send(packet);
+                // listen to response
+                packet = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(packet);
+                byte[] bytes1_ = packet.getData();
+                String IP = new String(bytes1_, 0, packet.getLength());
+                return (Inet4Address) Inet4Address.getByName(IP);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         } catch (SocketException | RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -149,7 +165,7 @@ public class FileManager {
                         File path = new File("src/main/java/fileManager/Node/Local_files");
                         File[] files = path.listFiles();
                         assert files != null;
-                        for (File file: files) {
+                        for (File file : files) {
                             if (Node.hashCode(file.getName()) == Node.hashCode(fileName)) {
                                 isALocalFile = true;
                                 break;

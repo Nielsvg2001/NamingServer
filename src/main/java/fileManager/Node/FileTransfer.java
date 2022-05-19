@@ -13,6 +13,7 @@ import java.util.Arrays;
 public class FileTransfer {
 
     private static final int FILEPORT = 9996;
+    private static final int DELETEFILEPORT = 9955;
 
     private final LogHandler logHandler;
     NetworkManager networkManager;
@@ -21,6 +22,7 @@ public class FileTransfer {
     /**
      * constructor
      * starts fileListener in new thread
+     *
      * @param networkManager Networkmanager that does everything with the network
      */
     public FileTransfer(NetworkManager networkManager) {
@@ -30,15 +32,17 @@ public class FileTransfer {
         try {
             path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         new Thread(this::fileListener).start();
+        new Thread(this::deleteListener).start();
     }
 
     /**
      * send the file to the node with IP
-     * @param ip ip where to send the file
+     *
+     * @param ip         ip where to send the file
      * @param fileToSend file to send
      */
     public void sendFile(Inet4Address ip, File fileToSend, int hostnamehash) {
@@ -63,7 +67,27 @@ public class FileTransfer {
             dataOutputStream.writeInt(fileContentBytes.length);
             dataOutputStream.write(fileContentBytes);
 
-            System.out.println("File is sent! : "+ filename);
+            System.out.println("File is sent! : " + filename);
+        } catch (IOException error) {
+            error.printStackTrace();
+        }
+    }
+
+    /**
+     * Sends a delete message to the owner of the local file that is deleted
+     *
+     * @param ip          IP adddress of the replicated node
+     * @param deletedFile Deleted file
+     */
+    public void sendDeleteMessage(Inet4Address ip, File deletedFile) {
+        System.out.println("sending delete message");
+        try {
+            Socket socket = new Socket(ip, DELETEFILEPORT);
+            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            String filename = deletedFile.getName();
+            byte[] fileNameBytes = filename.getBytes();
+            dataOutputStream.writeInt(fileNameBytes.length);
+            System.out.println("File is sent! : " + filename);
         } catch (IOException error) {
             error.printStackTrace();
         }
@@ -80,8 +104,9 @@ public class FileTransfer {
                 Socket socket = serverSocket.accept();
                 Thread thread = new Thread(() -> {
                     try {
-                        while(!socket.isClosed()) {
+                        while (!socket.isClosed()) {
                             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                            //get hostnameLength
                             int hostnameLength = dataInputStream.readInt();
                             if (hostnameLength > 0) {
                                 byte[] hostnameBytes = new byte[hostnameLength];
@@ -112,8 +137,8 @@ public class FileTransfer {
                             dataInputStream.close();
                             System.out.println("File received!");
                             socket.close();
-                    }
-                } catch (IOException error) {
+                        }
+                    } catch (IOException error) {
                         error.printStackTrace();
                     }
                 });
@@ -124,6 +149,57 @@ public class FileTransfer {
         }
     }
 
+    /**
+     * listens to all packets from the nodes with the local files that deleted a file
+     * then it is checked in the log if the file exists somewhere else as a local file, is it not the case the file and log are deleted
+     */
+    public void deleteListener() {
+        System.out.println("Start deletefileListener");
+        try {
+            ServerSocket serverSocket = new ServerSocket(DELETEFILEPORT);
+            while (!serverSocket.isClosed()) {
+                Socket socket = serverSocket.accept();
+                Thread thread = new Thread(() -> {
+                    try {
+                        while (!socket.isClosed()) {
+                            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                            int fileNameLength = dataInputStream.readInt();
+                            String fileName = null;
+                            if (fileNameLength > 0) {
+                                byte[] fileNameBytes = new byte[fileNameLength];
+                                dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
+                                fileName = new String(fileNameBytes);
+                            }
+                            dataInputStream.close();
+                            System.out.println("deleteFile received!");
+                            socket.close();
+
+                            // delete file if it was the only local file
+                            File fileToDelete = new File(path_ReplicationFiles + "/" + fileName);
+                            logHandler.removeFileLog(fileName, "replicated");
+                            // if no other logs -> no other downloadlocation -> can be deleted
+                            if (logHandler.checkDownloadlocations(fileName, "replicated") == null) {
+                                if (fileToDelete.delete()) {
+                                    System.out.println(fileToDelete.getName() + " deleted");
+                                } else {
+                                    System.out.println("failed to delete file");
+                                }
+                            }
+                        }
+                    } catch (IOException error) {
+                        error.printStackTrace();
+                    }
+                });
+                thread.start();
+            }
+        } catch (IOException error) {
+            error.printStackTrace();
+        }
+    }
+
+    /**
+     * @return loghandler
+     */
     public LogHandler getLogHandler() {
         return logHandler;
     }
