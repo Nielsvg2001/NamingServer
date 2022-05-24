@@ -190,7 +190,10 @@ public class NetworkManager {
                 JSONObject log = logHandler.removeFileLog(file.getName(), "replicated"); // remove file from the log file
                 int hostnamehash = (int) log.get("downloadlocation");
                 Node.fileManager.fileTransfer.sendFile(address, file, hostnamehash); // send file to node
-                file.delete();  // delete file out of location
+                // delete file out of location
+                if(!file.delete()){
+                    System.out.println("error deleting file in checkReplicationValidity");
+                };
             }
         }
     }

@@ -27,7 +27,6 @@ public class FileTransfer {
     public FileTransfer(NetworkManager networkManager, LogHandler logHandler) {
         this.networkManager = networkManager;
         this.logHandler = logHandler;
-
         try {
             path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");
             Files.createDirectories(path_ReplicationFiles);
@@ -52,11 +51,8 @@ public class FileTransfer {
             String filename = fileToSend.getName();
             //3 packets: filename, filecontent and hash of hostname
             byte[] fileNameBytes = filename.getBytes();
-
             byte[] fileContentBytes = Files.readAllBytes(fileToSend.toPath());
-
             byte[] hostnamehashbyte = String.valueOf(hostnamehash).getBytes();
-
             dataOutputStream.writeInt(hostnamehashbyte.length);
             dataOutputStream.write(hostnamehashbyte);
 
@@ -111,13 +107,11 @@ public class FileTransfer {
                                 byte[] hostnameBytes = new byte[hostnameLength];
                                 dataInputStream.readFully(hostnameBytes, 0, hostnameBytes.length);
                                 int hostnamehash = Integer.parseInt(new String(hostnameBytes));
-
                                 int fileNameLength = dataInputStream.readInt();
                                 if (fileNameLength > 0) {
                                     byte[] fileNameBytes = new byte[fileNameLength];
                                     dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
                                     String fileName = new String(fileNameBytes);
-
                                     int fileContentLength = dataInputStream.readInt();
                                     if (fileContentLength > 0) {
                                         byte[] fileContentBytes = new byte[fileContentLength];

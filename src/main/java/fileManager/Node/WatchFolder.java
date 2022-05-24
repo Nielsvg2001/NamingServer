@@ -110,7 +110,6 @@ public class WatchFolder {
                     }
                     /*
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-
                         System.out.println("A file has been modified: " + fileName);
                     }
                      */

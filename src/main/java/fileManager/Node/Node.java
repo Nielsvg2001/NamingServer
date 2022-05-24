@@ -29,8 +29,6 @@ public class Node {
         logHandler = new LogHandler();
         fileManager = new FileManager(networkManager, logHandler);
         watchfolder = new WatchFolder(fileManager);
-
-
     }
 
     /**
