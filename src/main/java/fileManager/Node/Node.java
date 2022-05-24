@@ -4,6 +4,7 @@ public class Node {
     public NetworkManager networkManager;
     public static FileManager fileManager;
     public WatchFolder watchfolder;
+    public LogHandler logHandler;
 
     /**
      * to run node
@@ -25,8 +26,10 @@ public class Node {
     public Node() {
         // get own information
         networkManager = new NetworkManager();
-        fileManager = new FileManager(networkManager);
+        logHandler = new LogHandler();
+        fileManager = new FileManager(networkManager, logHandler);
         watchfolder = new WatchFolder(fileManager);
+
 
     }
 

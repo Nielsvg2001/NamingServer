@@ -2,7 +2,6 @@ package fileManager.Node;
 
 import java.io.*;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -25,9 +24,9 @@ public class FileTransfer {
      *
      * @param networkManager Networkmanager that does everything with the network
      */
-    public FileTransfer(NetworkManager networkManager) {
+    public FileTransfer(NetworkManager networkManager, LogHandler logHandler) {
         this.networkManager = networkManager;
-        this.logHandler = new LogHandler();
+        this.logHandler = logHandler;
 
         try {
             path_ReplicationFiles = Paths.get("src/main/java/fileManager/Node/Replicated_files/");

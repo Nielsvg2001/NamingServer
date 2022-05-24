@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.apache.juli.logging.Log;
 import org.json.simple.JSONObject;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.net.Inet4Address;
 public class FileManager {
     FileTransfer fileTransfer;
     NetworkManager networkManager;
+    public LogHandler logHandler;
 
     public static int EDGEPORT = 9995;
 
@@ -26,8 +28,9 @@ public class FileManager {
      *
      * @param networkManager manager that manages all the network stuff
      */
-    public FileManager(NetworkManager networkManager) {
-        fileTransfer = new FileTransfer(networkManager); // to transfer the files
+    public FileManager(NetworkManager networkManager, LogHandler logHandler) {
+        this.logHandler = logHandler;
+        fileTransfer = new FileTransfer(networkManager, logHandler); // to transfer the files
         this.networkManager = networkManager;
         startUp();
         new Thread(this::shutdownListener).start();
@@ -53,7 +56,7 @@ public class FileManager {
                         if (nodeIp != InetAddress.getLocalHost()) {
                             fileTransfer.sendFile(nodeIp, file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
-                        // if the normal replicated node of this file is this host, the file is send to the previous node
+                        // if the normal replicated node of this file is this host, the file is send to the previous node if the previous node is not itself
                         else if (Inet4Address.getLocalHost() != networkManager.getPreviousIP()) {
                             fileTransfer.sendFile(networkManager.getPreviousIP(), file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
