@@ -196,6 +196,20 @@ public class NetworkManager {
                 };
             }
         }
+        path = new File("src/main/java/fileManager/Node/Local_files");
+        files = path.listFiles();
+        assert files != null;
+        for (File file: files) {
+            Inet4Address ip = Node.fileManager.namingRequest(Node.hashCode(file.getName()));
+            if(ip.equals(address) | ){
+                Node.fileManager.fileTransfer.sendFile(address, file, Node.hashCode(file.getName()));
+                if(!file.delete()){
+                    System.out.println("error deleting file in checkReplicationValidity");
+                };
+            }
+
+        }
+
     }
 
     /**
