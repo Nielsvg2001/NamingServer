@@ -214,8 +214,10 @@ public class NetworkManager {
             // if normal replicated node is itself or new next node
             if (ip.equals(address) | ip.equals(node.networkManager.getNodeInfo(nextNode))) {
                 // move file from previous node to new inserted (next) node
-                node.fileManager.fileTransfer.sendDeleteMessage(node.networkManager.getPreviousIP(), file);
-                node.fileManager.fileTransfer.sendFile(node.networkManager.getNodeInfo(nextNode), file, currentID);
+                if(previousNode != currentID | previousNode == nextNode) {
+                    node.fileManager.fileTransfer.sendDeleteMessage(node.networkManager.getPreviousIP(), file);
+                    node.fileManager.fileTransfer.sendFile(node.networkManager.getNodeInfo(nextNode), file, currentID);
+                }
             }
         }
     }
