@@ -2,7 +2,7 @@ package fileManager.Node;
 
 public class Node {
     public NetworkManager networkManager;
-    public static FileManager fileManager;
+    public FileManager fileManager;
     public WatchFolder watchfolder;
     public LogHandler logHandler;
 
@@ -25,9 +25,9 @@ public class Node {
      */
     public Node() {
         // get own information
-        networkManager = new NetworkManager();
+        networkManager = new NetworkManager(this);
         logHandler = new LogHandler();
-        fileManager = new FileManager(networkManager, logHandler);
+        fileManager = new FileManager( networkManager, logHandler);
         watchfolder = new WatchFolder(fileManager);
     }
 
@@ -52,7 +52,7 @@ public class Node {
     /**
      * calls filemanager.startup
      */
-    public static void sendReplicatedfiles(){
+    public void sendReplicatedfiles(){
         fileManager.startUp();
     }
 }

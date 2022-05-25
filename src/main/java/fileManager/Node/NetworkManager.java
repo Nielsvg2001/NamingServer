@@ -1,13 +1,11 @@
 package fileManager.Node;
 
-
 import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
@@ -15,6 +13,7 @@ import java.net.*;
 
 public class NetworkManager {
 
+    public Node node;
     public String hostName;
     private int currentID;
     private InetAddress ipAddress;
@@ -30,7 +29,12 @@ public class NetworkManager {
     private MulticastSocket msocket;
     private InetAddress multicastGroup;
 
-    public NetworkManager() {
+    /**
+     * constructor of NetworkManager
+     * @param node the node is passed so that the NetworkManager can acces all functions (also the functions of FileManager and FileTransfer)
+     */
+    public NetworkManager(Node node) {
+        this.node = node;
         try {
             hostName = InetAddress.getLocalHost().getHostName();
             ipAddress = InetAddress.getLocalHost();
@@ -39,7 +43,6 @@ public class NetworkManager {
         } catch (UnknownHostException e) {
             System.out.println("Could not get LocalHost information: " + e.getMessage());
         }
-
         // start services
         int numNodesWhenEntered = dicovery();
         new Thread(this::listenForNewNodes).start();
@@ -164,7 +167,7 @@ public class NetworkManager {
                     System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                     //if the node was the only node in the network and now there is another nextnode, it has to send its local files to be replicated
                     if(onlynode && nextNode!=currentID){
-                        Node.sendReplicatedfiles();
+                        node.sendReplicatedfiles();
                     }
                 });
                 thread.start();
@@ -186,14 +189,14 @@ public class NetworkManager {
         // check if replicated file hashes are closer to hash of inserted node than the hash of the owner
         for (File file: files) {
             if(insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()){
-                LogHandler logHandler = Node.fileManager.fileTransfer.getLogHandler();
+                LogHandler logHandler = node.fileManager.fileTransfer.getLogHandler();
                 JSONObject log = logHandler.removeFileLog(file.getName(), "replicated"); // remove file from the log file
                 int hostnamehash = (int) log.get("downloadlocation");
-                Node.fileManager.fileTransfer.sendFile(address, file, hostnamehash); // send file to node
+                node.fileManager.fileTransfer.sendFile(address, file, hostnamehash); // send file to node
                 // delete file out of location
                 if(!file.delete()){
                     System.out.println("error deleting file in checkReplicationValidity");
-                };
+                }
             }
         }
         path = new File("src/main/java/fileManager/Node/Local_files");
