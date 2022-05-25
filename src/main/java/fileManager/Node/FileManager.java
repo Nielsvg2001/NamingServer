@@ -163,7 +163,6 @@ public class FileManager {
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
                 Thread thread = new Thread(() -> {
-                    try {
                         // previous node checks if he has the file as a local file
 
                         byte[] bytes = datagramPacket.getData();
@@ -179,8 +178,13 @@ public class FileManager {
                             }
                         }
                         //send response
-                        DatagramSocket socket = new DatagramSocket();
-                        try {
+                    DatagramSocket socket = null;
+                    try {
+                        socket = new DatagramSocket();
+                    } catch (SocketException e) {
+                        e.printStackTrace();
+                    }
+                    try {
                             // if he already has the local file, send ip address of previous node to the sender
                             if (isALocalFile) {
                                 String IP = networkManager.getPreviousIP().getHostAddress();
@@ -198,9 +202,6 @@ public class FileManager {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
                 });
                 thread.start();
             }
@@ -210,5 +211,4 @@ public class FileManager {
             e.printStackTrace();
         }
     }
-
 }
