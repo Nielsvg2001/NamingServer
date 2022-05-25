@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 
 public class NetworkManager {
@@ -202,8 +203,8 @@ public class NetworkManager {
         // check if replicated file hashes are closer to hash of inserted node than the hash of the owner
         for (File file : files) {
             // here fout, kijken naar namingserver -> ni geraken bij Naming
-            if (insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()) {
-                //newnode.getip==node.fileManager.namingRequest(Node.hashCode(file.getName()));
+            // BEFORE: insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()
+            if (Arrays.equals(node.networkManager.getNodeInfo(insertedNodeHash).getAddress(), node.fileManager.namingRequest(Node.hashCode(file.getName())).getAddress())) {
                 LogHandler logHandler = node.fileManager.fileTransfer.getLogHandler();
                 JSONObject log = logHandler.removeFileLog(file.getName(), "replicated"); // remove file from the log file
                 int hostnamehash = (int) log.get("downloadlocation");
