@@ -53,9 +53,6 @@ public class WatchFolder {
                     // STEP7: Perform necessary action with the event
                     if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                         System.out.println("A new file is created : " + fileName);
-                        System.out.println(file.getName());
-                        System.out.println(file.getAbsolutePath());
-                        System.out.println(file);
                         //check replicated node of file
                         System.out.println("hash = " + Node.hashCode(String.valueOf(fileName)));
                         Inet4Address ipaddress = fileManager.namingRequest(Node.hashCode(String.valueOf(fileName)));
