@@ -27,7 +27,7 @@ public class Node {
         // get own information
         networkManager = new NetworkManager(this);
         logHandler = new LogHandler();
-        fileManager = new FileManager( networkManager, logHandler);
+        fileManager = new FileManager(networkManager, logHandler);
         watchfolder = new WatchFolder(fileManager);
     }
 
@@ -42,6 +42,7 @@ public class Node {
 
     /**
      * calculate the hash of a file or hostname
+     *
      * @param toHash String that must be hashed
      * @return int hash
      */
@@ -52,7 +53,7 @@ public class Node {
     /**
      * calls filemanager.startup
      */
-    public void sendReplicatedfiles(){
+    public void sendReplicatedfiles() {
         fileManager.startUp();
     }
 }

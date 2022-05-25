@@ -4,6 +4,7 @@ import fileManager.NamingServer.Naming;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
@@ -16,8 +17,9 @@ public class RestController {
     /**
      * receive REST Post request /addNode
      * then hashes the name and add it to the namingslist in Naming.java
+     *
      * @param nodeName name of node that must be added
-     * @param nodeIP ip of node that must be added
+     * @param nodeIP   ip of node that must be added
      * @return String with error if node already exists or with confirmation that node is added
      */
     @PostMapping("/addNode")
@@ -34,6 +36,7 @@ public class RestController {
     /**
      * Receive Rest Delete request /removeNode
      * removes node from the naminglist
+     *
      * @param nodeName name of node that must be removed
      * @return String with error if node was not in list or confirmation that node is deleted
      */
@@ -46,6 +49,7 @@ public class RestController {
 
     /**
      * receive REST Get request /namingRequest
+     *
      * @param hash hash value of file
      * @return Inet4Addres IP address of node where the file must be normally
      */
@@ -57,6 +61,7 @@ public class RestController {
     /**
      * receive REST Get request /getNodeInfo
      * gets the address over the node with the hash
+     *
      * @param id hash of node
      * @return Inet4Address: IP addres of node that has id as hash
      */

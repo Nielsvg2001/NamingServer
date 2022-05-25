@@ -1,6 +1,7 @@
 package fileManager.NamingServer;
 
 import org.springframework.stereotype.Service;
+
 import java.net.Inet4Address;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
@@ -33,6 +34,7 @@ public class Naming {
 
     /**
      * gets the address over the node with the hash
+     *
      * @param id hash of the node
      * @return returns the Inet4Address of the node with hash if it is in the list, otherwise it returns null
      */
@@ -94,7 +96,7 @@ public class Naming {
 
     /**
      * @param hash hash of node that must be removed
-     * removes node
+     *             removes node
      */
     public static void removeNode(int hash) {
         Lock lock = new ReentrantLock();

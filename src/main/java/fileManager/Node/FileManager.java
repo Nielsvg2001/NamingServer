@@ -1,17 +1,14 @@
 package fileManager.Node;
 
-import com.google.gson.JsonObject;
 import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.apache.juli.logging.Log;
 import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
-import java.net.Inet4Address;
 
 /**
  * class that mangages the files

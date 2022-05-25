@@ -6,6 +6,7 @@ import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
@@ -31,6 +32,7 @@ public class NetworkManager {
 
     /**
      * constructor of NetworkManager
+     *
      * @param node the node is passed so that the NetworkManager can acces all functions (also the functions of FileManager and FileTransfer)
      */
     public NetworkManager(Node node) {
@@ -57,6 +59,7 @@ public class NetworkManager {
     /**
      * Add Node to the network
      * sends POST request to REST server
+     *
      * @param ipaddr Ip adress of new node
      */
     public void addNode(InetAddress ipaddr) {
@@ -72,6 +75,7 @@ public class NetworkManager {
     /**
      * remove Node from the network
      * sends DELETE request to REST server
+     *
      * @param nodeName String name of node
      */
     public void removeNode(String nodeName) {
@@ -83,6 +87,7 @@ public class NetworkManager {
 
     /**
      * returns the Inet4Addres of the node with id
+     *
      * @param id Int hash of the hostname
      * @return Inet4Address IP address of node
      */
@@ -103,6 +108,7 @@ public class NetworkManager {
     /**
      * sends a multicast to all nodes in the network to join the network
      * then it get a response from the namingserver with the previousNode and nextnode and set these variables
+     *
      * @return number of nodes in the network
      */
     public int dicovery() {
@@ -157,7 +163,7 @@ public class NetworkManager {
                     //or if the current node has the biggest hash, then  the new nextnode is set if the new node has the biggest or smallest hash
                     if ((hash < nextNode && hash > currentID) || (nextNode <= currentID && hash > currentID) || (nextNode <= currentID && hash < nextNode)) {
                         nextNode = hash;
-                        checkReplicationValidity(hash,(Inet4Address) packet.getAddress()); // check if new node should be the owner of replicated files in this node
+                        checkReplicationValidity(hash, (Inet4Address) packet.getAddress()); // check if new node should be the owner of replicated files in this node
                     }
                     //set new previousnode if the newnode is between the previousnode and the current id
                     // or if the currentnode has the smallest hash, then the previousnode is set if the newnode has the smallest or the biggest hash
@@ -166,7 +172,7 @@ public class NetworkManager {
                     }
                     System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                     //if the node was the only node in the network and now there is another nextnode, it has to send its local files to be replicated
-                    if(onlynode && nextNode!=currentID){
+                    if (onlynode && nextNode != currentID) {
                         node.sendReplicatedfiles();
                     }
                 });
@@ -179,22 +185,23 @@ public class NetworkManager {
 
     /**
      * check for every file of replicated_files if it is smaller than the hash of the new node -> then new node becomes owner of these files
+     *
      * @param insertedNodeHash hash of hostname new node
-     * @param address Inet4Address IP address of new node
+     * @param address          Inet4Address IP address of new node
      */
-    public void checkReplicationValidity(int insertedNodeHash, Inet4Address address){
+    public void checkReplicationValidity(int insertedNodeHash, Inet4Address address) {
         File path = new File("src/main/java/fileManager/Node/Replicated_files");
         File[] files = path.listFiles();
         assert files != null;
         // check if replicated file hashes are closer to hash of inserted node than the hash of the owner
-        for (File file: files) {
-            if(insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()){
+        for (File file : files) {
+            if (insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()) {
                 LogHandler logHandler = node.fileManager.fileTransfer.getLogHandler();
                 JSONObject log = logHandler.removeFileLog(file.getName(), "replicated"); // remove file from the log file
                 int hostnamehash = (int) log.get("downloadlocation");
                 node.fileManager.fileTransfer.sendFile(address, file, hostnamehash); // send file to node
                 // delete file out of location
-                if(!file.delete()){
+                if (!file.delete()) {
                     System.out.println("error deleting file in checkReplicationValidity");
                 }
             }
@@ -202,17 +209,15 @@ public class NetworkManager {
         path = new File("src/main/java/fileManager/Node/Local_files");
         files = path.listFiles();
         assert files != null;
-        for (File file: files) {
-            Inet4Address ip = Node.fileManager.namingRequest(Node.hashCode(file.getName()));
-            if(ip.equals(address) | ){
-                Node.fileManager.fileTransfer.sendFile(address, file, Node.hashCode(file.getName()));
-                if(!file.delete()){
-                    System.out.println("error deleting file in checkReplicationValidity");
-                };
+        for (File file : files) {
+            Inet4Address ip = node.fileManager.namingRequest(Node.hashCode(file.getName()));
+            // if normal replicated node is itself or new next node
+            if (ip.equals(address) | ip.equals(node.networkManager.getNodeInfo(nextNode))) {
+                // move file from previous node to new inserted (next) node
+                node.fileManager.fileTransfer.sendDeleteMessage(node.networkManager.getPreviousIP(), file);
+                node.fileManager.fileTransfer.sendFile(node.networkManager.getNodeInfo(nextNode), file, currentID);
             }
-
         }
-
     }
 
     /**
@@ -358,6 +363,7 @@ public class NetworkManager {
 
     /**
      * if failure is detected, the hostname is send to the namingserver
+     *
      * @param hash hash of hostname that failed
      */
     public void failure(int hash) {
