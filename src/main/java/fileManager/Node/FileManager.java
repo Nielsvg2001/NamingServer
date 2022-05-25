@@ -50,10 +50,10 @@ public class FileManager {
                     Inet4Address nodeIp = namingRequest(Node.hashCode(file.getName()));
                     try {
                         System.out.println("in startup:");
-                        System.out.println(nodeIp);
-                        System.out.println(InetAddress.getLocalHost());
+                        System.out.println(nodeIp.getAddress());
+                        System.out.println(InetAddress.getLocalHost().getAddress());
                         // if the normal replicated node of this file is not this node
-                        if (nodeIp != InetAddress.getLocalHost()) {
+                        if (!Arrays.equals(nodeIp.getAddress(), InetAddress.getLocalHost().getAddress())) {
                             System.out.println("file send to normal replicated file");
                             fileTransfer.sendFile(nodeIp, file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
