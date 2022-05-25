@@ -161,10 +161,11 @@ public class FileManager {
             DatagramSocket datagramSocket = new DatagramSocket(EDGEPORT);
             while (!datagramSocket.isClosed()) {
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
+                datagramSocket.receive(datagramPacket);
                 Thread thread = new Thread(() -> {
                     try {
                         // previous node checks if he has the file as a local file
-                        datagramSocket.receive(datagramPacket);
+
                         byte[] bytes = datagramPacket.getData();
                         String fileName = Arrays.toString(bytes);
                         boolean isALocalFile = false;
@@ -205,6 +206,8 @@ public class FileManager {
             }
         } catch (SocketException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
