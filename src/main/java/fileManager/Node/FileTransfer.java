@@ -83,7 +83,8 @@ public class FileTransfer {
             String filename = deletedFile.getName();
             byte[] fileNameBytes = filename.getBytes();
             dataOutputStream.writeInt(fileNameBytes.length);
-            System.out.println("File is sent! : " + filename);
+            dataOutputStream.write(fileNameBytes);
+            System.out.println("Delete File is sent! : " + filename);
             socket.close();
         } catch (IOException error) {
             error.printStackTrace();
