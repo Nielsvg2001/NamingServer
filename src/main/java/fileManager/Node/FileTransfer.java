@@ -67,6 +67,7 @@ public class FileTransfer {
         } catch (IOException error) {
             error.printStackTrace();
         }
+        System.out.println("sendfile completed");
     }
 
     /**

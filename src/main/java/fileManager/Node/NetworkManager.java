@@ -274,6 +274,7 @@ public class NetworkManager {
                 //receive packet
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
+                System.out.println("shutdown received packet");
                 //create new thread for every new packet
                 Thread thread = new Thread(() -> {
                     try {
