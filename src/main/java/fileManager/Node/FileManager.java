@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * class that mangages the files
@@ -58,7 +59,7 @@ public class FileManager {
                             fileTransfer.sendFile(nodeIp, file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
                         // if the normal replicated node of this file is this host, the file is send to the previous node if the previous node is not itself
-                        else if (Inet4Address.getLocalHost() != networkManager.getPreviousIP()) {
+                        else if (!Arrays.equals(Inet4Address.getLocalHost().getAddress(), networkManager.getPreviousIP().getAddress())) {
                             fileTransfer.sendFile(networkManager.getPreviousIP(), file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                             System.out.println("file send to  previous node ");
                         }
