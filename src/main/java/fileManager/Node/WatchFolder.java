@@ -77,9 +77,6 @@ public class WatchFolder {
                     // if file deleted
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                         System.out.println("A file has been deleted: " + fileName);
-                        System.out.println(file.getName());
-                        System.out.println(file.getAbsolutePath());
-                        System.out.println(file);
                         try {
                             //check replicated node of file
                             System.out.println("hash = " + Node.hashCode(String.valueOf(fileName)));

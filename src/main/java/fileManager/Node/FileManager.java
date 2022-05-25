@@ -49,13 +49,18 @@ public class FileManager {
                     //get IP address of replicated node of that file
                     Inet4Address nodeIp = namingRequest(Node.hashCode(file.getName()));
                     try {
+                        System.out.println("in startup:");
+                        System.out.println(nodeIp);
+                        System.out.println(InetAddress.getLocalHost());
                         // if the normal replicated node of this file is not this node
                         if (nodeIp != InetAddress.getLocalHost()) {
+                            System.out.println("file send to normal replicated file");
                             fileTransfer.sendFile(nodeIp, file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
                         }
                         // if the normal replicated node of this file is this host, the file is send to the previous node if the previous node is not itself
                         else if (Inet4Address.getLocalHost() != networkManager.getPreviousIP()) {
                             fileTransfer.sendFile(networkManager.getPreviousIP(), file, Node.hashCode(Inet4Address.getLocalHost().getHostName()));
+                            System.out.println("file send to  previous node ");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
