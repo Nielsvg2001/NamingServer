@@ -175,7 +175,7 @@ public class NetworkManager {
                     if (onlynode && nextNode != currentID) {
                         //sleep because other node is still starting up
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(3000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
