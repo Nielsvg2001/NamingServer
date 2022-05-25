@@ -173,6 +173,12 @@ public class NetworkManager {
                     System.out.println("In listenForNewNodes: The previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
                     //if the node was the only node in the network and now there is another nextnode, it has to send its local files to be replicated
                     if (onlynode && nextNode != currentID) {
+                        //sleep because other node is still starting up
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         node.sendReplicatedfiles();
                     }
                 });
