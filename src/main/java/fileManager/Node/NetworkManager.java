@@ -1,13 +1,11 @@
 package fileManager.Node;
 
-
 import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
@@ -45,7 +43,6 @@ public class NetworkManager {
         } catch (UnknownHostException e) {
             System.out.println("Could not get LocalHost information: " + e.getMessage());
         }
-
         // start services
         int numNodesWhenEntered = dicovery();
         new Thread(this::listenForNewNodes).start();
