@@ -63,6 +63,7 @@ public class FileTransfer {
             dataOutputStream.write(fileContentBytes);
 
             System.out.println("File is sent! : " + filename);
+            socket.close();
         } catch (IOException error) {
             error.printStackTrace();
         }
@@ -83,6 +84,7 @@ public class FileTransfer {
             byte[] fileNameBytes = filename.getBytes();
             dataOutputStream.writeInt(fileNameBytes.length);
             System.out.println("File is sent! : " + filename);
+            socket.close();
         } catch (IOException error) {
             error.printStackTrace();
         }
