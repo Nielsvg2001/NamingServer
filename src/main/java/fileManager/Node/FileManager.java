@@ -44,14 +44,14 @@ public class FileManager {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) { //this line weeds out other directories/folders
-                    System.out.println(file);
                     System.out.println(namingRequest(Node.hashCode(file.getName())));
                     //get IP address of replicated node of that file
                     Inet4Address nodeIp = namingRequest(Node.hashCode(file.getName()));
                     try {
                         System.out.println("in startup:");
-                        System.out.println(nodeIp.getAddress());
-                        System.out.println(InetAddress.getLocalHost().getAddress());
+                        System.out.println("local file found to be replicated: ");
+                        System.out.println(file);
+                        System.out.println("hash: "+Node.hashCode(file.getName()));
                         // if the normal replicated node of this file is not this node
                         if (!Arrays.equals(nodeIp.getAddress(), InetAddress.getLocalHost().getAddress())) {
                             System.out.println("file send to normal replicated file");
