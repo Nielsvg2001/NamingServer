@@ -13,7 +13,6 @@ public class FileTransfer {
 
     private static final int FILEPORT = 9996;
     private static final int DELETEFILEPORT = 9955;
-
     private final LogHandler logHandler;
     NetworkManager networkManager;
     private Path path_ReplicationFiles;
@@ -55,13 +54,10 @@ public class FileTransfer {
             byte[] hostnamehashbyte = String.valueOf(hostnamehash).getBytes();
             dataOutputStream.writeInt(hostnamehashbyte.length);
             dataOutputStream.write(hostnamehashbyte);
-
             dataOutputStream.writeInt(fileNameBytes.length);
             dataOutputStream.write(fileNameBytes);
-
             dataOutputStream.writeInt(fileContentBytes.length);
             dataOutputStream.write(fileContentBytes);
-
             System.out.println("File is sent! : " + filename);
             socket.close();
         } catch (IOException error) {
@@ -170,7 +166,6 @@ public class FileTransfer {
                             dataInputStream.close();
                             System.out.println("deleteFile received!");
                             socket.close();
-
                             // delete file if it was the only local file
                             File fileToDelete = new File(path_ReplicationFiles + "/" + fileName);
                             logHandler.removeFileLog(fileName, "replicated");

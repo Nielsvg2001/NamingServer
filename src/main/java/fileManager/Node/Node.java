@@ -12,7 +12,6 @@ public class Node {
     public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger("org.apache.http");
         root.setLevel(ch.qos.logback.classic.Level.OFF);
-
         Node cl = new Node();
         //cl.fileManager.namingRequest("testfile name.txt");;
         //Thread.sleep(60000);
