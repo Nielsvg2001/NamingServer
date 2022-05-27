@@ -4,12 +4,10 @@ import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * class that mangages the files
