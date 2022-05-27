@@ -187,7 +187,7 @@ public class FileManager {
                     }
                     try {
                             // if he already has the local file, send ip address of previous node to the sender
-                        System.out.println(fileName + "is local file: " + isALocalFile);
+                        //System.out.println(fileName + "is local file: " + isALocalFile);
                             if (isALocalFile) {
                                 String IP = networkManager.getPreviousIP().getHostAddress();
                                 byte[] bytes1 = IP.getBytes();
