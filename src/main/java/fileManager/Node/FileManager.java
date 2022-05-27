@@ -101,8 +101,11 @@ public class FileManager {
                 Inet4Address IP = checkIsALocalFile(fileName, networkManager.getPreviousIP());
                 JSONObject log = fileTransfer.getLogHandler().removeFileLog(fileName, "replicated");
                 System.out.println(log.toJSONString());
-                int hostnamehash = (int) log.get("downloadlocation");
-                fileTransfer.sendFile(IP, file, hostnamehash);
+                // if 2 nodes in the network, don't send the file to the previous node from the previous node
+                if(!Arrays.equals(IP.getAddress(), Inet4Address.getLocalHost().getAddress())){
+                    int hostnamehash = (int) log.get("downloadlocation");
+                    fileTransfer.sendFile(IP, file, hostnamehash);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

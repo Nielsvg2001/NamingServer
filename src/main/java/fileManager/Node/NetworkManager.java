@@ -203,8 +203,7 @@ public class NetworkManager {
         // check if replicated file hashes are closer to hash of inserted node than the hash of the owner
         for (File file : files) {
             // here fout, kijken naar namingserver -> ni geraken bij Naming
-            // BEFORE: insertedNodeHash < Node.hashCode(file.getName()) | insertedNodeHash == Naming.getNodesList().lastKey()
-            if (Arrays.equals(node.networkManager.getNodeInfo(insertedNodeHash).getAddress(), node.fileManager.namingRequest(Node.hashCode(file.getName())).getAddress())) {
+            if (Arrays.equals(address.getAddress(), node.fileManager.namingRequest(Node.hashCode(file.getName())).getAddress())) {
                 LogHandler logHandler = node.fileManager.fileTransfer.getLogHandler();
                 JSONObject log = logHandler.removeFileLog(file.getName(), "replicated"); // remove file from the log file
                 int hostnamehash = (int) log.get("downloadlocation");
@@ -221,7 +220,7 @@ public class NetworkManager {
         for (File file : files) {
             Inet4Address ip = node.fileManager.namingRequest(Node.hashCode(file.getName()));
             // if normal replicated node is itself or new next node
-            if (ip.equals(address) | ip.equals(node.networkManager.getNodeInfo(nextNode))) {
+            if (ip.equals(address)) {
                 // move file from previous node to new inserted (next) node
                 if(previousNode != currentID | previousNode == nextNode) {
                     node.fileManager.fileTransfer.sendDeleteMessage(node.networkManager.getPreviousIP(), file);
