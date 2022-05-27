@@ -115,7 +115,7 @@ public class FileManager {
         for (File file : files) {
             String fileName = file.getName();
             try {
-                Inet4Address owner = Naming.checkID(Node.hashCode(fileName));
+                Inet4Address owner = namingRequest(Node.hashCode(fileName));
                 Inet4Address IP = checkIsALocalFile(fileName, owner);
                 fileTransfer.sendDeleteMessage(IP, file);
             } catch (Exception e) {
