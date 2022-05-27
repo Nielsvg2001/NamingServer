@@ -167,7 +167,7 @@ public class FileManager {
                         // previous node checks if he has the file as a local file
 
                         byte[] bytes = datagramPacket.getData();
-                        String fileName = Arrays.toString(bytes);
+                        String fileName = new String(bytes, 0, datagramPacket.getLength());
                         boolean isALocalFile = false;
                         File path = new File("src/main/java/fileManager/Node/Local_files");
                         File[] files = path.listFiles();
@@ -196,7 +196,7 @@ public class FileManager {
                             }
                             // if he doesn't have the local file, send ip address of current node to the sender
                             else {
-                                String IP = String.valueOf(Inet4Address.getLocalHost().getAddress());
+                                String IP = Arrays.toString(Inet4Address.getLocalHost().getAddress());
                                 byte[] bytes1 = IP.getBytes();
                                 DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
