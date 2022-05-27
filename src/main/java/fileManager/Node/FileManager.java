@@ -189,14 +189,14 @@ public class FileManager {
                             // if he already has the local file, send ip address of previous node to the sender
                         System.out.println(fileName + "is local file: " + isALocalFile);
                             if (isALocalFile) {
-                                String IP = Arrays.toString(networkManager.getPreviousIP().getAddress());
+                                String IP = networkManager.getPreviousIP().getHostAddress();
                                 byte[] bytes1 = IP.getBytes();
                                 DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
                             }
                             // if he doesn't have the local file, send ip address of current node to the sender
                             else {
-                                String IP = Arrays.toString(Inet4Address.getLocalHost().getAddress());
+                                String IP = Inet4Address.getLocalHost().getHostAddress();
                                 byte[] bytes1 = IP.getBytes();
                                 DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
                                 socket.send(packet);
