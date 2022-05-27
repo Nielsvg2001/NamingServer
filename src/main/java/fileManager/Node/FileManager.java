@@ -96,6 +96,7 @@ public class FileManager {
         for (File file : files) {
             String fileName = file.getName();
             try {
+                System.out.println("In shutdown: the previous node is: " + networkManager.getPreviousIP());
                 Inet4Address IP = checkIsALocalFile(fileName, networkManager.getPreviousIP());
                 JSONObject log = fileTransfer.getLogHandler().removeFileLog(fileName, "replicated");
                 System.out.println(log.toJSONString());
