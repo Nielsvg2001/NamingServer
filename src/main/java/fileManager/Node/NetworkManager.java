@@ -1,12 +1,10 @@
 package fileManager.Node;
 
-import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
@@ -52,7 +50,6 @@ public class NetworkManager {
         new Thread(this::shutdownListener).start();
         new Thread(this::checkNeighbors).start();
         new Thread(this::failureCheckListener).start();
-
         System.out.println("I'm node " + hostName + "(" + currentID + ")" + " and my ip is " + ipAddress);
         System.out.println("There are " + numNodesWhenEntered + " nodes in the network \nThe previous node is " + previousNode + " (" + getNodeInfo(previousNode) + ") and the next node is " + nextNode + " (" + getNodeInfo(nextNode) + ")");
     }
@@ -121,11 +118,9 @@ public class NetworkManager {
             DatagramPacket datagramPacket = new DatagramPacket(buf, 0, buf.length, multicastGroup, DISCOVERYPORT);
             datagramPacket.setAddress(multicastGroup);
             msocket.send(datagramPacket);
-
             // Receive response from naming server
             datagramPacket = new DatagramPacket(new byte[1024], 1024);
             msocket.receive(datagramPacket);
-
             // Handle received data
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(new String(datagramPacket.getData(), 0, datagramPacket.getLength()));
