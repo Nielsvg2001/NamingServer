@@ -1,6 +1,5 @@
 package fileManager.Node;
 
-import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
@@ -222,7 +221,7 @@ public class NetworkManager {
             // if normal replicated node is itself or new next node
             if (ip.equals(address)) {
                 // move file from previous node to new inserted (next) node
-                if(previousNode != currentID | previousNode == nextNode) {
+                if (previousNode != currentID | previousNode == nextNode) {
                     node.fileManager.fileTransfer.sendDeleteMessage(node.networkManager.getPreviousIP(), file);
                     node.fileManager.fileTransfer.sendFile(node.networkManager.getNodeInfo(nextNode), file, currentID);
                 }
