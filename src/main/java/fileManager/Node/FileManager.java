@@ -1,9 +1,9 @@
 package fileManager.Node;
 
+import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
@@ -50,7 +50,7 @@ public class FileManager {
                         System.out.println("in startup:");
                         System.out.println("local file found to be replicated: ");
                         System.out.println(file);
-                        System.out.println("hash: " + Node.hashCode(file.getName()));
+                        System.out.println("hash: "+Node.hashCode(file.getName()));
                         // if the normal replicated node of this file is not this node
                         if (!Arrays.equals(nodeIp.getAddress(), InetAddress.getLocalHost().getAddress())) {
                             System.out.println("file send to normal replicated file");
@@ -96,16 +96,13 @@ public class FileManager {
         for (File file : files) {
             String fileName = file.getName();
             try {
-                if (networkManager.getPreviousIP() != null) {
-                    fileTransfer.sendFile(networkManager.getPreviousIP(), file, Node.hashCode(fileName));
-                    Inet4Address IP = checkIsALocalFile(fileName, networkManager.getPreviousIP());
-                    JSONObject log = fileTransfer.getLogHandler().removeFileLog(fileName, "replicated");
-                    System.out.println(log.toJSONString());
-                    // if 2 nodes in the network, don't send the file to the previous node from the previous node
-                    if (!Arrays.equals(IP.getAddress(), Inet4Address.getLocalHost().getAddress())) {
-                        int hostnamehash = (int) log.get("downloadlocation");
-                        fileTransfer.sendFile(IP, file, hostnamehash);
-                    }
+                Inet4Address IP = checkIsALocalFile(fileName, networkManager.getPreviousIP());
+                JSONObject log = fileTransfer.getLogHandler().removeFileLog(fileName, "replicated");
+                System.out.println(log.toJSONString());
+                // if 2 nodes in the network, don't send the file to the previous node from the previous node
+                if(!Arrays.equals(IP.getAddress(), Inet4Address.getLocalHost().getAddress())){
+                    int hostnamehash = (int) log.get("downloadlocation");
+                    fileTransfer.sendFile(IP, file, hostnamehash);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -167,21 +164,21 @@ public class FileManager {
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
                 Thread thread = new Thread(() -> {
-                    // previous node checks if he has the file as a local file
+                        // previous node checks if he has the file as a local file
 
-                    byte[] bytes = datagramPacket.getData();
-                    String fileName = Arrays.toString(bytes);
-                    boolean isALocalFile = false;
-                    File path = new File("src/main/java/fileManager/Node/Local_files");
-                    File[] files = path.listFiles();
-                    assert files != null;
-                    for (File file : files) {
-                        if (Node.hashCode(file.getName()) == Node.hashCode(fileName)) {
-                            isALocalFile = true;
-                            break;
+                        byte[] bytes = datagramPacket.getData();
+                        String fileName = Arrays.toString(bytes);
+                        boolean isALocalFile = false;
+                        File path = new File("src/main/java/fileManager/Node/Local_files");
+                        File[] files = path.listFiles();
+                        assert files != null;
+                        for (File file : files) {
+                            if (Node.hashCode(file.getName()) == Node.hashCode(fileName)) {
+                                isALocalFile = true;
+                                break;
+                            }
                         }
-                    }
-                    //send response
+                        //send response
                     DatagramSocket socket = null;
                     try {
                         socket = new DatagramSocket();
@@ -189,23 +186,23 @@ public class FileManager {
                         e.printStackTrace();
                     }
                     try {
-                        // if he already has the local file, send ip address of previous node to the sender
-                        if (isALocalFile) {
-                            String IP = networkManager.getPreviousIP().getHostAddress();
-                            byte[] bytes1 = IP.getBytes();
-                            DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
-                            socket.send(packet);
+                            // if he already has the local file, send ip address of previous node to the sender
+                            if (isALocalFile) {
+                                String IP = networkManager.getPreviousIP().getHostAddress();
+                                byte[] bytes1 = IP.getBytes();
+                                DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
+                                socket.send(packet);
+                            }
+                            // if he doesn't have the local file, send ip address of current node to the sender
+                            else {
+                                String IP = Inet4Address.getLocalHost().getHostAddress();
+                                byte[] bytes1 = IP.getBytes();
+                                DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
+                                socket.send(packet);
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
-                        // if he doesn't have the local file, send ip address of current node to the sender
-                        else {
-                            String IP = Inet4Address.getLocalHost().getHostAddress();
-                            byte[] bytes1 = IP.getBytes();
-                            DatagramPacket packet = new DatagramPacket(bytes1, bytes1.length, datagramPacket.getAddress(), datagramPacket.getPort());
-                            socket.send(packet);
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
                 });
                 thread.start();
             }
