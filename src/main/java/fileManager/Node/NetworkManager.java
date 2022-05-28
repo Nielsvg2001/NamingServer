@@ -78,6 +78,14 @@ public class NetworkManager {
         return getNodeInfo(previousNode);
     }
 
+    public Inet4Address getNextIP() {
+        return getNodeInfo(nextNode);
+    }
+
+    public int getNextNode() {
+        return nextNode;
+    }
+
     public int dicovery() {
         try {
             // Send hostname (+ ip) to naming server and other nodes.
