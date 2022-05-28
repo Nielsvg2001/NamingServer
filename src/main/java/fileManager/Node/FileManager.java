@@ -1,6 +1,5 @@
 package fileManager.Node;
 
-import fileManager.NamingServer.Naming;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.simple.JSONObject;
@@ -165,7 +164,6 @@ public class FileManager {
                 datagramSocket.receive(datagramPacket);
                 Thread thread = new Thread(() -> {
                         // previous node checks if he has the file as a local file
-
                         byte[] bytes = datagramPacket.getData();
                         String fileName = new String(bytes, 0, datagramPacket.getLength());
                         boolean isALocalFile = false;
@@ -179,13 +177,9 @@ public class FileManager {
                             }
                         }
                         //send response
-                    DatagramSocket socket = null;
                     try {
-                        socket = new DatagramSocket();
-                    } catch (SocketException e) {
-                        e.printStackTrace();
-                    }
-                    try {
+                        DatagramSocket socket = new DatagramSocket();
+
                             // if he already has the local file, send ip address of previous node to the sender
                         //System.out.println(fileName + "is local file: " + isALocalFile);
                             if (isALocalFile) {
@@ -203,7 +197,7 @@ public class FileManager {
                             }
                         } catch (IOException e) {
                             throw new RuntimeException(e);
-                        }
+                    }
                 });
                 thread.start();
             }
