@@ -1,3 +1,17 @@
+#TO DO
+* Replication:
+
+  - failure
+  - edgecase if file is in previousnode and a new node joins the network
+
+  - test: all functions of replication
+
+* Agents:
+alles
+
+* GUI: alles
+
+
 
 #tips:
 niet touch gebruiken -> lege file aangemaakt, maar dat wordt niet aanvaard door listener

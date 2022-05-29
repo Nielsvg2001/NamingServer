@@ -12,16 +12,26 @@ public class Failure {
     private static final int FAILUREPORT = 9997;
     private static final int SHUTDOWNPORT = 9998;
 
+    /**
+     * Constructor of Failure
+     */
     public Failure() {
     }
 
+    /**
+     * this function starts the failure discovery on the Namingserver
+     * The Naming listens on a FailurePort to nodes that send a shutdownsignal, or to nodes that notify that another node is failed.
+     * Then it sends a new previous or nextnode to the neighbors of the failed/shutdown node
+     */
     public static void start() {
         System.out.println("Starting Failure");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(FAILUREPORT);
-            while (true) {
+            while (!datagramSocket.isClosed()) {
+                //recieve packet
                 DatagramPacket received = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(received);
+                //for every packet is a new thread created
                 Thread thread = new Thread(() -> {
                     // Receiving failed node
                     int hash = Integer.parseInt(new String(received.getData(), 0, received.getLength()));
@@ -30,7 +40,8 @@ public class Failure {
                     Integer previousNode = Naming.getNodesList().lowerKey(hash);
                     Integer nextNode = Naming.getNodesList().higherKey(hash);
 
-                    // Extreme case
+                    // Extreme case: first node : take last node as previous
+                    //               last node : take first node as next
                     previousNode = previousNode == null ? Naming.getNodesList().lastKey() : previousNode;
                     nextNode = nextNode == null ? Naming.getNodesList().firstKey() : nextNode;
 
@@ -40,6 +51,7 @@ public class Failure {
 
 
                     try {
+                        //sending new next and previous node to the neighbors of failed/shutdown node
                         DatagramSocket socket = new DatagramSocket();
                         try {
                             // Sending nextNode to previousNode
@@ -55,6 +67,7 @@ public class Failure {
                             buf = jsonObject.toString().getBytes();
                             packet = new DatagramPacket(buf, buf.length, Naming.getNodeInfo(nextNode), SHUTDOWNPORT);
                             socket.send(packet);
+                            socket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

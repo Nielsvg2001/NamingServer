@@ -11,6 +11,7 @@ public class LogHandler {
     private File logFile;
     JSONObject log = new JSONObject();
 
+    //for testing
     public static void main(String[] args) throws InterruptedException {
         LogHandler logHandler = new LogHandler();
         logHandler.addFileToLog("testfile", 2748950, "local");
@@ -22,14 +23,22 @@ public class LogHandler {
         logHandler.removeFileLog("testfile", "local");
     }
 
+    /**
+     * constructor that creates logFile
+     */
     public LogHandler() {
         createLogFile();
     }
 
+    /**
+     * creates log file
+     */
     private void createLogFile() {
         logFile = new File("src/main/java/fileManager/Node/Log.json");
         try {
-            logFile.createNewFile();
+            if (!logFile.createNewFile()) {
+                System.out.println("file already exists");
+            }
             log.put("local", new JSONArray());
             log.put("replicated", new JSONArray());
             writeLog();
@@ -38,21 +47,34 @@ public class LogHandler {
         }
     }
 
+    /**
+     * Adds file to log
+     *
+     * @param fileName         String :filename to add to log
+     * @param downloadlocation int hash of node that has this file as local file
+     * @param location         string: where the file is stored: replicated or local
+     */
     public void addFileToLog(String fileName, int downloadlocation, String location) {
         JSONArray locationArray = (JSONArray) log.get(location);
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("fileName", fileName);
         jsonObject.put("downloadlocation", downloadlocation);
-
         locationArray.add(jsonObject);
-
+        System.out.println("AddFileToLog: " + log.toJSONString());
         writeLog();
     }
 
+    /**
+     * Removes file from log
+     *
+     * @param fileName String filename to remove
+     * @param location location to remove
+     * @return returns the jsonObject if it is removed, otherwise it returns null
+     */
     public JSONObject removeFileLog(String fileName, String location) {
+        System.out.println("RefomveFileLog: " + fileName + " " + location);
+        System.out.println("RefomveFileLog: " + log.toJSONString());
         JSONArray locationArray = (JSONArray) log.get(location);
-
         for (Object object : locationArray) {
             JSONObject jsonObject = (JSONObject) object;
             if (jsonObject.get("fileName").equals(fileName)) {
@@ -64,6 +86,28 @@ public class LogHandler {
         return null;
     }
 
+    /**
+     * returns the downloadlocations of a file
+     *
+     * @param fileName name of file
+     * @param location location of file : replicated or local
+     * @return String of downloadlocation (if it exists, otherwise null)
+     */
+    public String checkDownloadlocations(String fileName, String location) {
+        System.out.println("check downloadlocations: " + log.toJSONString());
+        JSONArray locationArray = (JSONArray) log.get(location);
+        for (Object object : locationArray) {
+            JSONObject jsonObject = (JSONObject) object;
+            if (jsonObject.get("fileName").equals(fileName)) {
+                return (String) jsonObject.get("downloadlocation");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * write jsonobject back to the Log.json
+     */
     public void writeLog() {
         try {
             FileWriter file = new FileWriter(logFile);
