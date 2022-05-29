@@ -14,24 +14,31 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 // https://jade.tilab.com/doc/api/jade/core/Agent.html
-public class SyncAgent extends Agent {/*
-    private JSONArray array;
+public class SyncAgent extends Agent {
+    //private JSONArray array;
+    private ArrayList<String> fileList;
     private NetworkManager networkManager;
     private static int LISTPORT = 9994;
 
     public SyncAgent(NetworkManager networkManager) {
-        array = new JSONArray();
+        //array = new JSONArray();
         this.networkManager = networkManager;
         File path = new File("src/main/java/fileManager/Node/Replicated_files");
         File[] files = path.listFiles();
 
-        array.addAll(Arrays.asList(files));
+        assert files != null;
+        for (File file : files) {
+            fileList.add(file.toString());
+        }
+        //array.addAll(Arrays.asList(files));
         new Thread(this::sync).start();
     }
 
+    /*
     public JSONArray getArray() {
         return array;
     }
+    */
 
     public void sync() {
         Thread thread = new Thread(() -> {
@@ -107,5 +114,5 @@ public class SyncAgent extends Agent {/*
             });
             thread.start();
         }
-    }*/
+    }
 }

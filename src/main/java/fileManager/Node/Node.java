@@ -33,7 +33,7 @@ public class Node {
         networkManager = new NetworkManager();
         fileManager = new FileManager(networkManager);
         watchfolder = new WatchFolder(fileManager);
-        //syncAgent = new SyncAgent(networkManager);
+        syncAgent = new SyncAgent(networkManager);
     }
 
     public void shutdown() {
