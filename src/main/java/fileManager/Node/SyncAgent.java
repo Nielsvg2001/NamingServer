@@ -20,7 +20,7 @@ public class SyncAgent {
     public SyncAgent(NetworkManager networkManager) {
         listArray = new JSONArray();
         this.networkManager = networkManager;
-        File path = new File("src/main/java/fileManager/Node/Replicated_files");
+        File path = new File("src/main/java/fileManager/Node/Local_files");
         File[] files = path.listFiles();
         System.out.println("Sync agent: replic files" + Arrays.toString(files));
 
@@ -44,7 +44,7 @@ public class SyncAgent {
                 try {
                     //update own list based on replication files. Necessary if file is added
                     //to the replicated folder of the node
-                    File path = new File("src/main/java/fileManager/Node/Replicated_files");
+                    File path = new File("src/main/java/fileManager/Node/Local_files");
                     File[] files = path.listFiles();
 
                     for (File file : files) {
