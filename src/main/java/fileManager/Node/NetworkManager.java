@@ -104,6 +104,13 @@ public class NetworkManager {
     }
 
     /**
+     * @return Inet4Address IP address of next node
+     */
+    public Inet4Address getNextIP() {
+        return getNodeInfo(nextNode);
+    }
+
+    /**
      * sends a multicast to all nodes in the network to join the network
      * then it get a response from the namingserver with the previousNode and nextnode and set these variables
      *
