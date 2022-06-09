@@ -22,11 +22,13 @@ public class SyncAgent {
         this.networkManager = networkManager;
         File path = new File("src/main/java/fileManager/Node/Replicated_files");
         File[] files = path.listFiles();
+        System.out.println("Sync agent: replic files" + Arrays.toString(files));
 
         assert files != null;
         for (File file : files) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("fileName", file.getName());
+            System.out.println("Sync agent: file object" + jsonObject);
             listArray.add(jsonObject);
         }
         System.out.println("Sync agent: creating file list:" + listArray);
@@ -60,6 +62,7 @@ public class SyncAgent {
     }
 
     public void listenForFiles() {
+        System.out.println("Sync agent: listening for files");
         try {
             DatagramSocket datagramSocket = new DatagramSocket(LISTPORT);
             while (!datagramSocket.isClosed()) {
