@@ -89,7 +89,7 @@ public class SyncAgent {
                 datagramSocket.receive(datagramPacket);
                 Thread thread = new Thread(() -> {
                     byte[] bytes = datagramPacket.getData();
-                    String fileName = Arrays.toString(bytes);
+                    String fileName = new String(bytes, 0, datagramPacket.getLength());
                     System.out.println("!!!!!!!" + fileName);
                     boolean containsFile = false;
                     for (Object object : listArray) {
