@@ -47,7 +47,7 @@ public class SyncAgent {
                         //to the replicated folder of the node
                         File path = new File("src/main/java/fileManager/Node/Replicated_files");
                         File[] files = path.listFiles();
-                        System.out.println("Sync agent: replic files" + Arrays.toString(files));
+
                         for (File file : files) {
                             for (Object object : listArray) {
                                 JSONObject jsonObject = (JSONObject) object;
