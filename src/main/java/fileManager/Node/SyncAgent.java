@@ -29,16 +29,19 @@ public class SyncAgent {
             jsonObject.put("fileName", file.getName());
             listArray.add(jsonObject);
         }
+        System.out.println("Sync agent: creating file list:" + listArray);
         new Thread(this::sync).start();
         new Thread(this::listenForFiles).start();
     }
 
     public void sync() {
+        System.out.println("Sync agent: sync started!");
         try {
             DatagramSocket datagramSocket = new DatagramSocket();
             Thread thread = new Thread(() -> {
                 try {
                     if (!networkManager.getPreviousIP().equals(Inet4Address.getLocalHost())) {
+                        System.out.println("Sync agent: sending file names to previous node!");
                         for (Object object : listArray) {
                             JSONObject jsonObject = (JSONObject) object;
                             Object fileName = jsonObject.get("fileName");
