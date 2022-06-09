@@ -20,9 +20,8 @@ public class SyncAgent {
     public SyncAgent(NetworkManager networkManager) {
         listArray = new JSONArray();
         this.networkManager = networkManager;
-        File path = new File("src/main/java/fileManager/Node/Local_files");
+        File path = new File("src/main/java/fileManager/Node/Replicated_files");
         File[] files = path.listFiles();
-        System.out.println("Sync agent: replic files" + Arrays.toString(files));
 
         assert files != null;
         for (File file : files) {
@@ -42,6 +41,7 @@ public class SyncAgent {
             DatagramSocket datagramSocket = new DatagramSocket();
             Thread thread = new Thread(() -> {
                 try {
+/*
                     //update own list based on replication files. Necessary if file is added
                     //to the replicated folder of the node
                     File path = new File("src/main/java/fileManager/Node/Local_files");
@@ -57,7 +57,7 @@ public class SyncAgent {
                             }
                         }
                     }
-
+*/
                     //send files to previous node
                     if (!networkManager.getPreviousIP().equals(Inet4Address.getLocalHost())) {
                         for (Object object : listArray) {
