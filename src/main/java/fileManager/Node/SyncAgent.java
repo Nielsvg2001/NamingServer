@@ -6,16 +6,13 @@ import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.SocketException;
 import java.nio.channels.FileLock;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
-import jade.core.Agent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 // https://jade.tilab.com/doc/api/jade/core/Agent.html
-public class SyncAgent extends Agent {
+public class SyncAgent {
     private JSONArray listArray;
     private NetworkManager networkManager;
     private static int LISTPORT = 9994;
