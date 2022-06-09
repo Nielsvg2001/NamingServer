@@ -46,6 +46,7 @@ public class SyncAgent {
                     //to the replicated folder of the node
                     File path = new File("src/main/java/fileManager/Node/Replicated_files");
                     File[] files = path.listFiles();
+                    System.out.println("Sync agent: replic files" + Arrays.toString(files));
                     for (File file : files) {
                         for (Object object : listArray) {
                             JSONObject jsonObject = (JSONObject) object;
@@ -83,6 +84,7 @@ public class SyncAgent {
         try {
             DatagramSocket datagramSocket = new DatagramSocket(LISTPORT);
             while (!datagramSocket.isClosed()) {
+                System.out.println("Sync agent: files received!");
                 DatagramPacket datagramPacket = new DatagramPacket(new byte[256], 256);
                 datagramSocket.receive(datagramPacket);
                 Thread thread = new Thread(() -> {
