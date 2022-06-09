@@ -40,39 +40,42 @@ public class SyncAgent {
         System.out.println("Sync agent: sync started!");
         try {
             DatagramSocket datagramSocket = new DatagramSocket();
-            Thread thread = new Thread(() -> {
-                try {
-                    //update own list based on replication files. Necessary if file is added
-                    //to the replicated folder of the node
-                    File path = new File("src/main/java/fileManager/Node/Replicated_files");
-                    File[] files = path.listFiles();
-                    System.out.println("Sync agent: replic files" + Arrays.toString(files));
-                    for (File file : files) {
-                        for (Object object : listArray) {
-                            JSONObject jsonObject = (JSONObject) object;
-                            if (!file.getName().equals(jsonObject.get("fileName"))) {
-                                JSONObject object1 = new JSONObject();
-                                object1.put("fileName", file.getName());
-                                listArray.add(jsonObject);
+            while (!datagramSocket.isClosed()) {
+                Thread thread = new Thread(() -> {
+                    try {
+                        //update own list based on replication files. Necessary if file is added
+                        //to the replicated folder of the node
+                        File path = new File("src/main/java/fileManager/Node/Replicated_files");
+                        File[] files = path.listFiles();
+                        System.out.println("Sync agent: replic files" + Arrays.toString(files));
+                        for (File file : files) {
+                            for (Object object : listArray) {
+                                JSONObject jsonObject = (JSONObject) object;
+                                if (!file.getName().equals(jsonObject.get("fileName"))) {
+                                    JSONObject object1 = new JSONObject();
+                                    object1.put("fileName", file.getName());
+                                    listArray.add(jsonObject);
+                                }
                             }
                         }
-                    }
 
-                    //send files to previous node
-                    if (!networkManager.getPreviousIP().equals(Inet4Address.getLocalHost())) {
-                        System.out.println("Sync agent: sending file names to previous node!");
-                        for (Object object : listArray) {
-                            JSONObject jsonObject = (JSONObject) object;
-                            Object fileName = jsonObject.get("fileName");
-                            byte[] buf = fileName.toString().getBytes();
-                            DatagramPacket packet = new DatagramPacket(buf, buf.length, networkManager.getPreviousIP(), LISTPORT);
-                            datagramSocket.send(packet);
+                        //send files to previous node
+                        if (!networkManager.getPreviousIP().equals(Inet4Address.getLocalHost())) {
+                            System.out.println("Sync agent: sending file names to previous node!");
+                            for (Object object : listArray) {
+                                JSONObject jsonObject = (JSONObject) object;
+                                Object fileName = jsonObject.get("fileName");
+                                byte[] buf = fileName.toString().getBytes();
+                                DatagramPacket packet = new DatagramPacket(buf, buf.length, networkManager.getPreviousIP(), LISTPORT);
+                                datagramSocket.send(packet);
+                            }
                         }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }); thread.start();
+                });
+                thread.start();
+            }
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
