@@ -41,23 +41,6 @@ public class SyncAgent {
             DatagramSocket datagramSocket = new DatagramSocket();
             Thread thread = new Thread(() -> {
                 try {
-/*
-                    //update own list based on replication files. Necessary if file is added
-                    //to the replicated folder of the node
-                    File path = new File("src/main/java/fileManager/Node/Local_files");
-                    File[] files = path.listFiles();
-
-                    for (File file : files) {
-                        for (Object object : listArray) {
-                            JSONObject jsonObject = (JSONObject) object;
-                            if (!file.getName().equals(jsonObject.get("fileName"))) {
-                                JSONObject object1 = new JSONObject();
-                                object1.put("fileName", file.getName());
-                                listArray.add(jsonObject);
-                            }
-                        }
-                    }
-*/
                     //send files to previous node
                     if (!networkManager.getPreviousIP().equals(Inet4Address.getLocalHost())) {
                         for (Object object : listArray) {
